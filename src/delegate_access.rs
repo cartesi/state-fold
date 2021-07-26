@@ -109,7 +109,7 @@ pub struct Access<M: Middleware> {
     // If the Ethereum node has a limit on the number of events returned by the
     // method `eth_getLogs` (such as Infura, with a 10k events limit and <10s
     // query limit), `query_limit_error_codes` contains the error codes of when
-    // the request fails. In case of a match, Access will attempt a partiotion.
+    // the request fails. In case of a match, Access will attempt a partition.
     // In case of Infura, the error code is `-32005`. An empty array means a
     // partition will never be attempted.
     query_limit_error_codes: Vec<i32>,

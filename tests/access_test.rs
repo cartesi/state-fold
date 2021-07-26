@@ -175,7 +175,7 @@ async fn fold_query_test() {
             .unwrap();
         assert_eq!(value, "initial value");
 
-        // Defualt overrides given block.
+        // Default overrides given block.
         let event = simple_storage
             .value_changed_filter()
             .at_block_hash(block_hash0)

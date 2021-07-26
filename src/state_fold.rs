@@ -58,7 +58,7 @@ where
         // First check if block exists in archive, returning it if so. This is
         // an optimization and can be removed. The following code will be able
         // to get the requested block regardless. By doing this, we won't need
-        // to instantiate an unecessary provider and we avoid running on mutex
+        // to instantiate an unnecessary provider and we avoid running on mutex
         // locks.
         if let Some(block) = train.get_block(&self.delegate, block_hash).await {
             return Ok(block);
