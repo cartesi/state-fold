@@ -147,3 +147,60 @@ We achieve these properties through the use of the functional programming fold.
 Another design goal that should not be overlooked is the ability to compose State Folds.
 This allows for a modular approach when writing delegates, which greatly simplifies implementing complex logic and enables reuse of code.
 The ability of creating abstractions is one of the most important tools in a programmer's toolbox.
+
+## Examples
+
+There are a few examples in the `examples` directory that can be a good start for the new comers.
+
+* delegate_example
+* delegate_client_example
+* delegate_server_example
+
+### Prerequisites
+
+* solc 0.7.5+
+* geth 1.9.24+
+
+### Run delegate example
+
+```bash
+cd examples
+./run_delegate_example.sh
+```
+The program output would look like this
+```log
+Data after push: [10]
+Data after push: [10, 20]
+Data after push: [10, 20, 30]
+Data after push: [10, 20, 30, 40]
+Data after push: [10, 20, 30, 40, 50]
+Data after pop: [10, 20, 30, 40]
+Data after modify: [10, 20, 35, 40]
+Current block: 463
+ContractCtx { data: [10, 20, 35, 40] }
+Current block: 464
+ContractCtx { data: [10, 20, 35, 40] }
+Current block: 465
+ContractCtx { data: [10, 20, 35, 40] }
+```
+
+### Run delegate server and client examples:
+
+```bash
+cd examples
+./run_delegate_example.sh
+```
+Server will start listening for requests
+```log
+StateFoldServer listening on [::1]:50051
+```
+
+Open another terminal to run client
+```bash
+cd examples
+./run_delegate_client_example.sh
+```
+Client should receive state from the server
+```log
+RESPONSE=GetStateResponse { json_state: "state: ContractState { ctx: ContractCtx { data: [10, 20, 35, 40] } }" }
+```
