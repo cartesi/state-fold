@@ -102,9 +102,9 @@ dependencies = [
 
 [[package]]
 name = "async-trait"
-version = "0.1.51"
+version = "0.1.50"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44318e776df68115a881de9a8fd1b9e53368d7a4a5ce4cc48517da3393233a5e"
+checksum = "0b98e84bbb4cbcdd97da190ba0c58a1bb0de2c1fdf67d159e192ed766aeca722"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2125,9 +2125,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.65"
+version = "1.0.64"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "28c5e91e4240b46c4c19219d6cc84784444326131a4210f496f948d5cc827a29"
+checksum = "799e97dc9fdae36a5c8b8f2cae9ce2ee9fdce2058c57a93e6099d919fd982f79"
 dependencies = [
  "itoa",
  "ryu",
@@ -2266,9 +2266,9 @@ dependencies = [
 
 [[package]]
 name = "socket2"
-version = "0.4.1"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "765f090f0e423d2b55843402a07915add955e7d60657db13707a159727326cad"
+checksum = "9e3dfc207c526015c632472a77be09cf1b6e46866581aecae5cc38fb4235dea2"
 dependencies = [
  "libc",
  "winapi",
@@ -2283,20 +2283,30 @@ checksum = "6e63cff320ae2c57904679ba7cb63280a3dc4613885beafb148ee7bf9aa9042d"
 [[package]]
 name = "state-fold"
 version = "0.1.0"
+source = "git+https://github.com/cartesi/state-fold?rev=ace5480#ace5480a664d8c85ec7b0a13216f58bce9eb1551"
 dependencies = [
  "async-trait",
- "ethers",
  "futures",
  "offchain-utils",
  "serde",
- "serde_json",
  "snafu",
  "structopt",
  "tokio",
 ]
 
 [[package]]
-name = "state-fold-examples"
+name = "state-server-grpc"
+version = "0.1.0"
+dependencies = [
+ "prost",
+ "tokio",
+ "tonic",
+ "tonic-build",
+ "tonic-health",
+]
+
+[[package]]
+name = "state_fold_examples"
 version = "0.1.0"
 dependencies = [
  "async-trait",
@@ -2314,17 +2324,6 @@ dependencies = [
  "state-server-grpc",
  "tokio",
  "tonic",
-]
-
-[[package]]
-name = "state-server-grpc"
-version = "0.1.0"
-dependencies = [
- "prost",
- "tokio",
- "tonic",
- "tonic-build",
- "tonic-health",
 ]
 
 [[package]]
