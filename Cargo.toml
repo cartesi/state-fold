@@ -1,4 +1,5 @@
 [workspace]
 members = [
   "state-fold",
+  "state-server-grpc",
 ]

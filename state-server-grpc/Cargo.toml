@@ -1,0 +1,14 @@
+[package]
+name = "state-server-grpc"
+version = "0.1.0"
+authors = ["Marcelo Castellani <marcelo@linux.com>"]
+edition = "2018"
+
+[dependencies]
+tonic = "0.4"
+prost = "0.7"
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread", "signal", "sync"] }
+tonic-health = "0.3.1"
+
+[build-dependencies]
+tonic-build = "0.4"
