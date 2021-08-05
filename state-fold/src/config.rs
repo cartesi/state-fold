@@ -26,6 +26,9 @@ pub struct SFConfig {
     pub safety_margin: usize,
 }
 
+// default values
+const DEFAULT_SAFETY_MARGIN: usize = 10;
+
 impl SFConfig {
     pub fn initialize() -> config_error::Result<Self> {
         let env_cli_config = SFEnvCLIConfig::from_args();
@@ -33,13 +36,13 @@ impl SFConfig {
         let file_config: SFFileConfig =
             configuration::config::load_config_file(
                 env_cli_config.sf_config,
-                "state fold",
+                "state-fold",
             )?;
 
         let safety_margin = env_cli_config
             .sf_safety_margin
             .or(file_config.sf_safety_margin)
-            .unwrap_or(10);
+            .unwrap_or(DEFAULT_SAFETY_MARGIN);
 
         Ok(SFConfig { safety_margin })
     }
