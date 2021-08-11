@@ -1,7 +1,9 @@
 pub mod delegate_array_server;
+pub mod delegate_mapping_server;
 pub mod delegate_struct_server;
 pub mod fold;
 pub mod test_array_contract_lib;
+pub mod test_mapping_contract_lib;
 pub mod test_struct_contract_lib;
 pub mod types;
 
@@ -102,6 +104,10 @@ pub fn handle_env_args() -> Result<Examples, &'static str> {
         "Array" => Examples::Array(
             "TestArrayContract",
             "./common/contract/TestArrayContract.sol",
+        ),
+        "Mapping" => Examples::Mapping(
+            "TestMappingContract",
+            "./common/contract/TestMappingContract.sol",
         ),
         "Struct" => Examples::Struct(
             "TestStructContract",

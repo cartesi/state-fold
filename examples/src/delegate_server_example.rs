@@ -23,6 +23,7 @@
 
 #![warn(unused_extern_crates)]
 use state_fold_examples::fold::test_array_contract_delegate::ArrayContractFoldDelegate;
+use state_fold_examples::fold::test_mapping_contract_delegate::MappingContractFoldDelegate;
 use state_fold_examples::fold::test_struct_contract_delegate::StructContractFoldDelegate;
 use state_fold_examples::setup_test_contract;
 use state_fold_examples::types::Examples;
@@ -67,6 +68,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 contract_path
             );
             start_serving!(delegate_struct_server, shutdown_rx, contract_fold)
+        }
+        Examples::Mapping(contract_name, contract_path) => {
+            let contract_fold = setup_test_contract!(
+                MappingContractFoldDelegate,
+                contract_name,
+                contract_path
+            );
+            start_serving!(delegate_mapping_server, shutdown_rx, contract_fold)
         }
     }
 }
