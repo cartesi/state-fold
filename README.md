@@ -159,6 +159,7 @@ There are a few examples in the `examples` directory that can be a good start fo
 You can choose also choose upon which Solidity data type your example will run on.
 
 * Array
+* Struct
 
 ### Prerequisites
 
@@ -169,39 +170,40 @@ You can choose also choose upon which Solidity data type your example will run o
 
 While running this example, you can select which data type you want to use by utilising the `-m` command line argument.
 
-The following command will run the delegate example using the Array data type:
+The following command will run the delegate example using the Struct data type:
 
 ```bash
 cd examples
-./run_delegate_example.sh -m Array
+./run_delegate_example.sh -m Struct
 ```
 
 The program output would look like this
 ```log
-Data after push: [10]
-Data after push: [10, 20]
-Data after push: [10, 20, 30]
-Data after push: [10, 20, 30, 40]
-Data after push: [10, 20, 30, 40, 50]
-Data after pop: [10, 20, 30, 40]
-Data after modify: [10, 20, 35, 40]
-Current block: 463
-ContractCtx { data: [10, 20, 35, 40] }
-Current block: 464
-ContractCtx { data: [10, 20, 35, 40] }
-Current block: 465
-ContractCtx { data: [10, 20, 35, 40] }
+Name after modify: "John Doe"
+Age after modify: 52
+Name after modify: "Jon Snow"
+Age after modify: 34
+Name after modify: "Sir Jorah"
+Age after modify: 71
+Current block: 8
+ContractCtx { person: Person { name: "Sir Jorah", age: 71 } }
+Current block: 9
+ContractCtx { person: Person { name: "Sir Jorah", age: 71 } }
+Current block: 10
+ContractCtx { person: Person { name: "Sir Jorah", age: 71 } }
+Current block: 11
+ContractCtx { person: Person { name: "Sir Jorah", age: 71 } }
 ```
 
 ### Run delegate server and client examples:
 
 While running these examples, you can also select which data type you want to use by utilising the `-m` command line argument.
 
-The following command will run the delegate server example using the Array data type:
+The following command will run the delegate server example using the Struct data type:
 
 ```bash
 cd examples
-./run_delegate_server_example.sh -m Array
+./run_delegate_server_example.sh -m Struct
 ```
 Server will start listening for requests
 ```log
@@ -215,5 +217,7 @@ cd examples
 ```
 Client should receive state from the server
 ```log
-RESPONSE=GetStateResponse { json_state: "state: ContractState { ctx: ContractCtx { data: [10, 20, 35, 40] } }" }
+RESPONSE=GetStateResponse { json_state: "state: ContractState { ctx: ContractCtx { person: Person { name: \"Sir Jorah\", age: 71 } } }" }
 ```
+
+It's worth noting that if no data type is specified, the default is `Array`.

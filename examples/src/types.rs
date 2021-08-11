@@ -8,4 +8,5 @@ pub trait ExampleContractFoldDelegate: StateFoldDelegate + Default {
 
 pub enum Examples {
     Array(&'static str, &'static str),
+    Struct(&'static str, &'static str),
 }

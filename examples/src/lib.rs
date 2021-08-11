@@ -1,10 +1,13 @@
 pub mod delegate_array_server;
+pub mod delegate_struct_server;
 pub mod fold;
 pub mod test_array_contract_lib;
+pub mod test_struct_contract_lib;
 pub mod types;
 
 use block_subscriber::{BlockSubscriber, BlockSubscriberHandle};
 use fold::test_array_contract_delegate;
+use fold::test_struct_contract_delegate;
 use middleware_factory::WsProviderFactory;
 use state_fold::{Access, StateFold};
 
@@ -99,6 +102,10 @@ pub fn handle_env_args() -> Result<Examples, &'static str> {
         "Array" => Examples::Array(
             "TestArrayContract",
             "./common/contract/TestArrayContract.sol",
+        ),
+        "Struct" => Examples::Struct(
+            "TestStructContract",
+            "./common/contract/TestStructContract.sol",
         ),
         arg => panic!("Unknown example {}", arg),
     };

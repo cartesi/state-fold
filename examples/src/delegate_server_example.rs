@@ -23,6 +23,7 @@
 
 #![warn(unused_extern_crates)]
 use state_fold_examples::fold::test_array_contract_delegate::ArrayContractFoldDelegate;
+use state_fold_examples::fold::test_struct_contract_delegate::StructContractFoldDelegate;
 use state_fold_examples::setup_test_contract;
 use state_fold_examples::types::Examples;
 use state_server_grpc::{serve_delegate_manager, wait_for_signal};
@@ -58,6 +59,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 contract_path
             );
             start_serving!(delegate_array_server, shutdown_rx, contract_fold)
+        }
+        Examples::Struct(contract_name, contract_path) => {
+            let contract_fold = setup_test_contract!(
+                StructContractFoldDelegate,
+                contract_name,
+                contract_path
+            );
+            start_serving!(delegate_struct_server, shutdown_rx, contract_fold)
         }
     }
 }
