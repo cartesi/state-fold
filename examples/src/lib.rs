@@ -53,13 +53,10 @@ pub async fn setup_block_subscriber() -> (
     (block_subscriber, handle)
 }
 
-pub async fn setup_test_contract_delegate() -> (
-    Arc<Access<Provider<Http>>>,
-    StateFold<
-        test_contract_delegate::ContractFoldDelegate,
-        Access<Provider<Http>>,
-    >,
-) {
+pub async fn setup_test_contract_delegate() -> StateFold<
+    test_contract_delegate::ContractFoldDelegate,
+    Access<Provider<Http>>,
+> {
     // construct StateFold
     let provider = Provider::<Http>::try_from(HTTP_URL).unwrap();
     let deployer = provider.get_accounts().await.unwrap()[0];
@@ -68,13 +65,13 @@ pub async fn setup_test_contract_delegate() -> (
     let test_contract = deploy_test_contract(Arc::new(client)).await;
     let contract_address = test_contract.address();
 
-    let access = Access::new(Arc::new(provider), U64::from(0), vec![], 4);
-    let arc_access = Arc::new(access);
+    let access =
+        Arc::new(Access::new(Arc::new(provider), U64::from(0), vec![], 4));
 
     let contract_delegate =
         test_contract_delegate::ContractFoldDelegate::new(contract_address);
     let contract_fold =
-        StateFold::new(contract_delegate, Arc::clone(&arc_access), 0);
+        StateFold::new(contract_delegate, Arc::clone(&access), 0);
 
-    (arc_access, contract_fold)
+    contract_fold
 }

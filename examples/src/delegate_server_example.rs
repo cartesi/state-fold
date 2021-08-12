@@ -32,14 +32,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let _ = tokio::spawn(wait_for_signal(shutdown_tx));
 
-    let (access, contract_fold) =
+    let contract_fold =
         state_fold_examples::setup_test_contract_delegate().await;
 
     serve_delegate_manager(
         "[::1]:50051",
         state_fold_examples::delegate_server::ContractDelegateManager {
             fold: contract_fold,
-            access,
         },
         shutdown_rx,
     )

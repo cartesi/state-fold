@@ -21,13 +21,11 @@
 // this component is rewritten, the entire component will be released under the
 // Apache v2 license.
 
-use state_fold::{Access, DelegateAccess, StateFold};
+use state_fold::{Access, StateFold};
 use state_server_grpc::state_server::delegate_manager_server::DelegateManager;
 use state_server_grpc::state_server::{GetStateRequest, GetStateResponse};
 
 use ethers::providers::{Http, Provider};
-use ethers::types::BlockNumber;
-use std::sync::Arc;
 use tonic::{Code, Request, Response, Status};
 
 pub struct ContractDelegateManager {
@@ -35,7 +33,6 @@ pub struct ContractDelegateManager {
         crate::test_contract_delegate::ContractFoldDelegate,
         Access<Provider<Http>>,
     >,
-    pub access: Arc<Access<Provider<Http>>>,
 }
 
 #[tonic::async_trait]
@@ -50,15 +47,9 @@ impl DelegateManager for ContractDelegateManager {
             request.into_inner().json_initial_state
         );
 
-        let latest_block = self
-            .access
-            .get_block(BlockNumber::Latest)
-            .await
-            .map_err(|e| Status::new(Code::Unavailable, format!("{}", e)))?;
-
         let contract_state = self
             .fold
-            .get_state_for_block(&(), latest_block.hash)
+            .get_state_for_block(&(), None)
             .await
             .map_err(|e| Status::new(Code::Unavailable, format!("{}", e)))?
             .state;

@@ -27,14 +27,14 @@ use block_subscriber::block_subscriber::NewBlockSubscriber;
 async fn main() -> std::result::Result<(), ()> {
     let (block_subscriber, _handle) =
         state_fold_examples::setup_block_subscriber().await;
-    let (_, contract_fold) =
+    let contract_fold =
         state_fold_examples::setup_test_contract_delegate().await;
     let mut subscription = block_subscriber.subscribe().await.unwrap();
 
     loop {
         let current_block = subscription.recv().await.unwrap();
         let contract_state = contract_fold
-            .get_state_for_block(&(), current_block.hash)
+            .get_state_for_block(&(), Some(current_block.hash))
             .await
             .map_err(|e| {
                 println!("error getting state for contract fold: {}", e);
