@@ -3,6 +3,7 @@ use crate::delegate_access;
 use crate::error::*;
 use crate::types;
 
+use ethers::types::BlockNumber;
 use offchain_utils::offchain_core::ethers;
 use std::sync::Arc;
 
@@ -51,9 +52,17 @@ where
     pub async fn get_state_for_block(
         &self,
         initial_state: &D::InitialState,
-        block_hash: ethers::types::H256,
+        block_hash: Option<ethers::types::H256>,
     ) -> Result<D::State, DA> {
         let train = self.archive.get_train(initial_state).await;
+
+        // Use block hash from latest block if the hash is not specified
+        let block_hash = block_hash.unwrap_or(
+            self.delegate_access
+                .get_block(BlockNumber::Latest)
+                .await?
+                .hash,
+        );
 
         // First check if block exists in archive, returning it if so. This is
         // an optimization and can be removed. The following code will be able

@@ -85,7 +85,7 @@ async fn latest_state_test() {
     let (fold, access) = create_fold().await;
     let latest_hash = access.get_latest_hash().await;
     let state = fold
-        .get_state_for_block(&(), latest_hash)
+        .get_state_for_block(&(), Some(latest_hash))
         .await
         .unwrap()
         .state;
@@ -105,7 +105,11 @@ async fn straight_blockchain_test() {
 
     for i in 64u64..=128 {
         let hash = access.get_block_with_number(i.into()).await.unwrap().hash;
-        let state = fold.get_state_for_block(&(), hash).await.unwrap().state;
+        let state = fold
+            .get_state_for_block(&(), Some(hash))
+            .await
+            .unwrap()
+            .state;
 
         assert_eq!(
             state,
@@ -118,7 +122,11 @@ async fn straight_blockchain_test() {
 
     for i in 32u64..=50 {
         let hash = access.get_block_with_number(i.into()).await.unwrap().hash;
-        let state = fold.get_state_for_block(&(), hash).await.unwrap().state;
+        let state = fold
+            .get_state_for_block(&(), Some(hash))
+            .await
+            .unwrap()
+            .state;
 
         assert_eq!(
             state,
@@ -131,7 +139,11 @@ async fn straight_blockchain_test() {
 
     for i in 58u64..=64 {
         let hash = access.get_block_with_number(i.into()).await.unwrap().hash;
-        let state = fold.get_state_for_block(&(), hash).await.unwrap().state;
+        let state = fold
+            .get_state_for_block(&(), Some(hash))
+            .await
+            .unwrap()
+            .state;
 
         assert_eq!(
             state,
@@ -144,7 +156,11 @@ async fn straight_blockchain_test() {
 
     for i in 16u64..=128 {
         let hash = access.get_block_with_number(i.into()).await.unwrap().hash;
-        let state = fold.get_state_for_block(&(), hash).await.unwrap().state;
+        let state = fold
+            .get_state_for_block(&(), Some(hash))
+            .await
+            .unwrap()
+            .state;
 
         assert_eq!(
             state,
@@ -186,7 +202,11 @@ async fn branching_blockchain_test() {
             .unwrap()
             .hash;
 
-        let state = fold.get_state_for_block(&(), hash).await.unwrap().state;
+        let state = fold
+            .get_state_for_block(&(), Some(hash))
+            .await
+            .unwrap()
+            .state;
 
         assert_eq!(
             state,
@@ -205,7 +225,11 @@ async fn branching_blockchain_test() {
             .unwrap()
             .hash;
 
-        let state = fold.get_state_for_block(&(), hash).await.unwrap().state;
+        let state = fold
+            .get_state_for_block(&(), Some(hash))
+            .await
+            .unwrap()
+            .state;
 
         assert_eq!(
             state,
@@ -224,7 +248,11 @@ async fn branching_blockchain_test() {
             .unwrap()
             .hash;
 
-        let state = fold.get_state_for_block(&(), hash).await.unwrap().state;
+        let state = fold
+            .get_state_for_block(&(), Some(hash))
+            .await
+            .unwrap()
+            .state;
 
         assert_eq!(
             state,
@@ -242,8 +270,11 @@ async fn branching_blockchain_test() {
                 .unwrap()
                 .hash;
 
-            let state =
-                fold.get_state_for_block(&(), hash).await.unwrap().state;
+            let state = fold
+                .get_state_for_block(&(), Some(hash))
+                .await
+                .unwrap()
+                .state;
 
             assert_eq!(
                 state,
