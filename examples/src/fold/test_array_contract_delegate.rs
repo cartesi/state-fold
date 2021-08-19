@@ -1,6 +1,6 @@
-use crate::test_contract_lib::ContractCtx;
+use crate::test_array_contract_lib::ContractCtx;
 
-use super::contracts::test_contract;
+use super::contracts::test_array_contract;
 
 use offchain_core::types::Block;
 use state_fold::{
@@ -21,18 +21,18 @@ pub struct ContractState {
 }
 
 /// Test Contract StateFold Delegate, which implements `sync` and `fold`.
-pub struct ContractFoldDelegate {
+pub struct ArrayContractFoldDelegate {
     contract_address: Address,
 }
 
-impl ContractFoldDelegate {
+impl ArrayContractFoldDelegate {
     pub fn new(contract_address: Address) -> Self {
-        ContractFoldDelegate { contract_address }
+        ArrayContractFoldDelegate { contract_address }
     }
 }
 
 #[async_trait]
-impl StateFoldDelegate for ContractFoldDelegate {
+impl StateFoldDelegate for ArrayContractFoldDelegate {
     type InitialState = ();
     type Accumulator = ContractState;
     type State = BlockState<Self::Accumulator>;
@@ -47,7 +47,7 @@ impl StateFoldDelegate for ContractFoldDelegate {
             .build_sync_contract(
                 self.contract_address,
                 block.number,
-                test_contract::TestContract::new,
+                test_array_contract::TestArrayContract::new,
             )
             .await;
 
@@ -89,7 +89,7 @@ impl StateFoldDelegate for ContractFoldDelegate {
             .build_fold_contract(
                 self.contract_address,
                 block.hash,
-                test_contract::TestContract::new,
+                test_array_contract::TestArrayContract::new,
             )
             .await;
 
@@ -117,22 +117,26 @@ impl StateFoldDelegate for ContractFoldDelegate {
 
 /// Computes the state from the events emission
 fn compute_state(
-    events: Vec<test_contract::TestContractEvents>,
+    events: Vec<test_array_contract::TestArrayContractEvents>,
     previous_state: ContractState,
-) -> crate::test_contract_lib::Result<ContractState> {
+) -> crate::test_array_contract_lib::Result<ContractState> {
     let ctx =
         events
             .into_iter()
-            .try_fold(previous_state.ctx, |ctx, event| match event {
-                test_contract::TestContractEvents::PushedFilter(e) => {
-                    Ok(ctx.push(e.value))
-                }
+            .try_fold(previous_state.ctx, |ctx, event| {
+                match event {
+            test_array_contract::TestArrayContractEvents::PushedFilter(e) => {
+                Ok(ctx.push(e.value))
+            }
 
-                test_contract::TestContractEvents::PoppedFilter(_) => ctx.pop(),
+            test_array_contract::TestArrayContractEvents::PoppedFilter(_) => {
+                ctx.pop()
+            }
 
-                test_contract::TestContractEvents::ModifiedFilter(e) => {
-                    ctx.modify(e.index, e.value)
-                }
+            test_array_contract::TestArrayContractEvents::ModifiedFilter(e) => {
+                ctx.modify(e.index, e.value)
+            }
+        }
             })?;
 
     Ok(ContractState { ctx })

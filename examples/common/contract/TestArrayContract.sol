@@ -1,6 +1,6 @@
 pragma solidity ^0.7.0;
 
-contract TestContract {
+contract TestArrayContract {
     uint256[] data;
 
     event Modified(uint256 indexed index, uint256 indexed value);

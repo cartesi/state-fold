@@ -30,7 +30,7 @@ use tonic::{Code, Request, Response, Status};
 
 pub struct ContractDelegateManager {
     pub fold: StateFold<
-        crate::test_contract_delegate::ContractFoldDelegate,
+        crate::test_array_contract_delegate::ArrayContractFoldDelegate,
         Access<Provider<Http>>,
     >,
 }

@@ -1,9 +1,9 @@
 pub mod delegate_server;
 pub mod fold;
-pub mod test_contract_lib;
+pub mod test_array_contract_lib;
 
 use block_subscriber::{BlockSubscriber, BlockSubscriberHandle};
-use fold::test_contract_delegate;
+use fold::test_array_contract_delegate;
 use middleware_factory::WsProviderFactory;
 use state_fold::{Access, StateFold};
 
@@ -22,8 +22,8 @@ static HTTP_URL: &'static str = "http://localhost:8545";
 pub async fn deploy_test_contract<M: Middleware>(
     client: Arc<M>,
 ) -> Contract<M> {
-    let contract_name = "TestContract";
-    let path = "./common/contract/TestContract.sol";
+    let contract_name = "TestArrayContract";
+    let path = "./common/contract/TestArrayContract.sol";
     let contracts = Solc::new(&path).build().unwrap();
     let contract = contracts.get(contract_name).unwrap();
     let abi = contract.abi.clone();
@@ -54,7 +54,7 @@ pub async fn setup_block_subscriber() -> (
 }
 
 pub async fn setup_test_contract_delegate() -> StateFold<
-    test_contract_delegate::ContractFoldDelegate,
+    test_array_contract_delegate::ArrayContractFoldDelegate,
     Access<Provider<Http>>,
 > {
     // construct StateFold
@@ -69,7 +69,7 @@ pub async fn setup_test_contract_delegate() -> StateFold<
         Arc::new(Access::new(Arc::new(provider), U64::from(0), vec![], 4));
 
     let contract_delegate =
-        test_contract_delegate::ContractFoldDelegate::new(contract_address);
+        test_array_contract_delegate::ArrayContractFoldDelegate::new(contract_address);
     let contract_fold =
         StateFold::new(contract_delegate, Arc::clone(&access), 0);
 

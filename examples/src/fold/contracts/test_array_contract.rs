@@ -1,6 +1,6 @@
-pub use testcontract_mod::*;
+pub use testarraycontract_mod::*;
 #[allow(clippy::too_many_arguments)]
-mod testcontract_mod {
+mod testarraycontract_mod {
     #![allow(dead_code)]
     #![allow(unused_imports)]
     use ethers::{
@@ -16,28 +16,29 @@ mod testcontract_mod {
         },
         providers::{self as ethers_providers, Middleware},
     };
-    #[doc = "TestContract was auto-generated with ethers-rs Abigen. More information at: https://github.com/gakonst/ethers-rs"]
+    #[doc = "TestArrayContract was auto-generated with ethers-rs Abigen. More information at: https://github.com/gakonst/ethers-rs"]
     use std::sync::Arc;
-    pub static TESTCONTRACT_ABI: ethers_contract::Lazy<ethers_core::abi::Abi> =
-        ethers_contract::Lazy::new(|| {
-            serde_json :: from_str ("[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Modified\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[],\"name\":\"Popped\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Pushed\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"modify\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pop\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"push\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]") . expect ("invalid abi")
-        });
+    pub static TESTARRAYCONTRACT_ABI: ethers_contract::Lazy<
+        ethers_core::abi::Abi,
+    > = ethers_contract::Lazy::new(|| {
+        serde_json :: from_str ("[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Modified\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[],\"name\":\"Popped\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Pushed\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"modify\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pop\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"push\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]") . expect ("invalid abi")
+    });
     #[derive(Clone)]
-    pub struct TestContract<M>(ethers_contract::Contract<M>);
-    impl<M> std::ops::Deref for TestContract<M> {
+    pub struct TestArrayContract<M>(ethers_contract::Contract<M>);
+    impl<M> std::ops::Deref for TestArrayContract<M> {
         type Target = ethers_contract::Contract<M>;
         fn deref(&self) -> &Self::Target {
             &self.0
         }
     }
-    impl<M: ethers_providers::Middleware> std::fmt::Debug for TestContract<M> {
+    impl<M: ethers_providers::Middleware> std::fmt::Debug for TestArrayContract<M> {
         fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-            f.debug_tuple(stringify!(TestContract))
+            f.debug_tuple(stringify!(TestArrayContract))
                 .field(&self.address())
                 .finish()
         }
     }
-    impl<'a, M: ethers_providers::Middleware> TestContract<M> {
+    impl<'a, M: ethers_providers::Middleware> TestArrayContract<M> {
         #[doc = r" Creates a new contract instance with the specified `ethers`"]
         #[doc = r" client at the given `Address`. The contract derefs to a `ethers::Contract`"]
         #[doc = r" object"]
@@ -47,7 +48,7 @@ mod testcontract_mod {
         ) -> Self {
             let contract = ethers_contract::Contract::new(
                 address.into(),
-                TESTCONTRACT_ABI.clone(),
+                TESTARRAYCONTRACT_ABI.clone(),
                 client,
             );
             Self(contract)
@@ -98,7 +99,8 @@ mod testcontract_mod {
         #[doc = r" Returns an [`Event`](ethers_contract::builders::Event) builder for all events of this contract"]
         pub fn events(
             &self,
-        ) -> ethers_contract::builders::Event<M, TestContractEvents> {
+        ) -> ethers_contract::builders::Event<M, TestArrayContractEvents>
+        {
             self.0.event_with_filter(Default::default())
         }
     }
@@ -126,12 +128,12 @@ mod testcontract_mod {
         pub value: ethers_core::types::U256,
     }
     #[derive(Debug, Clone, PartialEq, Eq)]
-    pub enum TestContractEvents {
+    pub enum TestArrayContractEvents {
         ModifiedFilter(ModifiedFilter),
         PoppedFilter(PoppedFilter),
         PushedFilter(PushedFilter),
     }
-    impl ethers_core::abi::Tokenizable for TestContractEvents {
+    impl ethers_core::abi::Tokenizable for TestArrayContractEvents {
         fn from_token(
             token: ethers_core::abi::Token,
         ) -> Result<Self, ethers_core::abi::InvalidOutputType>
@@ -139,13 +141,13 @@ mod testcontract_mod {
             Self: Sized,
         {
             if let Ok(decoded) = ModifiedFilter::from_token(token.clone()) {
-                return Ok(TestContractEvents::ModifiedFilter(decoded));
+                return Ok(TestArrayContractEvents::ModifiedFilter(decoded));
             }
             if let Ok(decoded) = PoppedFilter::from_token(token.clone()) {
-                return Ok(TestContractEvents::PoppedFilter(decoded));
+                return Ok(TestArrayContractEvents::PoppedFilter(decoded));
             }
             if let Ok(decoded) = PushedFilter::from_token(token.clone()) {
-                return Ok(TestContractEvents::PushedFilter(decoded));
+                return Ok(TestArrayContractEvents::PushedFilter(decoded));
             }
             Err(ethers_core::abi::InvalidOutputType(
                 "Failed to decode all event variants".to_string(),
@@ -153,20 +155,20 @@ mod testcontract_mod {
         }
         fn into_token(self) -> ethers_core::abi::Token {
             match self {
-                TestContractEvents::ModifiedFilter(element) => {
+                TestArrayContractEvents::ModifiedFilter(element) => {
                     element.into_token()
                 }
-                TestContractEvents::PoppedFilter(element) => {
+                TestArrayContractEvents::PoppedFilter(element) => {
                     element.into_token()
                 }
-                TestContractEvents::PushedFilter(element) => {
+                TestArrayContractEvents::PushedFilter(element) => {
                     element.into_token()
                 }
             }
         }
     }
-    impl ethers_core::abi::TokenizableItem for TestContractEvents {}
-    impl ethers_contract::EthLogDecode for TestContractEvents {
+    impl ethers_core::abi::TokenizableItem for TestArrayContractEvents {}
+    impl ethers_contract::EthLogDecode for TestArrayContractEvents {
         fn decode_log(
             log: &ethers_core::abi::RawLog,
         ) -> Result<Self, ethers_core::abi::Error>
@@ -174,13 +176,13 @@ mod testcontract_mod {
             Self: Sized,
         {
             if let Ok(decoded) = ModifiedFilter::decode_log(log) {
-                return Ok(TestContractEvents::ModifiedFilter(decoded));
+                return Ok(TestArrayContractEvents::ModifiedFilter(decoded));
             }
             if let Ok(decoded) = PoppedFilter::decode_log(log) {
-                return Ok(TestContractEvents::PoppedFilter(decoded));
+                return Ok(TestArrayContractEvents::PoppedFilter(decoded));
             }
             if let Ok(decoded) = PushedFilter::decode_log(log) {
-                return Ok(TestContractEvents::PushedFilter(decoded));
+                return Ok(TestArrayContractEvents::PushedFilter(decoded));
             }
             Err(ethers_core::abi::Error::InvalidData)
         }
