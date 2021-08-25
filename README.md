@@ -188,7 +188,7 @@ ContractCtx { data: [10, 20, 35, 40] }
 
 ```bash
 cd examples
-./run_delegate_example.sh
+./run_delegate_server_example.sh
 ```
 Server will start listening for requests
 ```log
