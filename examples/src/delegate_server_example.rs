@@ -22,9 +22,25 @@
 // Apache v2 license.
 
 #![warn(unused_extern_crates)]
+use state_fold_examples::fold::test_array_contract_delegate::ArrayContractFoldDelegate;
+use state_fold_examples::setup_test_contract;
+use state_fold_examples::types::Examples;
 use state_server_grpc::{serve_delegate_manager, wait_for_signal};
 
 use tokio::sync::oneshot;
+
+macro_rules! start_serving {
+    ($server_file: ident, $shutdown_rx: ident, $contract_fold: ident) => {
+        serve_delegate_manager(
+            "[::1]:50051",
+            state_fold_examples::$server_file::ContractDelegateManager {
+                fold: $contract_fold,
+            },
+            $shutdown_rx,
+        )
+        .await
+    };
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -32,15 +48,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let _ = tokio::spawn(wait_for_signal(shutdown_tx));
 
-    let contract_fold =
-        state_fold_examples::setup_test_contract_delegate().await;
+    let example = state_fold_examples::handle_env_args()?;
 
-    serve_delegate_manager(
-        "[::1]:50051",
-        state_fold_examples::delegate_server::ContractDelegateManager {
-            fold: contract_fold,
-        },
-        shutdown_rx,
-    )
-    .await
+    match example {
+        Examples::Array(contract_name, contract_path) => {
+            let contract_fold = setup_test_contract!(
+                ArrayContractFoldDelegate,
+                contract_name,
+                contract_path
+            );
+            start_serving!(delegate_array_server, shutdown_rx, contract_fold)
+        }
+    }
 }

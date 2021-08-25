@@ -156,6 +156,10 @@ There are a few examples in the `examples` directory that can be a good start fo
 * delegate_client_example
 * delegate_server_example
 
+You can choose also choose upon which Solidity data type your example will run on.
+
+* Array
+
 ### Prerequisites
 
 * solc 0.7.5+
@@ -163,10 +167,15 @@ There are a few examples in the `examples` directory that can be a good start fo
 
 ### Run delegate example
 
+While running this example, you can select which data type you want to use by utilising the `-m` command line argument.
+
+The following command will run the delegate example using the Array data type:
+
 ```bash
 cd examples
-./run_delegate_example.sh
+./run_delegate_example.sh -m Array
 ```
+
 The program output would look like this
 ```log
 Data after push: [10]
@@ -186,9 +195,13 @@ ContractCtx { data: [10, 20, 35, 40] }
 
 ### Run delegate server and client examples:
 
+While running these examples, you can also select which data type you want to use by utilising the `-m` command line argument.
+
+The following command will run the delegate server example using the Array data type:
+
 ```bash
 cd examples
-./run_delegate_server_example.sh
+./run_delegate_server_example.sh -m Array
 ```
 Server will start listening for requests
 ```log

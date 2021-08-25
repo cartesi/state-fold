@@ -1,4 +1,5 @@
 use crate::test_array_contract_lib::ContractCtx;
+use crate::types::ExampleContractFoldDelegate;
 
 use super::contracts::test_array_contract;
 
@@ -21,12 +22,13 @@ pub struct ContractState {
 }
 
 /// Test Contract StateFold Delegate, which implements `sync` and `fold`.
+#[derive(Default)]
 pub struct ArrayContractFoldDelegate {
     contract_address: Address,
 }
 
-impl ArrayContractFoldDelegate {
-    pub fn new(contract_address: Address) -> Self {
+impl ExampleContractFoldDelegate for ArrayContractFoldDelegate {
+    fn new(contract_address: Address) -> Self {
         ArrayContractFoldDelegate { contract_address }
     }
 }
