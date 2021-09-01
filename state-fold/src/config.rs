@@ -5,9 +5,9 @@ use configuration::error as config_error;
 use serde::Deserialize;
 use structopt::StructOpt;
 
-#[derive(StructOpt, Debug)]
+#[derive(StructOpt, Clone, Debug)]
 #[structopt(name = "sf_config", about = "Configuration for state fold")]
-struct SFEnvCLIConfig {
+pub struct SFEnvCLIConfig {
     /// Path to state fold config
     #[structopt(long, env)]
     pub sf_config: Option<String>,
@@ -30,9 +30,9 @@ pub struct SFConfig {
 const DEFAULT_SAFETY_MARGIN: usize = 10;
 
 impl SFConfig {
-    pub fn initialize() -> config_error::Result<Self> {
-        let env_cli_config = SFEnvCLIConfig::from_args();
-
+    pub fn initialize(
+        env_cli_config: SFEnvCLIConfig,
+    ) -> config_error::Result<Self> {
         let file_config: SFFileConfig =
             configuration::config::load_config_file(
                 env_cli_config.sf_config,
