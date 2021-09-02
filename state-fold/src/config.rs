@@ -8,7 +8,7 @@ use structopt::StructOpt;
 #[derive(StructOpt, Clone, Debug)]
 #[structopt(name = "sf_config", about = "Configuration for state fold")]
 pub struct SFEnvCLIConfig {
-    /// Path to state fold config
+    /// Path to state fold .toml config
     #[structopt(long, env)]
     pub sf_config: Option<String>,
     /// Safety margin for state fold
@@ -18,7 +18,12 @@ pub struct SFEnvCLIConfig {
 
 #[derive(Clone, Debug, Deserialize, Default)]
 pub struct SFFileConfig {
-    pub sf_safety_margin: Option<usize>,
+    pub safety_margin: Option<usize>,
+}
+
+#[derive(Clone, Debug, Deserialize, Default)]
+pub struct FileConfig {
+    pub state_fold: SFFileConfig,
 }
 
 #[derive(Clone, Debug)]
@@ -33,15 +38,12 @@ impl SFConfig {
     pub fn initialize(
         env_cli_config: SFEnvCLIConfig,
     ) -> config_error::Result<Self> {
-        let file_config: SFFileConfig =
-            configuration::config::load_config_file(
-                env_cli_config.sf_config,
-                "state-fold",
-            )?;
+        let file_config: FileConfig =
+            configuration::config::load_config_file(env_cli_config.sf_config)?;
 
         let safety_margin = env_cli_config
             .sf_safety_margin
-            .or(file_config.sf_safety_margin)
+            .or(file_config.state_fold.safety_margin)
             .unwrap_or(DEFAULT_SAFETY_MARGIN);
 
         Ok(SFConfig { safety_margin })
