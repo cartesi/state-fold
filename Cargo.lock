@@ -143,7 +143,7 @@ checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 [[package]]
 name = "backoff"
 version = "0.1.0"
-source = "git+https://github.com/cartesi/offchain-utils?rev=bcab565#bcab5657ff491a0fe6fd199820469e846215ba68"
+source = "git+https://github.com/cartesi/offchain-utils?rev=f43b889#f43b889566768949548da64f211fc9ced09a590b"
 dependencies = [
  "rand 0.8.4",
  "tokio",
@@ -288,7 +288,7 @@ checksum = "8d696c370c750c948ada61c69a0ee2cbbb9c50b1019ddb86d9317157a99c2cae"
 [[package]]
 name = "block-subscriber"
 version = "0.1.0"
-source = "git+https://github.com/cartesi/offchain-utils?rev=bcab565#bcab5657ff491a0fe6fd199820469e846215ba68"
+source = "git+https://github.com/cartesi/offchain-utils?rev=f43b889#f43b889566768949548da64f211fc9ced09a590b"
 dependencies = [
  "async-trait",
  "backoff",
@@ -433,15 +433,15 @@ dependencies = [
 [[package]]
 name = "configuration"
 version = "0.1.0"
-source = "git+https://github.com/cartesi/offchain-utils?rev=bcab565#bcab5657ff491a0fe6fd199820469e846215ba68"
+source = "git+https://github.com/cartesi/offchain-utils?rev=f43b889#f43b889566768949548da64f211fc9ced09a590b"
 dependencies = [
  "im",
  "offchain-core",
  "serde",
  "serde_json",
- "serde_yaml",
  "snafu",
  "structopt",
+ "toml",
 ]
 
 [[package]]
@@ -552,12 +552,6 @@ name = "doc-comment"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fea41bba32d969b513997752735605054bc0dfa92b4c56bf1189f2e174be7a10"
-
-[[package]]
-name = "dtoa"
-version = "0.4.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "56899898ce76aaf4a0f24d914c97ea6ed976d42fec6ad33fcbb0a1103e07b2b0"
 
 [[package]]
 name = "ecdsa"
@@ -1362,12 +1356,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "320cfe77175da3a483efed4bc0adc1968ca050b098ce4f2f1c13a56626128790"
 
 [[package]]
-name = "linked-hash-map"
-version = "0.5.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7fb9b38af92608140b86b693604b9ffcc5824240a484d1ecd4795bacb2fe88f3"
-
-[[package]]
 name = "log"
 version = "0.4.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1391,7 +1379,7 @@ checksum = "b16bd47d9e329435e309c58469fe0791c2d0d1ba96ec0954152a5ae2b04387dc"
 [[package]]
 name = "middleware-factory"
 version = "0.1.0"
-source = "git+https://github.com/cartesi/offchain-utils?rev=bcab565#bcab5657ff491a0fe6fd199820469e846215ba68"
+source = "git+https://github.com/cartesi/offchain-utils?rev=f43b889#f43b889566768949548da64f211fc9ced09a590b"
 dependencies = [
  "async-trait",
  "backoff",
@@ -1475,7 +1463,7 @@ dependencies = [
 [[package]]
 name = "offchain-core"
 version = "0.1.0"
-source = "git+https://github.com/cartesi/offchain-utils?rev=bcab565#bcab5657ff491a0fe6fd199820469e846215ba68"
+source = "git+https://github.com/cartesi/offchain-utils?rev=f43b889#f43b889566768949548da64f211fc9ced09a590b"
 dependencies = [
  "ethabi",
  "ethers",
@@ -1484,7 +1472,7 @@ dependencies = [
 [[package]]
 name = "offchain-utils"
 version = "0.1.0"
-source = "git+https://github.com/cartesi/offchain-utils?rev=bcab565#bcab5657ff491a0fe6fd199820469e846215ba68"
+source = "git+https://github.com/cartesi/offchain-utils?rev=f43b889#f43b889566768949548da64f211fc9ced09a590b"
 dependencies = [
  "backoff",
  "block-subscriber",
@@ -2144,18 +2132,6 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
-]
-
-[[package]]
-name = "serde_yaml"
-version = "0.8.17"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "15654ed4ab61726bf918a39cb8d98a2e2995b002387807fa6ba58fdf7f59bb23"
-dependencies = [
- "dtoa",
- "linked-hash-map",
- "serde",
- "yaml-rust",
 ]
 
 [[package]]
@@ -2987,15 +2963,6 @@ name = "wyz"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "85e60b0d1b5f99db2556934e21937020776a5d31520bf169e851ac44e6420214"
-
-[[package]]
-name = "yaml-rust"
-version = "0.4.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "56c1936c4cc7a1c9ab21a1ebb602eb942ba868cbd44a99cb7cdc5892335e1c85"
-dependencies = [
- "linked-hash-map",
-]
 
 [[package]]
 name = "zeroize"
