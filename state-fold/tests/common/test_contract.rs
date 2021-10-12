@@ -1,21 +1,18 @@
 pub use testcontract_mod::*;
 #[allow(clippy::too_many_arguments)]
 mod testcontract_mod {
+    #![allow(clippy::enum_variant_names)]
     #![allow(dead_code)]
     #![allow(unused_imports)]
-    use ethers::{
-        contract::{
-            self as ethers_contract,
-            builders::{ContractCall, Event},
-            Contract, Lazy,
-        },
-        core::{
-            self as ethers_core,
-            abi::{Abi, Detokenize, InvalidOutputType, Token, Tokenizable},
-            types::*,
-        },
-        providers::{self as ethers_providers, Middleware},
+    use ethers_contract::{
+        builders::{ContractCall, Event},
+        Contract, Lazy,
     };
+    use ethers_core::{
+        abi::{Abi, Detokenize, InvalidOutputType, Token, Tokenizable},
+        types::*,
+    };
+    use ethers_providers::Middleware;
     #[doc = "TestContract was auto-generated with ethers-rs Abigen. More information at: https://github.com/gakonst/ethers-rs"]
     use std::sync::Arc;
     pub static TESTCONTRACT_ABI: ethers_contract::Lazy<ethers_core::abi::Abi> =
@@ -81,7 +78,7 @@ mod testcontract_mod {
         pub fn get_f_array(
             &self,
             i: ethers_core::types::U256,
-            fa: [ethers_core::types::U256; 3],
+            fa: [ethers_core::types::U256; 3usize],
         ) -> ethers_contract::builders::ContractCall<
             M,
             (ethers_core::types::Address, [ethers_core::types::U256; 3]),
@@ -152,7 +149,7 @@ mod testcontract_mod {
         pub fn get_v_array(
             &self,
             i: ethers_core::types::U256,
-            va: Vec<ethers_core::types::U256>,
+            va: ::std::vec::Vec<ethers_core::types::U256>,
         ) -> ethers_contract::builders::ContractCall<
             M,
             (ethers_core::types::Address, Vec<ethers_core::types::U256>),
@@ -229,7 +226,7 @@ mod testcontract_mod {
         ) -> ethers_contract::builders::Event<M, VarrayFilter> {
             self.0.event()
         }
-        #[doc = r" Returns an [`Event`](ethers_contract::builders::Event) builder for all events of this contract"]
+        #[doc = r" Returns an [`Event`](#ethers_contract::builders::Event) builder for all events of this contract"]
         pub fn events(
             &self,
         ) -> ethers_contract::builders::Event<M, TestContractEvents> {
@@ -449,5 +446,13 @@ mod testcontract_mod {
             }
             Err(ethers_core::abi::Error::InvalidData)
         }
+    }
+    #[doc = "`Struct(address,uint256)`"]
+    #[derive(
+        Clone, Debug, Default, Eq, PartialEq, ethers_contract :: EthAbiType,
+    )]
+    pub struct Struct {
+        pub sender: ethers_core::types::Address,
+        pub value: ethers_core::types::U256,
     }
 }

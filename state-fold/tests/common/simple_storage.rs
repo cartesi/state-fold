@@ -1,21 +1,18 @@
 pub use simplestorage_mod::*;
 #[allow(clippy::too_many_arguments)]
 mod simplestorage_mod {
+    #![allow(clippy::enum_variant_names)]
     #![allow(dead_code)]
     #![allow(unused_imports)]
-    use ethers::{
-        contract::{
-            self as ethers_contract,
-            builders::{ContractCall, Event},
-            Contract, Lazy,
-        },
-        core::{
-            self as ethers_core,
-            abi::{Abi, Detokenize, InvalidOutputType, Token, Tokenizable},
-            types::*,
-        },
-        providers::{self as ethers_providers, Middleware},
+    use ethers_contract::{
+        builders::{ContractCall, Event},
+        Contract, Lazy,
     };
+    use ethers_core::{
+        abi::{Abi, Detokenize, InvalidOutputType, Token, Tokenizable},
+        types::*,
+    };
+    use ethers_providers::Middleware;
     #[doc = "SimpleStorage was auto-generated with ethers-rs Abigen. More information at: https://github.com/gakonst/ethers-rs"]
     use std::sync::Arc;
     pub static SIMPLESTORAGE_ABI: ethers_contract::Lazy<ethers_core::abi::Abi> =
@@ -97,7 +94,7 @@ mod simplestorage_mod {
         ) -> ethers_contract::builders::Event<M, ValueChangedFilter> {
             self.0.event()
         }
-        #[doc = r" Returns an [`Event`](ethers_contract::builders::Event) builder for all events of this contract"]
+        #[doc = r" Returns an [`Event`](#ethers_contract::builders::Event) builder for all events of this contract"]
         pub fn events(
             &self,
         ) -> ethers_contract::builders::Event<M, ValueChangedFilter> {

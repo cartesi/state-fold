@@ -5,7 +5,8 @@ use offchain_utils::offchain_core::types::Block;
 
 use async_trait::async_trait;
 use ethers::core::types::{
-    Address, BlockId, Bytes, Filter, Log, TransactionRequest, H256, U64,
+    transaction::eip2718::TypedTransaction, Address, BlockId, Bytes, Filter,
+    Log, H256, U64,
 };
 use ethers::providers::{FromErr, Middleware};
 use snafu::ResultExt;
@@ -35,7 +36,6 @@ pub type Result<T, M> = std::result::Result<T, AccessMiddlewareError<M>>;
 
 ///
 /// Trait Definitions
-///
 
 #[async_trait]
 pub trait DelegateAccess: FoldAccess + SyncAccess {
@@ -99,7 +99,6 @@ pub trait FoldAccess: std::fmt::Debug {
 
 ///
 /// Concrete implementation of DelegateAccess
-///
 
 #[derive(Debug)]
 pub struct Access<M: Middleware> {
@@ -219,7 +218,6 @@ impl<M: Middleware + 'static> FoldAccess for Access<M> {
 
 ///
 /// Middleware implementation
-///
 
 impl<M: Middleware> FromErr<M::Error> for AccessMiddlewareError<M> {
     fn from(source: M::Error) -> AccessMiddlewareError<M> {
@@ -276,7 +274,7 @@ where
 
     async fn call(
         &self,
-        tx: &TransactionRequest,
+        tx: &TypedTransaction,
         block: Option<BlockId>,
     ) -> std::result::Result<Bytes, Self::Error> {
         // If user provides a block, we use it. Otherwise, we use the defualt
@@ -371,7 +369,7 @@ where
 
     async fn call(
         &self,
-        tx: &TransactionRequest,
+        tx: &TypedTransaction,
         block: Option<BlockId>,
     ) -> std::result::Result<Bytes, Self::Error> {
         // If user provides a block, we use it. Otherwise, we use the defualt

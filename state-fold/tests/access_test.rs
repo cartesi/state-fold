@@ -360,6 +360,7 @@ async fn set_value_get_block<M: Middleware + Clone>(
         .unwrap()
         .await
         .unwrap()
+        .unwrap()
         .block_number
         .unwrap()
 }
@@ -377,6 +378,7 @@ async fn set_value_get_hash<M: Middleware + Clone>(
         .await
         .unwrap()
         .await
+        .unwrap()
         .unwrap()
         .block_hash
         .unwrap()

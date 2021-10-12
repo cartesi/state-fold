@@ -40,11 +40,8 @@ impl StateFoldDelegate for Delegate {
         let m = access
             .build_sync_contract(Address::zero(), block.number, |_, m| m)
             .await;
-        let v = m
-            .call(&TransactionRequest::default(), None)
-            .await
-            .unwrap()
-            .to_vec();
+        let typed_tx = TransactionRequest::default().into();
+        let v = m.call(&typed_tx, None).await.unwrap().to_vec();
         let (_h, number, branch): (H256, U64, String) =
             serde_json::de::from_slice(&v).unwrap();
 
@@ -60,11 +57,8 @@ impl StateFoldDelegate for Delegate {
         let m = access
             .build_fold_contract(Address::zero(), block.hash, |_, m| m)
             .await;
-        let v = m
-            .call(&TransactionRequest::default(), None)
-            .await
-            .unwrap()
-            .to_vec();
+        let typed_tx = TransactionRequest::default().into();
+        let v = m.call(&typed_tx, None).await.unwrap().to_vec();
         let (_h, _number, branch): (H256, U64, String) =
             serde_json::de::from_slice(&v).unwrap();
 

@@ -8,8 +8,8 @@ use state_fold::{
 use async_trait::async_trait;
 use offchain_core::ethers::providers::{Middleware, MockProvider, Provider};
 use offchain_core::ethers::types::{
-    Address, BlockId, BlockNumber, Bloom, Bytes, TransactionRequest, H256,
-    U256, U64,
+    transaction::eip2718::TypedTransaction, Address, BlockId, BlockNumber,
+    Bloom, Bytes, H256, U256, U64,
 };
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -259,7 +259,7 @@ impl Middleware for MockMiddleware {
 
     async fn call(
         &self,
-        _: &TransactionRequest,
+        _: &TypedTransaction,
         _: Option<BlockId>,
     ) -> std::result::Result<Bytes, Self::Error> {
         // Silly way to pass parameters to delegate
