@@ -1,12 +1,14 @@
 use offchain_utils::offchain_core::ethers;
 use offchain_utils::offchain_core::types::Block;
 
+use crate::foldable::Foldable;
+
 use ethers::core::types::{H256, U64};
 
 use serde::{Serialize, Deserialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct BlockState<State> {
+pub struct BlockState<State: Foldable> {
     pub block: Block,
     pub state: State,
 }
