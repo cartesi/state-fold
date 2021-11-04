@@ -5,8 +5,10 @@ use offchain_utils::offchain_core::types::Block;
 
 use async_trait::async_trait;
 
-#[derive(Clone, Debug)]
-pub struct BlockState<State: Clone> {
+use serde::{Serialize, Deserialize};
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct BlockState<State> {
     pub block: Block,
     pub state: State,
 }
