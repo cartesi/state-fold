@@ -1,6 +1,5 @@
 mod common;
 use common::*;
-pub use simple_storage::*;
 
 use ethers::{
     contract::Contract,

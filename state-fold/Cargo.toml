@@ -24,8 +24,6 @@ ethers-contract = { version = "^0.5.0", features = [ "legacy" ] }
 ethers-providers = { version = "^0.5.0", features = [ "ws" ] }
 offchain-utils = { git = "https://github.com/cartesi/offchain-utils", rev = "38342b0" }
 
+hex = "0.4.3"
 serde_json = "1.0"
 tokio = { version = "^1.5", features = ["macros"] }
-
-[build-dependencies]
-offchain-utils = { git = "https://github.com/cartesi/offchain-utils", rev = "38342b0" }

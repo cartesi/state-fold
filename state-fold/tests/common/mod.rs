@@ -1,13 +1,16 @@
 #![allow(dead_code)]
 pub mod mock_provider;
-pub mod simple_storage;
-pub mod test_contract;
 
-use ethers::contract::{Contract, ContractFactory};
-use ethers::core::utils::{Geth, GethInstance, Solc};
+use ethers::contract::{abigen, Contract, ContractFactory};
+use ethers::core::utils::{Geth, GethInstance};
 use ethers::providers::{Http, Middleware, Provider};
 use std::convert::TryFrom;
 use std::sync::Arc;
+
+abigen!(
+    SimpleStorage,
+    "./state-fold/tests/common/contract/SimpleStorage.abi",
+);
 
 pub async fn new_geth() -> (GethInstance, Arc<Provider<Http>>) {
     let geth = Geth::new().spawn();
@@ -19,18 +22,25 @@ pub async fn new_geth() -> (GethInstance, Arc<Provider<Http>>) {
 pub async fn deploy_simple_storage<M: Middleware>(
     client: Arc<M>,
 ) -> Contract<M> {
-    let contract_name = "SimpleStorage";
-    let path = "./tests/common/contract/SimpleStorage.sol";
-    let contracts = Solc::new(&path).build().unwrap();
-    let contract = contracts.get(contract_name).unwrap();
-    let abi = contract.abi.clone();
-    let bytecode = contract.bytecode.clone();
+    let bytecode = hex::decode(include_bytes!("./contract/SimpleStorage.bin"))
+        .unwrap()
+        .into();
+    let abi = simplestorage_mod::SIMPLESTORAGE_ABI.clone();
 
     let factory = ContractFactory::new(abi, bytecode, client);
+
+    // This is what we wanted to write, but there's a bug in ethers preventing
+    // it.
+    /*
     factory
         .deploy("initial value".to_string())
         .unwrap()
         .send()
         .await
         .unwrap()
+    */
+
+    let mut deployer = factory.deploy("initial value".to_string()).unwrap();
+    deployer.tx.set_gas(8000000);
+    deployer.send().await.unwrap()
 }

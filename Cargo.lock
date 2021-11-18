@@ -2493,6 +2493,7 @@ dependencies = [
  "ethers-core",
  "ethers-providers",
  "futures",
+ "hex",
  "offchain-utils",
  "serde",
  "serde_json",
