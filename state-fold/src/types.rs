@@ -1,9 +1,7 @@
-use crate::delegate_access;
-use crate::error::*;
-
+use offchain_utils::offchain_core::ethers;
 use offchain_utils::offchain_core::types::Block;
 
-use async_trait::async_trait;
+use ethers::core::types::{H256, U64};
 
 #[derive(Clone, Debug)]
 pub struct BlockState<State: Clone> {
@@ -11,28 +9,47 @@ pub struct BlockState<State: Clone> {
     pub state: State,
 }
 
-#[async_trait]
-pub trait StateFoldDelegate {
-    type InitialState: Clone + PartialEq + Eq + std::hash::Hash;
-    type Accumulator: Clone;
-    type State;
+#[derive(Clone, Debug)]
+pub enum QueryBlock {
+    Latest,
+    BlockHash(H256),
+    BlockNumber(U64),
+    BlockDepth(usize),
+    Block(Block),
+}
 
-    async fn sync<A: delegate_access::SyncAccess + Send + Sync>(
-        &self,
-        initial_state: &Self::InitialState,
-        block: &Block,
-        access: &A,
-    ) -> SyncResult<Self::Accumulator, A>;
+impl From<H256> for QueryBlock {
+    fn from(h: H256) -> Self {
+        QueryBlock::BlockHash(h)
+    }
+}
 
-    async fn fold<A: delegate_access::FoldAccess + Send + Sync>(
-        &self,
-        previous_state: &Self::Accumulator,
-        block: &Block,
-        access: &A,
-    ) -> FoldResult<Self::Accumulator, A>;
+impl From<&H256> for QueryBlock {
+    fn from(h: &H256) -> Self {
+        QueryBlock::BlockHash(*h)
+    }
+}
 
-    fn convert(
-        &self,
-        accumulator: &BlockState<Self::Accumulator>,
-    ) -> Self::State;
+impl From<U64> for QueryBlock {
+    fn from(n: U64) -> Self {
+        QueryBlock::BlockNumber(n)
+    }
+}
+
+impl From<&U64> for QueryBlock {
+    fn from(n: &U64) -> Self {
+        QueryBlock::BlockNumber(*n)
+    }
+}
+
+impl From<Block> for QueryBlock {
+    fn from(b: Block) -> Self {
+        QueryBlock::Block(b)
+    }
+}
+
+impl From<&Block> for QueryBlock {
+    fn from(b: &Block) -> Self {
+        QueryBlock::from(b.clone())
+    }
 }

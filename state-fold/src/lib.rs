@@ -1,15 +1,15 @@
 pub mod config;
-pub mod delegate_access;
 pub mod error;
-pub mod state_fold;
 pub mod types;
 pub mod utils;
 
-mod archive;
-mod partition_events;
+mod delegate_access;
+mod env;
+mod foldable;
 
-pub use crate::delegate_access::{
-    Access, DelegateAccess, FoldAccess, SyncAccess,
-};
-pub use crate::state_fold::StateFold;
-pub use crate::types::StateFoldDelegate;
+pub use delegate_access::{AccessError, FoldMiddleware, SyncMiddleware};
+pub use env::StateFoldEnvironment;
+pub use foldable::Foldable;
+
+#[cfg(test)]
+mod test_utils;

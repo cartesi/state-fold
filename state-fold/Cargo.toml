@@ -9,23 +9,23 @@ edition = "2018"
 [dependencies]
 offchain-utils = { git = "https://github.com/cartesi/offchain-utils", rev = "38342b0" }
 
-structopt = "0.3"
-serde = "1.0.0"
-
 async-trait = "0.1"
 futures = "0.3"
-snafu = "0.6"
 tokio = { version = "^1.5", features = ["sync"] }
 
+serde = "1.0.0"
+snafu = "0.6"
+structopt = "0.3"
+
 [dev-dependencies]
-ethers = { version = "0.5.3", features = [ "legacy", "ws" ] }
-ethers-core = { version = "^0.5.0", features = [ "legacy" ] }
-ethers-contract = { version = "^0.5.0", features = [ "legacy" ] }
-ethers-providers = { version = "^0.5.0", features = [ "ws" ] }
-offchain-utils = { git = "https://github.com/cartesi/offchain-utils", rev = "38342b0" }
+ethers = { version = "0.5.3" }
+ethers-contract = { version = "^0.5.0" }
+ethers-core = { version = "^0.5.0" }
+ethers-providers = { version = "^0.5.0" }
+ethers-signers = { version = "^0.5.0" }
+ethers-middleware = { version = "^0.5.0" }
 
 serde_json = "1.0"
-tokio = { version = "^1.5", features = ["macros"] }
+hex = "0.4.3"
 
-[build-dependencies]
-offchain-utils = { git = "https://github.com/cartesi/offchain-utils", rev = "38342b0" }
+tokio = { version = "^1.5", features = ["macros"] }
