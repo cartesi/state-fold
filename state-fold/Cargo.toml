@@ -7,7 +7,7 @@ homepage = "https://cartesi.io"
 edition = "2018"
 
 [dependencies]
-offchain-utils = { git = "https://github.com/cartesi/offchain-utils", rev = "38342b0" }
+offchain-utils = { git = "https://github.com/cartesi/offchain-utils", rev = "c4a9c05" }
 
 async-trait = "0.1"
 futures = "0.3"
