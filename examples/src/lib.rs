@@ -45,7 +45,7 @@ pub async fn deploy_test_contract<M: Middleware>(
 
 pub async fn setup_block_subscriber() -> (
     Arc<BlockSubscriber<WsProviderFactory>>,
-    BlockSubscriberHandle<Provider<Ws>>,
+    BlockSubscriberHandle<Arc<Provider<Ws>>>,
 ) {
     // construct BlockSubscriber
     let ws_factory =
