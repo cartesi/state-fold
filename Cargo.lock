@@ -136,6 +136,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "backoff"
+version = "0.1.0"
+source = "git+https://github.com/cartesi/offchain-utils?rev=c4a9c05#c4a9c05a8d3e46868e05ac9cc5057e946169eb3c"
+dependencies = [
+ "rand",
+ "tokio",
+]
+
+[[package]]
 name = "base-x"
 version = "0.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -281,10 +290,27 @@ version = "0.1.0"
 source = "git+https://github.com/cartesi/offchain-utils?rev=38342b0#38342b0c0a3dccaf98793920f242822c0c161d39"
 dependencies = [
  "async-trait",
- "backoff",
- "configuration",
- "middleware-factory",
- "offchain-core",
+ "backoff 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=38342b0)",
+ "configuration 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=38342b0)",
+ "middleware-factory 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=38342b0)",
+ "offchain-core 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=38342b0)",
+ "serde",
+ "snafu",
+ "structopt",
+ "tokio",
+ "tokio-stream",
+]
+
+[[package]]
+name = "block-subscriber"
+version = "0.1.0"
+source = "git+https://github.com/cartesi/offchain-utils?rev=c4a9c05#c4a9c05a8d3e46868e05ac9cc5057e946169eb3c"
+dependencies = [
+ "async-trait",
+ "backoff 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=c4a9c05)",
+ "configuration 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=c4a9c05)",
+ "middleware-factory 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=c4a9c05)",
+ "offchain-core 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=c4a9c05)",
  "serde",
  "snafu",
  "structopt",
@@ -460,7 +486,22 @@ version = "0.1.0"
 source = "git+https://github.com/cartesi/offchain-utils?rev=38342b0#38342b0c0a3dccaf98793920f242822c0c161d39"
 dependencies = [
  "im",
- "offchain-core",
+ "offchain-core 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=38342b0)",
+ "serde",
+ "serde_json",
+ "snafu",
+ "structopt",
+ "toml",
+]
+
+[[package]]
+name = "configuration"
+version = "0.1.0"
+source = "git+https://github.com/cartesi/offchain-utils?rev=c4a9c05#c4a9c05a8d3e46868e05ac9cc5057e946169eb3c"
+dependencies = [
+ "im",
+ "offchain-core 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=c4a9c05)",
+ "rpassword",
  "serde",
  "serde_json",
  "snafu",
@@ -1451,8 +1492,21 @@ version = "0.1.0"
 source = "git+https://github.com/cartesi/offchain-utils?rev=38342b0#38342b0c0a3dccaf98793920f242822c0c161d39"
 dependencies = [
  "async-trait",
- "backoff",
- "offchain-core",
+ "backoff 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=38342b0)",
+ "offchain-core 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=38342b0)",
+ "snafu",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "middleware-factory"
+version = "0.1.0"
+source = "git+https://github.com/cartesi/offchain-utils?rev=c4a9c05#c4a9c05a8d3e46868e05ac9cc5057e946169eb3c"
+dependencies = [
+ "async-trait",
+ "backoff 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=c4a9c05)",
+ "offchain-core 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=c4a9c05)",
  "snafu",
  "tokio",
  "url",
@@ -1539,15 +1593,40 @@ dependencies = [
 ]
 
 [[package]]
+name = "offchain-core"
+version = "0.1.0"
+source = "git+https://github.com/cartesi/offchain-utils?rev=c4a9c05#c4a9c05a8d3e46868e05ac9cc5057e946169eb3c"
+dependencies = [
+ "anyhow",
+ "ethabi 14.1.0",
+ "ethers",
+ "proc-macro2",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "offchain-utils"
 version = "0.1.0"
 source = "git+https://github.com/cartesi/offchain-utils?rev=38342b0#38342b0c0a3dccaf98793920f242822c0c161d39"
 dependencies = [
- "backoff",
- "block-subscriber",
- "configuration",
- "middleware-factory",
- "offchain-core",
+ "backoff 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=38342b0)",
+ "block-subscriber 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=38342b0)",
+ "configuration 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=38342b0)",
+ "middleware-factory 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=38342b0)",
+ "offchain-core 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=38342b0)",
+]
+
+[[package]]
+name = "offchain-utils"
+version = "0.1.0"
+source = "git+https://github.com/cartesi/offchain-utils?rev=c4a9c05#c4a9c05a8d3e46868e05ac9cc5057e946169eb3c"
+dependencies = [
+ "backoff 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=c4a9c05)",
+ "block-subscriber 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=c4a9c05)",
+ "configuration 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=c4a9c05)",
+ "middleware-factory 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=c4a9c05)",
+ "offchain-core 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=c4a9c05)",
 ]
 
 [[package]]
@@ -2095,6 +2174,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "rpassword"
+version = "5.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ffc936cf8a7ea60c58f030fd36a612a48f440610214dc54bc36431f9ea0c3efb"
+dependencies = [
+ "libc",
+ "winapi",
+]
+
+[[package]]
 name = "rustc-hex"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2494,7 +2583,7 @@ dependencies = [
  "ethers-providers",
  "futures",
  "hex",
- "offchain-utils",
+ "offchain-utils 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=c4a9c05)",
  "serde",
  "serde_json",
  "snafu",
@@ -2507,13 +2596,13 @@ name = "state-fold-examples"
 version = "0.1.0"
 dependencies = [
  "async-trait",
- "block-subscriber",
+ "block-subscriber 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=38342b0)",
  "ethers",
  "futures",
  "im",
- "middleware-factory",
- "offchain-core",
- "offchain-utils",
+ "middleware-factory 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=38342b0)",
+ "offchain-core 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=38342b0)",
+ "offchain-utils 0.1.0 (git+https://github.com/cartesi/offchain-utils?rev=38342b0)",
  "serde",
  "serde_json",
  "snafu",
