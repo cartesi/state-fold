@@ -21,9 +21,9 @@ name = "delegate_server_example"
 path = "src/delegate_server_example.rs"
 
 [dependencies]
-block-subscriber = { git = "https://github.com/cartesi/offchain-utils", rev = "c4a9c05" }
-middleware-factory = { git = "https://github.com/cartesi/offchain-utils", rev = "c4a9c05" }
-offchain-core = { git = "https://github.com/cartesi/offchain-utils", rev = "c4a9c05" }
+block-subscriber = { git = "https://github.com/cartesi/offchain-utils", tag = "v0.1.0" }
+middleware-factory = { git = "https://github.com/cartesi/offchain-utils", tag = "v0.1.0" }
+offchain-core = { git = "https://github.com/cartesi/offchain-utils", tag = "v0.1.0" }
 state-fold = { path = "../state-fold" }
 state-server-grpc = { path = "../state-server-grpc" }
 
@@ -38,4 +38,4 @@ tokio = { version = "^1.5", features = ["sync"] }
 tonic = "0.4"
 
 [build-dependencies]
-offchain-utils = { git = "https://github.com/cartesi/offchain-utils", rev = "c4a9c05" }
+offchain-utils = { git = "https://github.com/cartesi/offchain-utils", tag = "v0.1.0" }
