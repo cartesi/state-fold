@@ -10,6 +10,7 @@ edition = "2018"
 offchain-utils = { git = "https://github.com/cartesi/offchain-utils", tag = "v0.1.0" }
 
 async-trait = "0.1"
+diesel = { version = "1.4.8", features = [ "mysql", "r2d2" ] }
 futures = "0.3"
 tokio = { version = "^1.5", features = ["sync"] }
 

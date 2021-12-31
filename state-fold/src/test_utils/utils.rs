@@ -66,7 +66,7 @@ pub(crate) async fn set_value_get_block<
     F: Foldable,
     M: Middleware + Clone + 'static,
 >(
-    env: &StateFoldEnvironment<M>,
+    env: &StateFoldEnvironment<M, ()>,
     contract: &Contract<M>,
     value: &str,
 ) -> Block {

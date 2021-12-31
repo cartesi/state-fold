@@ -14,7 +14,7 @@ use snafu::{ensure, ResultExt};
 use std::convert::TryInto;
 use std::sync::Arc;
 
-pub struct StateFoldEnvironment<M: Middleware> {
+pub struct StateFoldEnvironment<M: Middleware, UD> {
     inner_middleware: Arc<M>,
     genesis_block: U64,
 
@@ -31,15 +31,18 @@ pub struct StateFoldEnvironment<M: Middleware> {
     concurrent_events_fetch: usize,
 
     global_archive: GlobalArchive,
+
+    user_data: UD,
 }
 
-impl<M: Middleware + 'static> StateFoldEnvironment<M> {
+impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
     pub fn new(
         inner_middleware: Arc<M>,
         safety_margin: usize,
         genesis_block: U64,
         query_limit_error_codes: Vec<i32>,
         concurrent_events_fetch: usize,
+        user_data: UD,
     ) -> Self {
         let global_archive = GlobalArchive::new(safety_margin);
 
@@ -49,14 +52,21 @@ impl<M: Middleware + 'static> StateFoldEnvironment<M> {
             query_limit_error_codes,
             concurrent_events_fetch,
             global_archive,
+            user_data,
         }
+    }
+
+    pub fn user_data(&self) -> &UD {
+        &self.user_data
     }
 
     pub fn inner_middleware(&self) -> Arc<M> {
         self.inner_middleware.clone()
     }
 
-    pub async fn get_state_for_block<F: Foldable + Send + Sync + 'static>(
+    pub async fn get_state_for_block<
+        F: Foldable<UserData = UD> + Send + Sync + 'static,
+    >(
         &self,
         initial_state: &F::InitialState,
         fold_block: QueryBlock,
@@ -145,9 +155,8 @@ impl<M: Middleware + 'static> StateFoldEnvironment<M> {
 
 ///
 /// Internals
-///
 
-impl<M: Middleware + 'static> StateFoldEnvironment<M> {
+impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
     pub(crate) fn sync_access(&self, block: &Block) -> Arc<SyncMiddleware<M>> {
         let middleware = SyncMiddleware::new(
             Arc::clone(&self.inner_middleware),

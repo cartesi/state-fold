@@ -52,7 +52,7 @@ where
 
     pub async fn fetch_block_state<M: Middleware + 'static>(
         &self,
-        env: &StateFoldEnvironment<M>,
+        env: &StateFoldEnvironment<M, F::UserData>,
         block: &Block,
     ) -> Result<BlockState<F>, FoldableError<M, F>> {
         // We assume this function will be called close to the latest block
@@ -80,7 +80,7 @@ where
 {
     async fn fold_to_leaf<M: Middleware + 'static>(
         &self,
-        env: &StateFoldEnvironment<M>,
+        env: &StateFoldEnvironment<M, F::UserData>,
         leaf_block: &Block,
     ) -> Result<BlockState<F>, FoldableError<M, F>> {
         // Build stack of blocks to be processed. We are, in essence, searching
@@ -213,7 +213,7 @@ where
 
     async fn sync_to_margin<M: Middleware + 'static>(
         &self,
-        env: &StateFoldEnvironment<M>,
+        env: &StateFoldEnvironment<M, F::UserData>,
         leaf_block: &Block,
     ) -> Result<BlockState<F>, FoldableError<M, F>> {
         // Calculate sync block. If `leaf_block` in within the `safety_margin`,
@@ -294,7 +294,7 @@ mod tests {
     async fn instantiate_all() -> (
         Train<IncrementFold>,
         Arc<MockMiddleware>,
-        StateFoldEnvironment<MockMiddleware>,
+        StateFoldEnvironment<MockMiddleware, ()>,
     ) {
         let train = Train::<IncrementFold>::new(INITIAL_VALUE, SAFETY_MARGIN);
         let m = MockMiddleware::new(128).await;
@@ -304,6 +304,7 @@ mod tests {
             0.into(),
             vec![],
             1,
+            (),
         );
 
         (train, m, env)

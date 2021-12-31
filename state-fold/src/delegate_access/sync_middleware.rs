@@ -168,7 +168,7 @@ pub mod tests {
     pub async fn sync_query_test<M: Middleware + 'static>(
         account: Address,
         deployed_address: Address,
-        env: &StateFoldEnvironment<M>,
+        env: &StateFoldEnvironment<M, ()>,
         blocks: (&Block, &Block, &Block, &Block),
     ) {
         // Test at block_hash0

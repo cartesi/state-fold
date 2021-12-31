@@ -32,11 +32,12 @@ pub(crate) struct MockFold;
 impl Foldable for MockFold {
     type InitialState = ();
     type Error = MockError;
+    type UserData = ();
 
     async fn sync<M: Middleware>(
         _initial_state: &Self::InitialState,
         _block: &Block,
-        _env: &StateFoldEnvironment<M>,
+        _env: &StateFoldEnvironment<M, ()>,
         _access: Arc<SyncMiddleware<M>>,
     ) -> Result<Self, Self::Error> {
         unreachable!()
@@ -45,7 +46,7 @@ impl Foldable for MockFold {
     async fn fold<M: Middleware>(
         _previous_state: &Self,
         _block: &Block,
-        _env: &StateFoldEnvironment<M>,
+        _env: &StateFoldEnvironment<M, ()>,
         _access: Arc<FoldMiddleware<M>>,
     ) -> Result<Self, Self::Error> {
         unreachable!()
@@ -63,11 +64,12 @@ pub(crate) struct IncrementFold {
 impl Foldable for IncrementFold {
     type InitialState = u64;
     type Error = MockError;
+    type UserData = ();
 
     async fn sync<M: Middleware>(
         initial_state: &Self::InitialState,
         block: &Block,
-        _env: &StateFoldEnvironment<M>,
+        _env: &StateFoldEnvironment<M, ()>,
         _access: Arc<SyncMiddleware<M>>,
     ) -> Result<Self, Self::Error> {
         Ok(Self {
@@ -80,7 +82,7 @@ impl Foldable for IncrementFold {
     async fn fold<M: Middleware>(
         previous_state: &Self,
         block: &Block,
-        _env: &StateFoldEnvironment<M>,
+        _env: &StateFoldEnvironment<M, ()>,
         _access: Arc<FoldMiddleware<M>>,
     ) -> Result<Self, Self::Error> {
         assert_eq!(

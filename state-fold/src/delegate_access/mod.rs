@@ -36,6 +36,7 @@ mod tests {
             genesis,
             vec![],
             1,
+            (),
         );
 
         let block0 = test_utils::get_current_block(provider.as_ref()).await;
