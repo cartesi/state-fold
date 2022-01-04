@@ -1,6 +1,6 @@
 use crate::{FoldMiddleware, Foldable, StateFoldEnvironment, SyncMiddleware};
 
-use ethers::providers::{FromErr, Middleware, MockProvider, Provider};
+use ethers::providers::{FromErr, Middleware, MockProvider};
 use ethers::types::{BlockId, BlockNumber, Bloom, H256, U256, U64};
 use offchain_utils::offchain_core::ethers;
 use offchain_utils::offchain_core::types::Block;
@@ -102,16 +102,12 @@ pub(crate) struct MockMiddleware {
     block_count: Mutex<U64>,
     latest_block: Mutex<H256>,
     deepest_block: Mutex<U64>,
-
-    mock_provider: MockProvider,
-    provider: Arc<Provider<MockProvider>>,
 }
 
 impl MockMiddleware {
     pub(crate) async fn new(initial_block_count: u64) -> Arc<Self> {
         assert!(initial_block_count > 0);
 
-        let (p, m) = Provider::mocked();
         let latest_block = H256::zero();
 
         let this = Self {
@@ -119,9 +115,6 @@ impl MockMiddleware {
             block_count: Mutex::new(U64::from(0)),
             latest_block: Mutex::new(latest_block),
             deepest_block: Mutex::new(U64::from(0)),
-
-            mock_provider: m,
-            provider: Arc::new(p),
         };
 
         this.chain.lock().await.insert(
