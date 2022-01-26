@@ -1,8 +1,8 @@
 use crate::error::*;
-use crate::types::*;
 use crate::{FoldMiddleware, StateFoldEnvironment, SyncMiddleware};
 
 use offchain_utils::offchain_core::types::Block;
+use state_fold_types::{BlockState, QueryBlock};
 
 use ethers::providers::Middleware;
 use offchain_utils::offchain_core::ethers;

@@ -1,5 +1,5 @@
 [package]
-name = "state-fold"
+name = "state-client-lib"
 license = "Apache-2.0"
 version = "0.1.0"
 authors = ["Gabriel Coutinho de Paula <gabriel.coutinho@cartesi.io>"]
@@ -10,15 +10,13 @@ edition = "2021"
 offchain-utils = { git = "https://github.com/cartesi/offchain-utils", tag = "v0.1.0" }
 
 state-fold-types = { path = "../state-fold-types" }
+state-server-common = { path = "../state-server-common", features = ["server"] }
 
 async-trait = "0.1"
-futures = "0.3"
-tokio = { version = "^1.5", features = ["sync"] }
+tonic = "0.6"
+tokio = { version = "1", features = ["sync"] }
+tokio-stream = "0.1"
 
-serde = "1.0.0"
+serde = "1"
+serde_json = "1"
 snafu = "0.6"
-structopt = "0.3"
-
-[dev-dependencies]
-state-fold-test = { path = "../state-fold-test" }
-tokio = { version = "^1.5", features = ["macros"] }

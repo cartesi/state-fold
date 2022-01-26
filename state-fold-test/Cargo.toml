@@ -1,0 +1,30 @@
+[package]
+name = "state-fold-test"
+license = "Apache-2.0"
+version = "0.1.0"
+authors = ["Gabriel Coutinho de Paula <gabriel.coutinho@cartesi.io>"]
+homepage = "https://cartesi.io"
+edition = "2021"
+publish = false
+
+[dependencies]
+offchain-utils = { git = "https://github.com/cartesi/offchain-utils", tag = "v0.1.0" }
+
+state-fold-types = { path = "../state-fold-types" }
+
+# TODO: Remove this direct dependency.
+# Instead, generate contract bindings through a build script,
+# using reexported ethers.
+ethers = { version = "0.5.3" }
+ethers-contract = { version = "^0.5.0" }
+ethers-core = { version = "^0.5.0" }
+ethers-providers = { version = "^0.5.0" }
+ethers-signers = { version = "^0.5.0" }
+ethers-middleware = { version = "^0.5.0" }
+
+hex = "0.4.3"
+serde_json = "1.0"
+
+async-trait = "0.1"
+futures = "0.3"
+tokio = { version = "^1.5", features = ["sync"] }

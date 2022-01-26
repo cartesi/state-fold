@@ -11,6 +11,7 @@ mod utils;
 
 #[cfg(test)]
 mod tests {
+    use crate::test_utils;
     use crate::test_utils::mocks::MockFold;
     use crate::StateFoldEnvironment;
     use std::sync::Arc;
@@ -19,14 +20,15 @@ mod tests {
     use offchain_utils::offchain_core::ethers;
 
     use super::{fold_middleware, sync_middleware};
-    use crate::test_utils;
 
     #[tokio::test]
     async fn test_sync_fold() {
-        let (_handle, provider) = test_utils::new_geth().await;
+        let (_handle, provider) = state_fold_test::utils::new_geth().await;
         let genesis = provider.get_block_number().await.unwrap();
-        let contract =
-            test_utils::deploy_simple_storage(Arc::clone(&provider)).await;
+        let contract = state_fold_test::simple_storage::deploy_simple_storage(
+            Arc::clone(&provider),
+        )
+        .await;
         let account = provider.get_accounts().await.unwrap()[0];
         let deployed_address = contract.address();
 
@@ -39,7 +41,8 @@ mod tests {
             (),
         );
 
-        let block0 = test_utils::get_current_block(provider.as_ref()).await;
+        let block0 =
+            state_fold_test::utils::get_current_block(provider.as_ref()).await;
         let block1 = test_utils::set_value_get_block::<MockFold, _>(
             &env, &contract, "this",
         )

@@ -1,10 +1,10 @@
 use crate::error::*;
-use crate::types::*;
 use crate::Foldable;
 
 use super::StateFoldEnvironment;
 
 use offchain_utils::offchain_core::types::Block;
+use state_fold_types::BlockState;
 
 use ethers::core::types::{H256, U64};
 use ethers::providers::Middleware;
@@ -281,9 +281,11 @@ where
 #[cfg(test)]
 mod tests {
     use super::Train;
-    use crate::test_utils::mocks::{IncrementFold, MockMiddleware};
+    use crate::test_utils::mocks::IncrementFold;
     use crate::StateFoldEnvironment;
     use std::sync::Arc;
+
+    use state_fold_test::mock_middleware::MockMiddleware;
 
     use ethers::core::types::{H256, U64};
     use offchain_utils::offchain_core::ethers;

@@ -1,5 +1,14 @@
 [workspace]
+
 members = [
+  "block-history",
   "state-fold",
-  "state-server-grpc",
+  "state-fold-types",
+  "state-server-common",
+  "state-client-lib",
+  "state-server-lib",
+  # "state-server-grpc",
+
+  # Internal
+  "state-fold-test",
 ]

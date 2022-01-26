@@ -76,8 +76,7 @@ pub mod tests {
     use offchain_utils::offchain_core::ethers;
     use offchain_utils::offchain_core::types::Block;
 
-    use crate::test_utils;
-    use test_utils::SimpleStorage;
+    use state_fold_test::simple_storage::SimpleStorage;
 
     pub async fn fold_query_test<M: Middleware + 'static>(
         account: Address,

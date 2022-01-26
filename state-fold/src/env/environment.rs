@@ -1,9 +1,10 @@
 use crate::delegate_access::{FoldMiddleware, SyncMiddleware};
 use crate::error::*;
-use crate::types::*;
 use crate::Foldable;
 
 use super::global_archive::GlobalArchive;
+
+use state_fold_types::{BlockState, QueryBlock};
 
 use ethers::core::types::{BlockId, BlockNumber, U64};
 use ethers::providers::Middleware;
@@ -17,6 +18,7 @@ use std::sync::Arc;
 pub struct StateFoldEnvironment<M: Middleware, UD> {
     inner_middleware: Arc<M>,
     genesis_block: U64,
+    pub safety_margin: usize,
 
     // If the Ethereum node has a limit on the number of events returned by the
     // method `eth_getLogs` (such as Infura, with a 10k events limit and <10s
@@ -48,6 +50,7 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
 
         Self {
             inner_middleware,
+            safety_margin,
             genesis_block,
             query_limit_error_codes,
             concurrent_events_fetch,
