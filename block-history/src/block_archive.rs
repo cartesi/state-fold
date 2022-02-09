@@ -38,6 +38,16 @@ pub enum BlockArchiveError {
     },
 
     #[snafu(display(
+        "The depth `{}` is over the `{}` maximum",
+        depth,
+        max_depth
+    ))]
+    BlockOutOfRange {
+        depth: usize,
+        max_depth: usize,
+    },
+
+    #[snafu(display(
         "Depth of `{}` higher than latest block `{:?}`",
         depth,
         latest
@@ -50,10 +60,11 @@ pub type Result<T> = std::result::Result<T, BlockArchiveError>;
 pub struct BlockArchive<M: Middleware> {
     middleware: Arc<M>,
     block_tree: RwLock<BlockTree>,
+    max_depth: usize,
 }
 
 impl<M: Middleware + 'static> BlockArchive<M> {
-    pub(crate) async fn new(middleware: Arc<M>) -> Result<Self> {
+    pub(crate) async fn new(middleware: Arc<M>, max_depth: usize) -> Result<Self> {
         let block_tree = {
             let latest_block =
                 fetch_block(middleware.as_ref(), BlockNumber::Latest).await?;
@@ -64,6 +75,7 @@ impl<M: Middleware + 'static> BlockArchive<M> {
         Ok(Self {
             middleware,
             block_tree,
+            max_depth,
         })
     }
 
@@ -132,6 +144,13 @@ impl<M: Middleware + 'static> BlockArchive<M> {
     ) -> Result<BlocksSince> {
         let latest = self.latest_block().await;
 
+        ensure!(
+            depth <= self.max_depth,
+            BlockOutOfRange {
+                depth,
+                max_depth: self.max_depth
+            }
+        );
         ensure!(
             previous.number <= latest.number,
             PreviousAheadOfLatest {
@@ -289,8 +308,9 @@ mod tests {
 
     async fn instantiate_all(
     ) -> (Arc<MockMiddleware>, BlockArchive<MockMiddleware>) {
+        let max_depth = 100;
         let m = MockMiddleware::new(128).await;
-        let archive = BlockArchive::new(Arc::clone(&m)).await.unwrap();
+        let archive = BlockArchive::new(Arc::clone(&m), max_depth).await.unwrap();
 
         (m, archive)
     }

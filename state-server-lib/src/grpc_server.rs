@@ -19,7 +19,7 @@ use offchain_core::ethers;
 use offchain_core::types::Block;
 use offchain_utils::offchain_core;
 
-use block_history::{BlockArchive, BlockSubscriber};
+use block_history::{BlockArchive, BlockArchiveError, BlockSubscriber};
 use state_fold::{Foldable, StateFoldEnvironment};
 use state_fold_types::{BlockState, BlockStreamItem, BlocksSince};
 
@@ -90,7 +90,6 @@ where
         let message = request.into_inner();
 
         let depth = message.depth as usize;
-
         let block = get_block_with_hash(
             message.previous_block,
             &self.block_subscriber.block_archive,
@@ -102,7 +101,10 @@ where
             .block_archive
             .blocks_since(depth, &block)
             .await
-            .map_err(|e| Status::unavailable(format!("{:?}", e)))?;
+            .map_err(|e| match e {
+                BlockArchiveError::BlockOutOfRange { .. } => Status::out_of_range(format!("{:?}", e)),
+                e => Status::unavailable(format!("{:?}", e)),
+            })?;
 
         Ok(Response::new(BlocksSinceResponse {
             response: Some(diff.into()),
@@ -176,7 +178,10 @@ where
             .block_archive
             .blocks_since(depth, &block)
             .await
-            .map_err(|e| Status::unavailable(format!("{:?}", e)))?;
+            .map_err(|e| match e {
+                BlockArchiveError::BlockOutOfRange { .. } => Status::out_of_range(format!("{:?}", e)),
+                e => Status::unavailable(format!("{:?}", e)),
+            })?;
 
         let state_diff = match diff {
             BlocksSince::Normal(bs) => GrpcStatesSinceResponse::NewStates(

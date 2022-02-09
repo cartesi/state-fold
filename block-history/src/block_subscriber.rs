@@ -60,8 +60,9 @@ where
     pub async fn start(
         middleware: Arc<M>,
         subscriber_timeout: std::time::Duration,
+        max_depth: usize,
     ) -> crate::block_archive::Result<Self> {
-        let archive = Arc::new(BlockArchive::new(middleware.clone()).await?);
+        let archive = Arc::new(BlockArchive::new(middleware.clone(), max_depth).await?);
 
         let (kill_tx, kill_rx) = oneshot::channel();
         let (new_block_tx, new_block_alarm) = watch::channel(());

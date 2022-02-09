@@ -16,6 +16,7 @@ async fn subscribe_test() -> Result<(), Box<dyn std::error::Error>> {
     let block_history = BlockSubscriber::start(
         provider.clone(),
         std::time::Duration::from_secs(3),
+        100
     )
     .await?;
 
