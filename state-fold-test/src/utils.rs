@@ -5,8 +5,8 @@ use ethers::{
     providers::{Http, Middleware, Provider},
     types::Bytes,
 };
-use offchain_utils::offchain_core::ethers;
-use offchain_utils::offchain_core::types::Block;
+use state_fold_types::ethers;
+use state_fold_types::Block;
 
 use std::convert::TryFrom;
 use std::convert::TryInto;

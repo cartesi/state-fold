@@ -3,10 +3,10 @@ use crate::block_tree::BlockTree;
 use state_fold_types::BlocksSince;
 
 use ethers::providers::Middleware;
-use ethers::types::{BlockId, BlockNumber, H256, U64};
-use offchain_core::ethers;
-use offchain_core::types::Block;
-use offchain_utils::offchain_core;
+use ethers::types::{BlockId, BlockNumber};
+use state_fold_types::ethers;
+use state_fold_types::Block;
+use state_fold_types::ethereum_types::{H256, U64};
 
 use std::convert::TryInto;
 use std::sync::Arc;

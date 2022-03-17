@@ -1,7 +1,25 @@
-use ethers::core::types::{H256, U64};
-use offchain_core::ethers;
-use offchain_core::types::Block;
-use offchain_utils::offchain_core;
+use ethabi::ethereum_types::{Bloom, H256, U256, U64};
+use serde::{Serialize, Deserialize};
+use std::convert::TryFrom;
+use snafu::Snafu;
+
+#[cfg(feature = "ethers")]
+pub mod contract;
+
+pub use ethabi;
+pub use ethabi::ethereum_types;
+
+#[cfg(feature = "ethers")]
+pub use ethers;
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Block {
+    pub hash: H256,
+    pub number: U64,
+    pub parent_hash: H256,
+    pub timestamp: U256,
+    pub logs_bloom: Bloom,
+}
 
 #[derive(Clone, Debug)]
 pub struct BlockState<State> {
@@ -40,6 +58,34 @@ pub enum QueryBlock {
     BlockNumber(U64),
     BlockDepth(usize),
     Block(Block),
+}
+
+/// Error that might occur when trying to convert [`ethers::Block`] into [`Block`].
+///
+/// [`Block`]: self::Block
+/// [`ethers::Block`]: self::ethers::types::Block
+#[derive(Snafu, Clone, Debug)]
+pub enum BlockError {
+    #[snafu(display("Block has no hash"))]
+    MissingHash,
+    #[snafu(display("Block has no number"))]
+    MissingNumber,
+    #[snafu(display("Block has no logs bloom"))]
+    MissingLogsBloom,
+}
+
+impl<T> TryFrom<self::ethers::types::Block<T>> for Block {
+    type Error = BlockError;
+
+    fn try_from(b: self::ethers::types::Block<T>) -> Result<Self, Self::Error> {
+        Ok(Self {
+            hash: H256::from(b.hash.ok_or(BlockError::MissingHash)?.0),
+            number: U64(b.number.ok_or(BlockError::MissingNumber)?.0),
+            parent_hash: H256::from(b.parent_hash.0),
+            timestamp: U256(b.timestamp.0),
+            logs_bloom: Bloom::from(b.logs_bloom.ok_or(BlockError::MissingLogsBloom)?.0),
+        })
+    }
 }
 
 impl From<H256> for QueryBlock {

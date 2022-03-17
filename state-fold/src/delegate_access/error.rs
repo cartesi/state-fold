@@ -1,5 +1,5 @@
 use ethers::providers::{FromErr, Middleware};
-use offchain_utils::offchain_core::ethers;
+use state_fold_types::ethers;
 
 use snafu::Snafu;
 

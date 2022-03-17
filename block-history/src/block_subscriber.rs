@@ -1,10 +1,8 @@
 use crate::block_archive::{self, BlockArchive};
 
-use state_fold_types::{BlockStreamItem, BlocksSince};
-
-use offchain_core::ethers::providers::{Middleware, PubsubClient};
-use offchain_core::types::Block;
-use offchain_utils::offchain_core;
+use state_fold_types::{Block, BlockStreamItem, BlocksSince, BlockError};
+use state_fold_types::ethers;
+use ethers::providers::{Middleware, PubsubClient};
 
 use std::sync::Arc;
 use tokio::sync::{oneshot, watch};
@@ -14,13 +12,13 @@ use snafu::{ResultExt, Snafu};
 
 #[derive(Debug, Snafu)]
 pub enum BlockSubscriberError<
-    M: offchain_core::ethers::providers::Middleware + 'static,
+    M: ethers::providers::Middleware + 'static,
 > {
     #[snafu(display("Ethers provider error: {}", source))]
     EthersProviderError { source: M::Error },
 
     #[snafu(display("Got incomplete block"))]
-    BlockIncomplete { err: String },
+    BlockIncomplete { err: BlockError },
 
     #[snafu(display("New block subscriber timeout: {}", source))]
     NewBlockSubscriberTimeout { source: std::io::Error },

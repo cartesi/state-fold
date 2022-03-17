@@ -8,8 +8,8 @@ use state_fold_types::{BlockState, QueryBlock};
 
 use ethers::core::types::{BlockId, BlockNumber, U64};
 use ethers::providers::Middleware;
-use offchain_utils::offchain_core::ethers;
-use offchain_utils::offchain_core::types::Block;
+use state_fold_types::ethers;
+use state_fold_types::Block;
 
 use snafu::{ensure, ResultExt};
 use std::convert::TryInto;

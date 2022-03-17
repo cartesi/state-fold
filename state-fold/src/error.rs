@@ -1,6 +1,6 @@
 use crate::Foldable;
 
-use offchain_utils::offchain_core::ethers;
+use state_fold_types::ethers;
 
 use ethers::providers::{FromErr, Middleware};
 

@@ -1,4 +1,4 @@
-use offchain_utils::offchain_core::{ethabi, ethers};
+use state_fold_types::{ethabi, ethers};
 
 use ethabi::ethereum_types::BloomInput;
 use ethers::types::{Address, Bloom, H256, U256, U64};

@@ -15,9 +15,9 @@ use tonic::{Request, Response, Status};
 
 use ethers::providers::{Middleware, PubsubClient};
 use ethers::types::H256;
-use offchain_core::ethers;
-use offchain_core::types::Block;
-use offchain_utils::offchain_core;
+use state_fold_types::ethers;
+use state_fold_types::Block;
+use state_fold_types;
 
 use block_history::{BlockArchive, BlockArchiveError, BlockSubscriber};
 use state_fold::{Foldable, StateFoldEnvironment};

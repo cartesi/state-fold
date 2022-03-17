@@ -6,7 +6,7 @@ use ethers::core::types::{
     Filter, FilterBlockOption, Log, U64,
 };
 use ethers::providers::{FromErr, Middleware};
-use offchain_utils::offchain_core::ethers;
+use state_fold_types::ethers;
 
 use async_trait::async_trait;
 use std::sync::Arc;
@@ -159,8 +159,8 @@ pub mod tests {
 
     use ethers::providers::Middleware;
     use ethers::types::Address;
-    use offchain_utils::offchain_core::ethers;
-    use offchain_utils::offchain_core::types::Block;
+    use state_fold_types::ethers;
+    use state_fold_types::Block;
 
     use state_fold_test::simple_storage::SimpleStorage;
 

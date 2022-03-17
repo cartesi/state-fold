@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use offchain_utils::offchain_core::ethers::{contract::Abigen, utils::Solc};
+use state_fold_types::ethers::{contract::Abigen, utils::Solc};
 
 fn main() {
     let bindings_dest_path1 =

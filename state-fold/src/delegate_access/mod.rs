@@ -17,7 +17,7 @@ mod tests {
     use std::sync::Arc;
 
     use ethers::providers::Middleware;
-    use offchain_utils::offchain_core::ethers;
+    use state_fold_types::ethers;
 
     use super::{fold_middleware, sync_middleware};
 

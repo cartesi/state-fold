@@ -2,7 +2,7 @@ use super::error::*;
 
 use ethers::core::types::Log;
 use ethers::providers::Middleware;
-use offchain_utils::offchain_core::ethers;
+use state_fold_types::ethers;
 
 pub fn sort_logs<M: Middleware>(logs: &mut Vec<Log>) -> Result<(), M> {
     for log in logs.iter() {

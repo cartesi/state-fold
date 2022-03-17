@@ -13,8 +13,6 @@ server = []
 client = []
 
 [dependencies]
-offchain-utils = { git = "https://github.com/cartesi/offchain-utils", tag = "v0.1.0" }
-
 state-fold-types = { path = "../state-fold-types" }
 
 prost = "0.9"

@@ -1,8 +1,8 @@
 use crate::{Foldable, StateFoldEnvironment};
 
 use ethers::{contract::Contract, providers::Middleware, types::H256};
-use offchain_utils::offchain_core::ethers;
-use offchain_utils::offchain_core::types::Block;
+use state_fold_types::ethers;
+use state_fold_types::Block;
 
 use std::convert::TryInto;
 

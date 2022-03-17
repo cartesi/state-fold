@@ -1,12 +1,11 @@
 use crate::{error::*, BlockServer, StateServer};
 
 use ethers::core::types::H256;
-use offchain_core::ethers;
-use offchain_core::types::Block;
-use offchain_utils::offchain_core;
+use state_fold_types::ethers;
+use state_fold_types;
 use state_fold_types::{
-    BlockState, BlockStreamItem, BlocksSince, QueryBlock, StateStreamItem,
-    StatesSince,
+    Block, BlockState, BlockStreamItem, BlocksSince, QueryBlock,
+    StateStreamItem, StatesSince,
 };
 
 use state_fold_server::state_fold_client::StateFoldClient;

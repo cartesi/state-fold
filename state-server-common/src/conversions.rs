@@ -9,11 +9,10 @@ use crate::grpc_interface::state_fold_server::{
     States as GrpcStates, StatesSinceResponse,
 };
 
-use offchain_core::{
+use state_fold_types::{
     ethers::types::{Bloom, H256},
-    types::Block,
+    Block,
 };
-use offchain_utils::offchain_core;
 
 use state_fold_types::{
     BlockState, BlockStreamItem, BlocksSince, QueryBlock, StateStreamItem,

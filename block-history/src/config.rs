@@ -1,5 +1,3 @@
-use offchain_utils::configuration;
-
 use serde::Deserialize;
 use snafu::{ResultExt, Snafu};
 use std::time::Duration;
@@ -50,7 +48,7 @@ pub enum ConfigError {
     MissingWsUrl {},
 
     #[snafu(display("Error while loading configuration file: {}", source))]
-    ConfigFileError { source: configuration::error::Error },
+    ConfigFileError { source: std::io::Error },
 }
 pub type Result<T> = std::result::Result<T, ConfigError>;
 
@@ -60,10 +58,15 @@ const DEFAULT_TIMEOUT: u64 = 60;
 
 impl BHConfig {
     pub fn initialize(env_cli_config: BHEnvCLIConfig) -> Result<Self> {
-        let file_config: FileConfig = configuration::config::load_config_file(
-            env_cli_config.config_path,
-        )
-        .context(ConfigFileError)?;
+        let file_config: FileConfig = match env_cli_config.config_path {
+            None => Default::default(),
+            Some(v) =>
+                std::fs::read_to_string(&v)
+                    .map(|v| toml::from_str(&v))
+                    .context(ConfigFileError)?
+                    .unwrap_or_default()
+
+        };
 
         let ws_endpoint = env_cli_config
             .ws_endpoint

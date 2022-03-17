@@ -7,9 +7,7 @@ homepage = "https://cartesi.io"
 edition = "2021"
 
 [dependencies]
-offchain-utils = { git = "https://github.com/cartesi/offchain-utils", tag = "v0.1.0" }
-
-state-fold-types = { path = "../state-fold-types" }
+state-fold-types = { path = "../state-fold-types", features = ["ethers"] }
 
 serde = "1"
 snafu = "0.6"
@@ -18,7 +16,7 @@ structopt = "0.3"
 async-stream = "0.3"
 tokio = { version = "1", features = ["sync"] }
 tokio-stream = "0.1"
-
+toml = "0.5.8"
 
 [dev-dependencies]
 state-fold-test = { path = "../state-fold-test" }

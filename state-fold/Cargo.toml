@@ -7,15 +7,15 @@ homepage = "https://cartesi.io"
 edition = "2021"
 
 [dependencies]
-offchain-utils = { git = "https://github.com/cartesi/offchain-utils", tag = "v0.1.0" }
-
-state-fold-types = { path = "../state-fold-types" }
+state-fold-types = { path = "../state-fold-types", features = ["ethers"] }
 
 async-trait = "0.1"
 futures = "0.3"
 tokio = { version = "^1.5", features = ["sync"] }
+toml = "0.5.8"
 
 serde = "1.0.0"
+serde_json = "1"
 snafu = "0.6"
 structopt = "0.3"
 

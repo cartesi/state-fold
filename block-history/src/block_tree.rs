@@ -1,6 +1,5 @@
-use offchain_core::ethers::types::{H256, U64};
-use offchain_core::types::Block;
-use offchain_utils::offchain_core;
+use state_fold_types::ethereum_types::{H256, U64};
+use state_fold_types::Block;
 
 use std::collections::HashMap;
 

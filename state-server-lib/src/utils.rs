@@ -6,8 +6,8 @@ use state_server_common::state_fold_server;
 use state_fold::Foldable;
 
 use ethers::providers::{Middleware, PubsubClient};
-use offchain_core::ethers;
-use offchain_utils::offchain_core;
+use state_fold_types::ethers;
+use state_fold_types;
 
 use tokio::signal;
 use tokio::sync::oneshot;

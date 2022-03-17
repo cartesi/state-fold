@@ -1,10 +1,9 @@
-use offchain_utils::configuration;
-
-use configuration::error as config_error;
-
-use offchain_utils::offchain_core::ethers::core::types::U64;
+use state_fold_types::ethereum_types::U64;
 use serde::Deserialize;
 use structopt::StructOpt;
+use snafu::Snafu;
+use serde::de::DeserializeOwned;
+use std::fs;
 
 #[derive(StructOpt, Clone, Debug)]
 #[structopt(name = "sf_config", about = "Configuration for state fold")]
@@ -47,18 +46,25 @@ pub struct SFConfig {
     pub safety_margin: usize,
 }
 
-// default values
+pub type Result<T> = std::result::Result<T, Error>;
+
+#[derive(Debug, Snafu)]
+#[snafu(visibility = "pub")]
+pub enum Error {
+    #[snafu(display("File error: {}", err))]
+    FileError { err: String },
+    #[snafu(display("Parse error: {}", err))]
+    ParseError { err: String },
+}
+
 const DEFAULT_CONCURRENT_EVENTS_FETCH: usize = 16;
 const DEFAULT_GENESIS_BLOCK: u64 = 0;
 const DEFAULT_QUERY_LIMIT_ERROR_CODES: Vec<i32> = vec![];
 const DEFAULT_SAFETY_MARGIN: usize = 10;
 
 impl SFConfig {
-    pub fn initialize(
-        env_cli_config: SFEnvCLIConfig,
-    ) -> config_error::Result<Self> {
-        let file_config: FileConfig =
-            configuration::config::load_config_file(env_cli_config.sf_config)?;
+    pub fn initialize(env_cli_config: SFEnvCLIConfig) -> Result<Self> {
+        let file_config: FileConfig = Self::load_config_file(env_cli_config.sf_config)?;
 
         let concurrent_events_fetch = env_cli_config
             .sf_concurrent_events_fetch
@@ -86,5 +92,31 @@ impl SFConfig {
             query_limit_error_codes,
             safety_margin,
         })
+    }
+
+    fn load_config_file<T: Default + DeserializeOwned>(config_file: Option<String>) -> Result<T> {
+        match config_file {
+            Some(config) => {
+                let s = fs::read_to_string(&config).map_err(|e| {
+                    FileError {
+                        err: format!(
+                            "Fail to read config file {}, error: {}",
+                            config, e
+                        ),
+                    }
+                        .build()
+                })?;
+
+                let file_config: T = toml::from_str(&s).map_err(|e| {
+                    ParseError {
+                        err: format!("Fail to parse config {}, error: {}", s, e),
+                    }
+                        .build()
+                })?;
+
+                Ok(file_config)
+            }
+            None => Ok(T::default()),
+        }
     }
 }
