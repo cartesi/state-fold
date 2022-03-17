@@ -1,7 +1,7 @@
-use std::error::Error;
-use std::fs::File;
-use std::fs;
 use state_fold_types::contract;
+use std::error::Error;
+use std::fs;
+use std::fs::File;
 
 macro_rules! rerun_if_changed {
     ($path:expr) => {

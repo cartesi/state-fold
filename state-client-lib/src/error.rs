@@ -1,9 +1,7 @@
 use serde_json;
 use snafu::Snafu;
 
-use state_server_common::conversions::{
-    MessageConversionError, StateConversionError,
-};
+use state_server_common::conversions::{MessageConversionError, StateConversionError};
 
 #[derive(Debug, Snafu)]
 #[snafu(visibility = "pub")]

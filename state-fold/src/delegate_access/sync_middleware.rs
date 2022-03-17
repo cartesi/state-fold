@@ -2,8 +2,8 @@ use super::error::*;
 use super::partition_events::*;
 
 use ethers::core::types::{
-    transaction::eip2718::TypedTransaction, BlockId, BlockNumber, Bytes,
-    Filter, FilterBlockOption, Log, U64,
+    transaction::eip2718::TypedTransaction, BlockId, BlockNumber, Bytes, Filter, FilterBlockOption,
+    Log, U64,
 };
 use ethers::providers::{FromErr, Middleware};
 use state_fold_types::ethers;
@@ -71,12 +71,8 @@ where
         self.inner().call(tx, block).await.map_err(FromErr::from)
     }
 
-    async fn get_logs(
-        &self,
-        filter: &Filter,
-    ) -> std::result::Result<Vec<Log>, Self::Error> {
-        let partition_events =
-            PartitionEvents::new(self.concurrent_events_fetch, self, filter);
+    async fn get_logs(&self, filter: &Filter) -> std::result::Result<Vec<Log>, Self::Error> {
+        let partition_events = PartitionEvents::new(self.concurrent_events_fetch, self, filter);
 
         let (start, end) = match filter.block_option {
             FilterBlockOption::Range {
@@ -178,8 +174,7 @@ pub mod tests {
             let value = simple_storage.get_value().call().await.unwrap();
             assert_eq!(value, "initial value");
 
-            let event =
-                simple_storage.value_changed_filter().query().await.unwrap();
+            let event = simple_storage.value_changed_filter().query().await.unwrap();
             assert_eq!(event.len(), 1);
             assert_eq!(event[0].old_author, Address::zero());
             assert_eq!(event[0].author, account);
@@ -194,8 +189,7 @@ pub mod tests {
             let value = simple_storage.get_value().call().await.unwrap();
             assert_eq!(value, "this");
 
-            let event =
-                simple_storage.value_changed_filter().query().await.unwrap();
+            let event = simple_storage.value_changed_filter().query().await.unwrap();
             assert_eq!(event.len(), 2);
             assert_eq!(event[1].old_author, account);
             assert_eq!(event[1].author, account);
@@ -226,8 +220,7 @@ pub mod tests {
             let value = simple_storage.get_value().call().await.unwrap();
             assert_eq!(value, "that");
 
-            let event =
-                simple_storage.value_changed_filter().query().await.unwrap();
+            let event = simple_storage.value_changed_filter().query().await.unwrap();
             assert_eq!(event.len(), 3);
             assert_eq!(event[2].old_author, account);
             assert_eq!(event[2].author, account);
@@ -242,8 +235,7 @@ pub mod tests {
             let value = simple_storage.get_value().call().await.unwrap();
             assert_eq!(value, "other");
 
-            let event =
-                simple_storage.value_changed_filter().query().await.unwrap();
+            let event = simple_storage.value_changed_filter().query().await.unwrap();
             assert_eq!(event.len(), 4);
             assert_eq!(event[3].old_author, account);
             assert_eq!(event[3].author, account);

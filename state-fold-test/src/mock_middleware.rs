@@ -65,8 +65,7 @@ impl MockMiddleware {
     }
 
     pub async fn add_block(&self, parent_hash: H256) -> Option<H256> {
-        let new_number =
-            self.chain.lock().await.get(&parent_hash)?.number + U64::from(1);
+        let new_number = self.chain.lock().await.get(&parent_hash)?.number + U64::from(1);
         let new_hash = self.new_hash().await;
         let new_block = Block {
             number: new_number,
@@ -96,11 +95,7 @@ impl MockMiddleware {
             .await
     }
 
-    pub async fn get_block_with_number_from(
-        &self,
-        number: U64,
-        tip: H256,
-    ) -> Option<Block> {
+    pub async fn get_block_with_number_from(&self, number: U64, tip: H256) -> Option<Block> {
         let mut current_hash = tip;
 
         loop {
@@ -154,9 +149,7 @@ impl Middleware for MockMiddleware {
         block_hash_or_number: T,
     ) -> Result<Option<ethers::types::Block<H256>>, Self::Error> {
         let b = match block_hash_or_number.into() {
-            BlockId::Hash(h) => {
-                MockMiddleware::get_block(self, h).await.unwrap()
-            }
+            BlockId::Hash(h) => MockMiddleware::get_block(self, h).await.unwrap(),
 
             BlockId::Number(BlockNumber::Number(n)) => {
                 MockMiddleware::get_block_with_number(self, n)

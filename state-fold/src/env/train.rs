@@ -39,10 +39,7 @@ where
         }
     }
 
-    pub async fn get_block_state(
-        &self,
-        block_hash: &H256,
-    ) -> Option<BlockState<F>> {
+    pub async fn get_block_state(&self, block_hash: &H256) -> Option<BlockState<F>> {
         self.state_tree
             .read()
             .await
@@ -110,8 +107,7 @@ where
                 // build an ancestral block by syncing. We call our
                 // `sync_to_margin` helper function, which will get us the
                 // block `leaf - safety_margin` inside the archive.
-                let sync_block =
-                    self.sync_to_margin(env, leaf_block).await?.block;
+                let sync_block = self.sync_to_margin(env, leaf_block).await?.block;
 
                 // The function `sync_to_margin` has added an accumualtor to
                 // the train, using at least `safety_margin` from the current
@@ -182,14 +178,10 @@ where
                     .ok_or(snafu::NoneError)
                     .context(BlockUnavailable {})?;
 
-                let new_state = F::fold(
-                    &previous_state.state,
-                    &block,
-                    env,
-                    env.fold_access(&block),
-                )
-                .await
-                .context(InnerError)?;
+                let new_state =
+                    F::fold(&previous_state.state, &block, env, env.fold_access(&block))
+                        .await
+                        .context(InnerError)?;
 
                 BlockState {
                     block: block.clone(),
@@ -300,14 +292,7 @@ mod tests {
     ) {
         let train = Train::<IncrementFold>::new(INITIAL_VALUE, SAFETY_MARGIN);
         let m = MockMiddleware::new(128).await;
-        let env = StateFoldEnvironment::new(
-            Arc::clone(&m),
-            SAFETY_MARGIN,
-            0.into(),
-            vec![],
-            1,
-            (),
-        );
+        let env = StateFoldEnvironment::new(Arc::clone(&m), SAFETY_MARGIN, 0.into(), vec![], 1, ());
 
         (train, m, env)
     }
@@ -350,8 +335,7 @@ mod tests {
             let block = m.get_block_with_number(i.into()).await.unwrap();
             assert!(train.get_block_state(&block.hash).await.is_none());
 
-            let state =
-                train.fetch_block_state(&env, &block).await.unwrap().state;
+            let state = train.fetch_block_state(&env, &block).await.unwrap().state;
 
             assert_eq!(
                 state,
@@ -369,8 +353,7 @@ mod tests {
             let block = m.get_block_with_number(i.into()).await.unwrap();
             assert!(train.get_block_state(&block.hash).await.is_none());
 
-            let state =
-                train.fetch_block_state(&env, &block).await.unwrap().state;
+            let state = train.fetch_block_state(&env, &block).await.unwrap().state;
 
             assert_eq!(
                 state,
@@ -388,8 +371,7 @@ mod tests {
             let block = m.get_block_with_number(i.into()).await.unwrap();
             assert!(train.get_block_state(&block.hash).await.is_none());
 
-            let state =
-                train.fetch_block_state(&env, &block).await.unwrap().state;
+            let state = train.fetch_block_state(&env, &block).await.unwrap().state;
 
             assert_eq!(
                 state,
@@ -406,8 +388,7 @@ mod tests {
         for i in 16u64..=128 {
             let block = m.get_block_with_number(i.into()).await.unwrap();
 
-            let state =
-                train.fetch_block_state(&env, &block).await.unwrap().state;
+            let state = train.fetch_block_state(&env, &block).await.unwrap().state;
 
             assert_eq!(
                 state,
@@ -424,11 +405,7 @@ mod tests {
 
     #[tokio::test]
     async fn branching_blockchain_test() {
-        async fn add_branch(
-            m: &Arc<MockMiddleware>,
-            base: H256,
-            count: usize,
-        ) -> H256 {
+        async fn add_branch(m: &Arc<MockMiddleware>, base: H256, count: usize) -> H256 {
             let mut last_hash = base;
             for _ in 0..=count {
                 last_hash = m.add_block(last_hash).await.unwrap();
@@ -445,11 +422,9 @@ mod tests {
 
         let tip_a = m.get_block_with_number(128.into()).await.unwrap().hash;
         for i in 64u64..=128 {
-            let block =
-                m.get_block_with_number_from(i.into(), tip_a).await.unwrap();
+            let block = m.get_block_with_number_from(i.into(), tip_a).await.unwrap();
 
-            let state =
-                train.fetch_block_state(&env, &block).await.unwrap().state;
+            let state = train.fetch_block_state(&env, &block).await.unwrap().state;
 
             assert_eq!(
                 state,
@@ -463,11 +438,9 @@ mod tests {
 
         let tip_b = add_branch(&m, base_b.hash, 128).await;
         for i in 80u64..=128 {
-            let block =
-                m.get_block_with_number_from(i.into(), tip_b).await.unwrap();
+            let block = m.get_block_with_number_from(i.into(), tip_b).await.unwrap();
 
-            let state =
-                train.fetch_block_state(&env, &block).await.unwrap().state;
+            let state = train.fetch_block_state(&env, &block).await.unwrap().state;
 
             assert_eq!(
                 state,
@@ -481,11 +454,9 @@ mod tests {
 
         let tip_c = add_branch(&m, base_c.hash, 128).await;
         for i in 68u64..=128 {
-            let block =
-                m.get_block_with_number_from(i.into(), tip_c).await.unwrap();
+            let block = m.get_block_with_number_from(i.into(), tip_c).await.unwrap();
 
-            let state =
-                train.fetch_block_state(&env, &block).await.unwrap().state;
+            let state = train.fetch_block_state(&env, &block).await.unwrap().state;
 
             assert_eq!(
                 state,
@@ -499,11 +470,9 @@ mod tests {
 
         let tip_d = add_branch(&m, base_d.hash, 128).await;
         for i in 90u64..=128 {
-            let block =
-                m.get_block_with_number_from(i.into(), tip_d).await.unwrap();
+            let block = m.get_block_with_number_from(i.into(), tip_d).await.unwrap();
 
-            let state =
-                train.fetch_block_state(&env, &block).await.unwrap().state;
+            let state = train.fetch_block_state(&env, &block).await.unwrap().state;
 
             assert_eq!(
                 state,

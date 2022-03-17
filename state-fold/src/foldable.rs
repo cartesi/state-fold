@@ -30,10 +30,7 @@ pub trait Foldable: Clone + Send + Sync + std::fmt::Debug {
         access: Arc<FoldMiddleware<M>>,
     ) -> std::result::Result<Self, Self::Error>;
 
-    async fn get_state_for_block<
-        M: Middleware + 'static,
-        T: Into<QueryBlock> + Send + Sync,
-    >(
+    async fn get_state_for_block<M: Middleware + 'static, T: Into<QueryBlock> + Send + Sync>(
         initial_state: &Self::InitialState,
         fold_block: T,
         env: &StateFoldEnvironment<M, Self::UserData>,

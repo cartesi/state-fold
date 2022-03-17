@@ -18,7 +18,8 @@ pub struct BHEnvCLIConfig {
     #[structopt(long, env = "BH_BLOCK_TIMEOUT")]
     pub block_timeout: Option<u64>,
 
-    /// How far back can we look into the block history from the most recent block index
+    /// How far back can we look into the block history from the most recent
+    /// block index
     #[structopt(long, env = "BH_MAX_DEPTH")]
     pub max_depth: Option<usize>,
 }
@@ -60,12 +61,10 @@ impl BHConfig {
     pub fn initialize(env_cli_config: BHEnvCLIConfig) -> Result<Self> {
         let file_config: FileConfig = match env_cli_config.config_path {
             None => Default::default(),
-            Some(v) =>
-                std::fs::read_to_string(&v)
-                    .map(|v| toml::from_str(&v))
-                    .context(ConfigFileError)?
-                    .unwrap_or_default()
-
+            Some(v) => std::fs::read_to_string(&v)
+                .map(|v| toml::from_str(&v))
+                .context(ConfigFileError)?
+                .unwrap_or_default(),
         };
 
         let ws_endpoint = env_cli_config

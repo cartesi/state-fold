@@ -1,9 +1,9 @@
-use state_fold_types::ethereum_types::U64;
-use serde::Deserialize;
-use structopt::StructOpt;
-use snafu::Snafu;
 use serde::de::DeserializeOwned;
+use serde::Deserialize;
+use snafu::Snafu;
+use state_fold_types::ethereum_types::U64;
 use std::fs;
+use structopt::StructOpt;
 
 #[derive(StructOpt, Clone, Debug)]
 #[structopt(name = "sf_config", about = "Configuration for state fold")]
@@ -99,19 +99,16 @@ impl SFConfig {
             Some(config) => {
                 let s = fs::read_to_string(&config).map_err(|e| {
                     FileError {
-                        err: format!(
-                            "Fail to read config file {}, error: {}",
-                            config, e
-                        ),
+                        err: format!("Fail to read config file {}, error: {}", config, e),
                     }
-                        .build()
+                    .build()
                 })?;
 
                 let file_config: T = toml::from_str(&s).map_err(|e| {
                     ParseError {
                         err: format!("Fail to parse config {}, error: {}", s, e),
                     }
-                        .build()
+                    .build()
                 })?;
 
                 Ok(file_config)

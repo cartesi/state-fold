@@ -1,5 +1,7 @@
 # State Fold
 
+[![Build Status](https://github.com/cartesi-corp/state-fold/actions/workflows/rust.yml/badge.svg)](https://github.com/cartesi-corp/state-fold/actions)
+
 At Cartesi, we run into issues related to lack of mature tooling everyday.
 Blockchain is a nascent technology, and the software stack is still in its early days and evolving at a fast pace.
 Writing _ad-hoc_ solutions to these issues is not scalable.

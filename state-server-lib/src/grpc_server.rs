@@ -1,12 +1,10 @@
 use state_fold_server::state_fold_server::StateFold;
 use state_fold_server::{
-    query_block::Id,
-    state_stream_response::Response as GrpcStateStreamResponse,
-    states_since_response::Response as GrpcStatesSinceResponse,
-    Block as GrpcBlock, BlockState as GrpcBlockState, BlockStreamResponse,
-    BlocksSinceResponse, Hash as GrpcHash, InitialState as GrpcInitialState,
-    QueryBlock, QueryBlockRequest, QueryBlocksSinceRequest, QueryStateRequest,
-    QueryStatesSinceRequest, StateStreamResponse, States as GrpcStates,
+    query_block::Id, state_stream_response::Response as GrpcStateStreamResponse,
+    states_since_response::Response as GrpcStatesSinceResponse, Block as GrpcBlock,
+    BlockState as GrpcBlockState, BlockStreamResponse, BlocksSinceResponse, Hash as GrpcHash,
+    InitialState as GrpcInitialState, QueryBlock, QueryBlockRequest, QueryBlocksSinceRequest,
+    QueryStateRequest, QueryStatesSinceRequest, StateStreamResponse, States as GrpcStates,
     StatesSinceResponse, SubscribeNewBlocksRequest, SubscribeNewStatesRequest,
 };
 use state_server_common::state_fold_server;
@@ -15,9 +13,9 @@ use tonic::{Request, Response, Status};
 
 use ethers::providers::{Middleware, PubsubClient};
 use ethers::types::H256;
+use state_fold_types;
 use state_fold_types::ethers;
 use state_fold_types::Block;
-use state_fold_types;
 
 use block_history::{BlockArchive, BlockArchiveError, BlockSubscriber};
 use state_fold::{Foldable, StateFoldEnvironment};
@@ -31,16 +29,13 @@ use std::pin::Pin;
 use std::sync::Arc;
 use tokio_stream::Stream;
 
-pub struct StateServer<M: Middleware + 'static, UD, F: Foldable<UserData = UD>>
-{
+pub struct StateServer<M: Middleware + 'static, UD, F: Foldable<UserData = UD>> {
     block_subscriber: Arc<BlockSubscriber<M>>,
     env: Arc<StateFoldEnvironment<M, UD>>,
     __phantom: std::marker::PhantomData<F>,
 }
 
-impl<M: Middleware + 'static, UD, F: Foldable<UserData = UD>>
-    StateServer<M, UD, F>
-{
+impl<M: Middleware + 'static, UD, F: Foldable<UserData = UD>> StateServer<M, UD, F> {
     pub fn new(
         block_subscriber: Arc<BlockSubscriber<M>>,
         env: Arc<StateFoldEnvironment<M, UD>>,
@@ -54,11 +49,8 @@ impl<M: Middleware + 'static, UD, F: Foldable<UserData = UD>>
 }
 
 #[tonic::async_trait]
-impl<
-        M: Middleware + 'static,
-        UD: Send + Sync + 'static,
-        F: Foldable<UserData = UD> + 'static,
-    > StateFold for StateServer<M, UD, F>
+impl<M: Middleware + 'static, UD: Send + Sync + 'static, F: Foldable<UserData = UD> + 'static>
+    StateFold for StateServer<M, UD, F>
 where
     <M as Middleware>::Provider: PubsubClient,
     F::InitialState: serde::de::DeserializeOwned + 'static,
@@ -90,11 +82,9 @@ where
         let message = request.into_inner();
 
         let depth = message.depth as usize;
-        let block = get_block_with_hash(
-            message.previous_block,
-            &self.block_subscriber.block_archive,
-        )
-        .await?;
+        let block =
+            get_block_with_hash(message.previous_block, &self.block_subscriber.block_archive)
+                .await?;
 
         let diff = self
             .block_subscriber
@@ -102,7 +92,9 @@ where
             .blocks_since(depth, &block)
             .await
             .map_err(|e| match e {
-                BlockArchiveError::BlockOutOfRange { .. } => Status::out_of_range(format!("{:?}", e)),
+                BlockArchiveError::BlockOutOfRange { .. } => {
+                    Status::out_of_range(format!("{:?}", e))
+                }
                 e => Status::unavailable(format!("{:?}", e)),
             })?;
 
@@ -137,14 +129,11 @@ where
     ) -> Result<Response<GrpcBlockState>, Status> {
         let message = request.into_inner();
 
-        let initial_state: F::InitialState =
-            convert_initial_state::<F>(message.initial_state)?;
+        let initial_state: F::InitialState = convert_initial_state::<F>(message.initial_state)?;
 
-        let block = get_block_from_archive(
-            &self.block_subscriber.block_archive,
-            message.query_block,
-        )
-        .await?;
+        let block =
+            get_block_from_archive(&self.block_subscriber.block_archive, message.query_block)
+                .await?;
 
         let state = F::get_state_for_block(&initial_state, block, &self.env)
             .await
@@ -164,14 +153,11 @@ where
         let message = request.into_inner();
 
         let depth = message.depth as usize;
-        let initial_state: F::InitialState =
-            convert_initial_state::<F>(message.initial_state)?;
+        let initial_state: F::InitialState = convert_initial_state::<F>(message.initial_state)?;
 
-        let block = get_block_with_hash(
-            message.previous_block,
-            &self.block_subscriber.block_archive,
-        )
-        .await?;
+        let block =
+            get_block_with_hash(message.previous_block, &self.block_subscriber.block_archive)
+                .await?;
 
         let diff = self
             .block_subscriber
@@ -179,30 +165,20 @@ where
             .blocks_since(depth, &block)
             .await
             .map_err(|e| match e {
-                BlockArchiveError::BlockOutOfRange { .. } => Status::out_of_range(format!("{:?}", e)),
+                BlockArchiveError::BlockOutOfRange { .. } => {
+                    Status::out_of_range(format!("{:?}", e))
+                }
                 e => Status::unavailable(format!("{:?}", e)),
             })?;
 
         let state_diff = match diff {
             BlocksSince::Normal(bs) => GrpcStatesSinceResponse::NewStates(
-                map_blocks_into_grpc_states::<_, _, F>(
-                    bs,
-                    &initial_state,
-                    &self.env,
-                )
-                .await?,
+                map_blocks_into_grpc_states::<_, _, F>(bs, &initial_state, &self.env).await?,
             ),
 
-            BlocksSince::Reorg(bs) => {
-                GrpcStatesSinceResponse::ReorganizedStates(
-                    map_blocks_into_grpc_states::<_, _, F>(
-                        bs,
-                        &initial_state,
-                        &self.env,
-                    )
-                    .await?,
-                )
-            }
+            BlocksSince::Reorg(bs) => GrpcStatesSinceResponse::ReorganizedStates(
+                map_blocks_into_grpc_states::<_, _, F>(bs, &initial_state, &self.env).await?,
+            ),
         };
 
         Ok(Response::new(StatesSinceResponse {
@@ -234,17 +210,13 @@ where
             async move {
                 match item {
                     Ok(BlockStreamItem::NewBlock(block)) => {
-                        let block_state = get_foldable_state::<_, _, F>(
-                            &initial_state,
-                            block,
-                            &env,
-                        )
-                        .await?;
+                        let block_state =
+                            get_foldable_state::<_, _, F>(&initial_state, block, &env).await?;
 
                         let response = Some(GrpcStateStreamResponse::NewState(
-                            block_state.try_into().map_err(|e| {
-                                Status::internal(format!("{:?}", e))
-                            })?,
+                            block_state
+                                .try_into()
+                                .map_err(|e| Status::internal(format!("{:?}", e)))?,
                         ));
 
                         Ok(StateStreamResponse { response })
@@ -252,19 +224,14 @@ where
 
                     Ok(BlockStreamItem::Reorg(blocks)) => {
                         let block_states =
-                            map_blocks_into_grpc_states::<_, _, F>(
-                                blocks,
-                                &initial_state,
-                                &env,
-                            )
-                            .await?;
+                            map_blocks_into_grpc_states::<_, _, F>(blocks, &initial_state, &env)
+                                .await?;
 
-                        let response =
-                            Some(GrpcStateStreamResponse::ReorganizedStates(
-                                block_states.try_into().map_err(|e| {
-                                    Status::internal(format!("{:?}", e))
-                                })?,
-                            ));
+                        let response = Some(GrpcStateStreamResponse::ReorganizedStates(
+                            block_states
+                                .try_into()
+                                .map_err(|e| Status::internal(format!("{:?}", e)))?,
+                        ));
 
                         Ok(StateStreamResponse { response })
                     }
@@ -362,11 +329,7 @@ async fn map_blocks_into_grpc_states<
         .map_err(|e| Status::internal(format!("{:?}", e)))
 }
 
-async fn get_foldable_state<
-    M: Middleware + 'static,
-    UD,
-    F: Foldable<UserData = UD> + 'static,
->(
+async fn get_foldable_state<M: Middleware + 'static, UD, F: Foldable<UserData = UD> + 'static>(
     initial_state: &F::InitialState,
     block: Block,
     env: &StateFoldEnvironment<M, UD>,

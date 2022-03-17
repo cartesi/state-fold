@@ -25,16 +25,12 @@ where
         }
     }
 
-    pub async fn get_train(
-        &self,
-        initial_state: &F::InitialState,
-    ) -> Arc<Train<F>> {
+    pub async fn get_train(&self, initial_state: &F::InitialState) -> Arc<Train<F>> {
         if let Some(train) = self.trains.read().await.get(initial_state) {
             return Arc::clone(train);
         }
 
-        let train =
-            Arc::new(Train::new(initial_state.clone(), self.safety_margin));
+        let train = Arc::new(Train::new(initial_state.clone(), self.safety_margin));
 
         self.trains
             .write()

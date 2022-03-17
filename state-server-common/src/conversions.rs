@@ -3,10 +3,9 @@ use crate::grpc_interface::state_fold_server::{
     blocks_since_response::Response as GrpcBlocksSince, query_block::Id,
     state_stream_response::Response as GrpcStateStreamResponse,
     states_since_response::Response as GrpcStatesSince, Block as GrpcBlock,
-    BlockState as GrpcBlockState, BlockStreamResponse, Blocks as GrpcBlocks,
-    BlocksSinceResponse, Bloom as GrpcBloom, Hash,
-    QueryBlock as GrpcQueryBlock, State as GrpcState, StateStreamResponse,
-    States as GrpcStates, StatesSinceResponse,
+    BlockState as GrpcBlockState, BlockStreamResponse, Blocks as GrpcBlocks, BlocksSinceResponse,
+    Bloom as GrpcBloom, Hash, QueryBlock as GrpcQueryBlock, State as GrpcState,
+    StateStreamResponse, States as GrpcStates, StatesSinceResponse,
 };
 
 use state_fold_types::{
@@ -15,8 +14,7 @@ use state_fold_types::{
 };
 
 use state_fold_types::{
-    BlockState, BlockStreamItem, BlocksSince, QueryBlock, StateStreamItem,
-    StatesSince,
+    BlockState, BlockStreamItem, BlocksSince, QueryBlock, StateStreamItem, StatesSince,
 };
 
 use serde::{de::DeserializeOwned, Serialize};
@@ -35,12 +33,7 @@ pub struct MessageNilError {
 }
 
 #[derive(Debug, Snafu)]
-#[snafu(display(
-    "message `{}` field `{}` malformed: {}",
-    message,
-    field,
-    reason
-))]
+#[snafu(display("message `{}` field `{}` malformed: {}", message, field, reason))]
 pub struct MessageMalformedError {
     message: String,
     field: String,
@@ -129,12 +122,8 @@ impl<T: DeserializeOwned> TryFrom<GrpcStatesSince> for StatesSince<T> {
 
     fn try_from(sd: GrpcStatesSince) -> Result<Self, Self::Error> {
         Ok(match sd {
-            GrpcStatesSince::NewStates(ss) => {
-                StatesSince::Normal(ss.try_into()?)
-            }
-            GrpcStatesSince::ReorganizedStates(ss) => {
-                StatesSince::Reorg(ss.try_into()?)
-            }
+            GrpcStatesSince::NewStates(ss) => StatesSince::Normal(ss.try_into()?),
+            GrpcStatesSince::ReorganizedStates(ss) => StatesSince::Reorg(ss.try_into()?),
         })
     }
 }
@@ -169,25 +158,19 @@ impl<T: Serialize> TryFrom<StateStreamItem<T>> for GrpcStateStreamResponse {
 
     fn try_from(i: StateStreamItem<T>) -> Result<Self, Self::Error> {
         Ok(match i {
-            StateStreamItem::NewState(s) => {
-                GrpcStateStreamResponse::NewState(s.try_into()?)
-            }
+            StateStreamItem::NewState(s) => GrpcStateStreamResponse::NewState(s.try_into()?),
             StateStreamItem::Reorg(ss) => {
                 GrpcStateStreamResponse::ReorganizedStates(ss.try_into()?)
             }
         })
     }
 }
-impl<T: DeserializeOwned> TryFrom<GrpcStateStreamResponse>
-    for StateStreamItem<T>
-{
+impl<T: DeserializeOwned> TryFrom<GrpcStateStreamResponse> for StateStreamItem<T> {
     type Error = StateConversionError;
 
     fn try_from(ssr: GrpcStateStreamResponse) -> Result<Self, Self::Error> {
         Ok(match ssr {
-            GrpcStateStreamResponse::NewState(s) => {
-                StateStreamItem::NewState(s.try_into()?)
-            }
+            GrpcStateStreamResponse::NewState(s) => StateStreamItem::NewState(s.try_into()?),
             GrpcStateStreamResponse::ReorganizedStates(ss) => {
                 StateStreamItem::Reorg(ss.try_into()?)
             }
@@ -221,9 +204,7 @@ impl From<BlocksSince> for GrpcBlocksSince {
     fn from(d: BlocksSince) -> Self {
         match d {
             BlocksSince::Normal(bs) => GrpcBlocksSince::NewBlocks(bs.into()),
-            BlocksSince::Reorg(bs) => {
-                GrpcBlocksSince::ReorganizedBlocks(bs.into())
-            }
+            BlocksSince::Reorg(bs) => GrpcBlocksSince::ReorganizedBlocks(bs.into()),
         }
     }
 }
@@ -233,13 +214,9 @@ impl TryFrom<GrpcBlocksSince> for BlocksSince {
 
     fn try_from(d: GrpcBlocksSince) -> Result<Self, Self::Error> {
         Ok(match d {
-            GrpcBlocksSince::NewBlocks(bs) => {
-                BlocksSince::Normal(bs.try_into()?)
-            }
+            GrpcBlocksSince::NewBlocks(bs) => BlocksSince::Normal(bs.try_into()?),
 
-            GrpcBlocksSince::ReorganizedBlocks(bs) => {
-                BlocksSince::Reorg(bs.try_into()?)
-            }
+            GrpcBlocksSince::ReorganizedBlocks(bs) => BlocksSince::Reorg(bs.try_into()?),
         })
     }
 }
@@ -269,12 +246,8 @@ impl From<BlockStreamItem> for BlockStreamResponse {
 impl From<BlockStreamItem> for GrpcBlockStreamResponse {
     fn from(i: BlockStreamItem) -> Self {
         match i {
-            BlockStreamItem::NewBlock(b) => {
-                GrpcBlockStreamResponse::NewBlock(b.into())
-            }
-            BlockStreamItem::Reorg(bs) => {
-                GrpcBlockStreamResponse::ReorganizedBlocks(bs.into())
-            }
+            BlockStreamItem::NewBlock(b) => GrpcBlockStreamResponse::NewBlock(b.into()),
+            BlockStreamItem::Reorg(bs) => GrpcBlockStreamResponse::ReorganizedBlocks(bs.into()),
         }
     }
 }
@@ -284,9 +257,7 @@ impl TryFrom<GrpcBlockStreamResponse> for BlockStreamItem {
 
     fn try_from(s: GrpcBlockStreamResponse) -> Result<Self, Self::Error> {
         Ok(match s {
-            GrpcBlockStreamResponse::NewBlock(b) => {
-                BlockStreamItem::NewBlock(b.try_into()?)
-            }
+            GrpcBlockStreamResponse::NewBlock(b) => BlockStreamItem::NewBlock(b.try_into()?),
 
             GrpcBlockStreamResponse::ReorganizedBlocks(bs) => {
                 BlockStreamItem::Reorg(bs.try_into()?)
@@ -299,8 +270,7 @@ impl<T: Serialize> TryFrom<Vec<BlockState<T>>> for GrpcStates {
     type Error = serde_json::Error;
 
     fn try_from(bs: Vec<BlockState<T>>) -> Result<Self, Self::Error> {
-        let states: Result<_, _> =
-            bs.into_iter().map(|x| x.try_into()).collect();
+        let states: Result<_, _> = bs.into_iter().map(|x| x.try_into()).collect();
         let states = states?;
         Ok(GrpcStates { states })
     }
@@ -342,9 +312,7 @@ impl TryFrom<Id> for QueryBlock {
         Ok(match i {
             Id::Depth(d) => QueryBlock::BlockDepth(d as usize),
 
-            Id::BlockHash(h) => {
-                QueryBlock::BlockHash(h.try_into().context(MalformedError)?)
-            }
+            Id::BlockHash(h) => QueryBlock::BlockHash(h.try_into().context(MalformedError)?),
 
             Id::BlockNumber(n) => QueryBlock::BlockNumber(n.into()),
         })

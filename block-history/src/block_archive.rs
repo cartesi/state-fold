@@ -4,9 +4,9 @@ use state_fold_types::BlocksSince;
 
 use ethers::providers::Middleware;
 use ethers::types::{BlockId, BlockNumber};
+use state_fold_types::ethereum_types::{H256, U64};
 use state_fold_types::ethers;
 use state_fold_types::Block;
-use state_fold_types::ethereum_types::{H256, U64};
 
 use std::convert::TryInto;
 use std::sync::Arc;
@@ -37,21 +37,10 @@ pub enum BlockArchiveError {
         latest_number: usize,
     },
 
-    #[snafu(display(
-        "The depth `{}` is over the `{}` maximum",
-        depth,
-        max_depth
-    ))]
-    BlockOutOfRange {
-        depth: usize,
-        max_depth: usize,
-    },
+    #[snafu(display("The depth `{}` is over the `{}` maximum", depth, max_depth))]
+    BlockOutOfRange { depth: usize, max_depth: usize },
 
-    #[snafu(display(
-        "Depth of `{}` higher than latest block `{:?}`",
-        depth,
-        latest
-    ))]
+    #[snafu(display("Depth of `{}` higher than latest block `{:?}`", depth, latest))]
     DepthTooHigh { depth: usize, latest: Block },
 }
 
@@ -66,8 +55,7 @@ pub struct BlockArchive<M: Middleware> {
 impl<M: Middleware + 'static> BlockArchive<M> {
     pub(crate) async fn new(middleware: Arc<M>, max_depth: usize) -> Result<Self> {
         let block_tree = {
-            let latest_block =
-                fetch_block(middleware.as_ref(), BlockNumber::Latest).await?;
+            let latest_block = fetch_block(middleware.as_ref(), BlockNumber::Latest).await?;
 
             RwLock::new(BlockTree::new(latest_block))
         };
@@ -137,11 +125,7 @@ impl<M: Middleware + 'static> BlockArchive<M> {
         Ok(b)
     }
 
-    pub async fn blocks_since(
-        &self,
-        depth: usize,
-        previous: &Block,
-    ) -> Result<BlocksSince> {
+    pub async fn blocks_since(&self, depth: usize, previous: &Block) -> Result<BlocksSince> {
         let latest = self.latest_block().await;
 
         ensure!(
@@ -173,9 +157,7 @@ impl<M: Middleware + 'static> BlockArchive<M> {
     }
 
     pub async fn block_with_hash(&self, block_hash: H256) -> Result<Block> {
-        if let Some(b) =
-            self.block_tree.read().await.block_with_hash(&block_hash)
-        {
+        if let Some(b) = self.block_tree.read().await.block_with_hash(&block_hash) {
             return Ok(b);
         }
 
@@ -187,10 +169,7 @@ impl<M: Middleware + 'static> BlockArchive<M> {
 }
 
 impl<M: Middleware + 'static> BlockArchive<M> {
-    async fn fetch_block<T: Into<BlockId> + Send + Sync>(
-        &self,
-        block_id: T,
-    ) -> Result<Block> {
+    async fn fetch_block<T: Into<BlockId> + Send + Sync>(&self, block_id: T) -> Result<Block> {
         fetch_block(self.middleware.as_ref(), block_id).await
     }
 
@@ -204,8 +183,7 @@ impl<M: Middleware + 'static> BlockArchive<M> {
         leaf: &Block,
         number_of_new_blocks: usize,
     ) -> Result<BlocksSince> {
-        let mut stack =
-            self.build_stack_from_leaf(previous.number, leaf).await?;
+        let mut stack = self.build_stack_from_leaf(previous.number, leaf).await?;
 
         let len = stack.len();
 
@@ -249,14 +227,10 @@ impl<M: Middleware + 'static> BlockArchive<M> {
         Ok(stack)
     }
 
-    async fn extend_stack_to_ancestor(
-        &self,
-        stack: &mut Vec<Block>,
-        uncle: &Block,
-    ) -> Result<()> {
-        let last = stack.last().expect(
-            "should not call `extend_stack_to_ancestor` with empty stack",
-        );
+    async fn extend_stack_to_ancestor(&self, stack: &mut Vec<Block>, uncle: &Block) -> Result<()> {
+        let last = stack
+            .last()
+            .expect("should not call `extend_stack_to_ancestor` with empty stack");
 
         assert_eq!(uncle.number, last.number);
         assert_ne!(uncle.hash, last.hash);
@@ -268,8 +242,7 @@ impl<M: Middleware + 'static> BlockArchive<M> {
             let current = self.block_with_hash(current_parent).await?;
             current_parent = current.parent_hash;
 
-            let current_uncle =
-                self.block_with_hash(current_uncle_parent).await?;
+            let current_uncle = self.block_with_hash(current_uncle_parent).await?;
             current_uncle_parent = current_uncle.parent_hash;
 
             stack.push(current);
@@ -279,10 +252,7 @@ impl<M: Middleware + 'static> BlockArchive<M> {
     }
 }
 
-async fn fetch_block<
-    M: Middleware + 'static,
-    T: Into<BlockId> + Send + Sync,
->(
+async fn fetch_block<M: Middleware + 'static, T: Into<BlockId> + Send + Sync>(
     middleware: &M,
     block_id: T,
 ) -> Result<Block> {
@@ -306,8 +276,7 @@ mod tests {
 
     use std::sync::Arc;
 
-    async fn instantiate_all(
-    ) -> (Arc<MockMiddleware>, BlockArchive<MockMiddleware>) {
+    async fn instantiate_all() -> (Arc<MockMiddleware>, BlockArchive<MockMiddleware>) {
         let max_depth = 100;
         let m = MockMiddleware::new(128).await;
         let archive = BlockArchive::new(Arc::clone(&m), max_depth).await.unwrap();
@@ -315,10 +284,7 @@ mod tests {
         (m, archive)
     }
 
-    async fn update_archive_with_latest(
-        m: &MockMiddleware,
-        a: &BlockArchive<MockMiddleware>,
-    ) {
+    async fn update_archive_with_latest(m: &MockMiddleware, a: &BlockArchive<MockMiddleware>) {
         a.update_latest_block(m.get_latest_block().await.unwrap())
             .await
             .unwrap();

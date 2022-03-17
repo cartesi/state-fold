@@ -38,11 +38,7 @@ where
     D: Send + Sync,
     P: PartitionProvider<E, D> + Send + Sync,
 {
-    pub fn new(
-        concurrent_workers: usize,
-        provider: &'a P,
-        partition_data: &'a D,
-    ) -> Self {
+    pub fn new(concurrent_workers: usize, provider: &'a P, partition_data: &'a D) -> Self {
         let semaphore = Semaphore::new(concurrent_workers);
         PartitionEvents {
             semaphore,
@@ -70,11 +66,7 @@ where
                 // Make number of concurrent fetches bounded.
                 let _permit = self.semaphore.acquire().await;
                 self.provider
-                    .fetch_events_with_range(
-                        &self.partition_data,
-                        start_block,
-                        end_block,
-                    )
+                    .fetch_events_with_range(&self.partition_data, start_block, end_block)
                     .await
             };
 
@@ -90,13 +82,10 @@ where
                             start_block + half - 1
                         };
 
-                        let first_fut =
-                            self.get_events_rec(start_block, middle);
-                        let second_fut =
-                            self.get_events_rec(middle + 1, end_block);
+                        let first_fut = self.get_events_rec(start_block, middle);
+                        let second_fut = self.get_events_rec(middle + 1, end_block);
 
-                        let (first_res, second_res) =
-                            futures::join!(first_fut, second_fut);
+                        let (first_res, second_res) = futures::join!(first_fut, second_fut);
 
                         match (first_res, second_res) {
                             (Ok(mut first), Ok(second)) => {
@@ -142,10 +131,7 @@ mod tests {
                 if start_block == end_block {
                     Ok(vec![start_block])
                 } else {
-                    Err(std::io::Error::new(
-                        std::io::ErrorKind::Other,
-                        "oh no!",
-                    ))
+                    Err(std::io::Error::new(std::io::ErrorKind::Other, "oh no!"))
                 }
             }
             .await
@@ -159,8 +145,7 @@ mod tests {
     #[tokio::test]
     async fn test_partition_simple1() {
         let provider = MockProvider1 {};
-        let partition =
-            PartitionEvents::new(1, &provider, &MockProviderData {});
+        let partition = PartitionEvents::new(1, &provider, &MockProviderData {});
 
         let ret = partition.get_events(0, 10000).await;
         assert_eq!((0..=10000).collect::<Vec<u64>>(), ret.unwrap());
@@ -169,8 +154,7 @@ mod tests {
     #[tokio::test]
     async fn test_partition_simple2() {
         let provider = MockProvider1 {};
-        let partition =
-            PartitionEvents::new(16, &provider, &MockProviderData {});
+        let partition = PartitionEvents::new(16, &provider, &MockProviderData {});
 
         let ret = partition.get_events(0, 10000).await;
         assert_eq!((0..=10000).collect::<Vec<u64>>(), ret.unwrap());
@@ -193,10 +177,7 @@ mod tests {
                     // println!("{} {}", start_block, end_block);
                     Ok((start_block..=end_block).collect::<Vec<u64>>())
                 } else {
-                    Err(std::io::Error::new(
-                        std::io::ErrorKind::Other,
-                        "oh no!",
-                    ))
+                    Err(std::io::Error::new(std::io::ErrorKind::Other, "oh no!"))
                 }
             }
             .await
@@ -210,8 +191,7 @@ mod tests {
     #[tokio::test]
     async fn test_partition_simple3() {
         let provider = MockProvider2 {};
-        let partition =
-            PartitionEvents::new(16, &provider, &MockProviderData {});
+        let partition = PartitionEvents::new(16, &provider, &MockProviderData {});
 
         let ret = partition.get_events(0, 10000).await;
         assert_eq!((0..=10000).collect::<Vec<u64>>(), ret.unwrap());

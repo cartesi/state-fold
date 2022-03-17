@@ -67,9 +67,7 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
         self.inner_middleware.clone()
     }
 
-    pub async fn get_state_for_block<
-        F: Foldable<UserData = UD> + Send + Sync + 'static,
-    >(
+    pub async fn get_state_for_block<F: Foldable<UserData = UD> + Send + Sync + 'static>(
         &self,
         initial_state: &F::InitialState,
         fold_block: QueryBlock,
@@ -87,8 +85,7 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
                 let b = self.get_block(BlockNumber::Latest).await?;
 
                 // Check if exists in archive.
-                if let Some(block_state) = train.get_block_state(&b.hash).await
-                {
+                if let Some(block_state) = train.get_block_state(&b.hash).await {
                     return Ok(block_state);
                 }
 
@@ -108,8 +105,7 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
                 let b = self.get_block(n).await?;
 
                 // Check if exists in archive.
-                if let Some(block_state) = train.get_block_state(&b.hash).await
-                {
+                if let Some(block_state) = train.get_block_state(&b.hash).await {
                     return Ok(block_state);
                 }
 
@@ -130,8 +126,7 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
                 };
 
                 // Check if exists in archive.
-                if let Some(block_state) = train.get_block_state(&b.hash).await
-                {
+                if let Some(block_state) = train.get_block_state(&b.hash).await {
                     return Ok(block_state);
                 }
 
@@ -140,8 +135,7 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
 
             QueryBlock::Block(b) => {
                 // Check if exists in archive.
-                if let Some(block_state) = train.get_block_state(&b.hash).await
-                {
+                if let Some(block_state) = train.get_block_state(&b.hash).await {
                     return Ok(block_state);
                 }
 
@@ -173,8 +167,7 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
     }
 
     pub(crate) fn fold_access(&self, block: &Block) -> Arc<FoldMiddleware<M>> {
-        let middleware =
-            FoldMiddleware::new(Arc::clone(&self.inner_middleware), block.hash);
+        let middleware = FoldMiddleware::new(Arc::clone(&self.inner_middleware), block.hash);
 
         Arc::new(middleware)
     }
@@ -197,9 +190,7 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
             .context(BlockIncomplete)
     }
 
-    pub(crate) async fn get_current_block_number<
-        F: Foldable + Send + Sync + 'static,
-    >(
+    pub(crate) async fn get_current_block_number<F: Foldable + Send + Sync + 'static>(
         &self,
     ) -> Result<U64, FoldableError<M, F>> {
         self.inner_middleware

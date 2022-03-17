@@ -1,7 +1,7 @@
 use ethabi::ethereum_types::{Bloom, H256, U256, U64};
-use serde::{Serialize, Deserialize};
-use std::convert::TryFrom;
+use serde::{Deserialize, Serialize};
 use snafu::Snafu;
+use std::convert::TryFrom;
 
 #[cfg(feature = "ethers")]
 pub mod contract;
@@ -60,7 +60,8 @@ pub enum QueryBlock {
     Block(Block),
 }
 
-/// Error that might occur when trying to convert [`ethers::Block`] into [`Block`].
+/// Error that might occur when trying to convert [`ethers::Block`] into
+/// [`Block`].
 ///
 /// [`Block`]: self::Block
 /// [`ethers::Block`]: self::ethers::types::Block

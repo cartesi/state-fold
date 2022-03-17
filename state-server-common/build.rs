@@ -7,9 +7,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             &["../grpc-interfaces/"],
         )?;
 
-    println!(
-        "cargo:rerun-if-changed=../grpc-interfaces/state-fold-server.proto"
-    );
+    println!("cargo:rerun-if-changed=../grpc-interfaces/state-fold-server.proto");
     println!("cargo:rerun-if-changed=build.rs");
     Ok(())
 }

@@ -103,9 +103,10 @@ where
         .spawn()?;
 
     {
-        let stdin = rustfmt.stdin.as_mut().ok_or_else(|| {
-            anyhow!("stdin was not created for `rustfmt` child process")
-        })?;
+        let stdin = rustfmt
+            .stdin
+            .as_mut()
+            .ok_or_else(|| anyhow!("stdin was not created for `rustfmt` child process"))?;
         stdin.write_all(source.as_ref().as_bytes())?;
     }
 
@@ -132,15 +133,11 @@ fn replace_ethers_crates(stream: TokenStream) -> TokenStream {
 
 /// Find the first `mod` statement and then
 /// [`look_for_group`][self::look_for_group]
-fn look_for_module(
-    mut new_stream: TokenStream,
-    stream: &mut IntoIter,
-) -> TokenStream {
+fn look_for_module(mut new_stream: TokenStream, stream: &mut IntoIter) -> TokenStream {
     match stream.next() {
         None => new_stream,
         Some(next) => {
-            let found =
-                matches!(&next, TokenTree::Ident(ident) if ident == "mod");
+            let found = matches!(&next, TokenTree::Ident(ident) if ident == "mod");
 
             new_stream.extend([next]);
 
@@ -156,10 +153,7 @@ fn look_for_module(
 /// Find opening braces `{` and then [`look_for_use`][self::look_for_use] within
 /// the tokens inside. Then goes to [`look_for_module`][self::look_for_module]
 /// on the subsequent tokens after closing brace `}`.
-fn look_for_group(
-    mut new_stream: TokenStream,
-    stream: &mut IntoIter,
-) -> TokenStream {
+fn look_for_group(mut new_stream: TokenStream, stream: &mut IntoIter) -> TokenStream {
     match stream.next() {
         None => new_stream,
         Some(next) => {
@@ -167,10 +161,8 @@ fn look_for_group(
 
             if found {
                 if let TokenTree::Group(group) = &next {
-                    let group_stream = look_for_use(
-                        TokenStream::new(),
-                        &mut group.stream().into_iter(),
-                    );
+                    let group_stream =
+                        look_for_use(TokenStream::new(), &mut group.stream().into_iter());
 
                     new_stream.extend([TokenTree::Group(Group::new(
                         group.delimiter(),
@@ -202,15 +194,11 @@ fn look_for_group(
 /// ```
 /// Then goes to [`look_for_module`][self::look_for_module] on the subsequent
 /// tokens.
-fn look_for_use(
-    mut new_stream: TokenStream,
-    stream: &mut IntoIter,
-) -> TokenStream {
+fn look_for_use(mut new_stream: TokenStream, stream: &mut IntoIter) -> TokenStream {
     match stream.next() {
         None => new_stream,
         Some(next) => {
-            let found =
-                matches!(&next, TokenTree::Ident(ident) if ident == "use");
+            let found = matches!(&next, TokenTree::Ident(ident) if ident == "use");
 
             if found {
                 new_stream.extend([quote!(

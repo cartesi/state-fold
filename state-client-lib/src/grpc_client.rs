@@ -1,18 +1,16 @@
 use crate::{error::*, BlockServer, StateServer};
 
 use ethers::core::types::H256;
-use state_fold_types::ethers;
 use state_fold_types;
+use state_fold_types::ethers;
 use state_fold_types::{
-    Block, BlockState, BlockStreamItem, BlocksSince, QueryBlock,
-    StateStreamItem, StatesSince,
+    Block, BlockState, BlockStreamItem, BlocksSince, QueryBlock, StateStreamItem, StatesSince,
 };
 
 use state_fold_server::state_fold_client::StateFoldClient;
 use state_fold_server::{
-    InitialState, QueryBlockRequest, QueryBlocksSinceRequest,
-    QueryStateRequest, QueryStatesSinceRequest, SubscribeNewBlocksRequest,
-    SubscribeNewStatesRequest,
+    InitialState, QueryBlockRequest, QueryBlocksSinceRequest, QueryStateRequest,
+    QueryStatesSinceRequest, SubscribeNewBlocksRequest, SubscribeNewStatesRequest,
 };
 use state_server_common::state_fold_server;
 use tonic::{transport::Channel, Request};
@@ -138,8 +136,7 @@ where
         let mut client = self.client.clone();
 
         let initial_state_json = InitialState {
-            json_data: serde_json::to_string(&initial_state)
-                .context(SerializeError)?,
+            json_data: serde_json::to_string(&initial_state).context(SerializeError)?,
         };
 
         let query_block: QueryBlock = query_block.into();
@@ -173,8 +170,7 @@ where
         let mut client = self.client.clone();
 
         let initial_state_json = InitialState {
-            json_data: serde_json::to_string(&initial_state)
-                .context(SerializeError)?,
+            json_data: serde_json::to_string(&initial_state).context(SerializeError)?,
         };
 
         let request = Request::new(QueryStatesSinceRequest {
@@ -202,13 +198,11 @@ where
         &self,
         initial_state: Self::InitialState,
         confirmations: usize,
-    ) -> Result<Pin<Box<dyn Stream<Item = Result<StateStreamItem<Self::State>>>>>>
-    {
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<StateStreamItem<Self::State>>>>>> {
         let mut client = self.client.clone();
 
         let initial_state_json = InitialState {
-            json_data: serde_json::to_string(&initial_state)
-                .context(SerializeError)?,
+            json_data: serde_json::to_string(&initial_state).context(SerializeError)?,
         };
 
         let request = Request::new(SubscribeNewStatesRequest {

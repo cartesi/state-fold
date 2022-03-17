@@ -6,8 +6,8 @@ use state_server_common::state_fold_server;
 use state_fold::Foldable;
 
 use ethers::providers::{Middleware, PubsubClient};
-use state_fold_types::ethers;
 use state_fold_types;
+use state_fold_types::ethers;
 
 use tokio::signal;
 use tokio::sync::oneshot;
@@ -27,8 +27,7 @@ where
     F::InitialState: serde::de::DeserializeOwned + 'static,
     F: serde::Serialize,
 {
-    let (mut health_reporter, health_server) =
-        tonic_health::server::health_reporter();
+    let (mut health_reporter, health_server) = tonic_health::server::health_reporter();
     health_reporter
         .set_serving::<StateFoldServer<StateServer<M, UD, F>>>()
         .await;

@@ -25,9 +25,7 @@ impl GlobalArchive {
     where
         F: Foldable + Send + Sync + 'static,
     {
-        if let Some(archive) =
-            self.archives.read().await.get(&TypeId::of::<Archive<F>>())
-        {
+        if let Some(archive) = self.archives.read().await.get(&TypeId::of::<Archive<F>>()) {
             return archive.clone().downcast::<Archive<F>>().unwrap();
         }
 

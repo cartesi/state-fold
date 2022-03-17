@@ -48,10 +48,7 @@ where
         self.inner().call(tx, block).await.map_err(FromErr::from)
     }
 
-    async fn get_logs(
-        &self,
-        filter: &Filter,
-    ) -> std::result::Result<Vec<Log>, Self::Error> {
+    async fn get_logs(&self, filter: &Filter) -> std::result::Result<Vec<Log>, Self::Error> {
         // Unlike call, we always override user provided range. This is a
         // limitation of ethers, because the type that holds the range is
         // private.
@@ -92,8 +89,7 @@ pub mod tests {
             let value = simple_storage.get_value().call().await.unwrap();
             assert_eq!(value, "initial value");
 
-            let event =
-                simple_storage.value_changed_filter().query().await.unwrap();
+            let event = simple_storage.value_changed_filter().query().await.unwrap();
             assert_eq!(event.len(), 1);
             assert_eq!(event[0].old_author, Address::zero());
             assert_eq!(event[0].author, account);
@@ -116,8 +112,7 @@ pub mod tests {
             let value = simple_storage.get_value().call().await.unwrap();
             assert_eq!(value, "this");
 
-            let event =
-                simple_storage.value_changed_filter().query().await.unwrap();
+            let event = simple_storage.value_changed_filter().query().await.unwrap();
             assert_eq!(event.len(), 1);
             assert_eq!(event[0].old_author, account);
             assert_eq!(event[0].author, account);
@@ -154,8 +149,7 @@ pub mod tests {
             let value = simple_storage.get_value().call().await.unwrap();
             assert_eq!(value, "that");
 
-            let event =
-                simple_storage.value_changed_filter().query().await.unwrap();
+            let event = simple_storage.value_changed_filter().query().await.unwrap();
             assert_eq!(event.len(), 1);
             assert_eq!(event[0].old_author, account);
             assert_eq!(event[0].author, account);
@@ -176,8 +170,7 @@ pub mod tests {
             let value = simple_storage.get_value().call().await.unwrap();
             assert_eq!(value, "other");
 
-            let event =
-                simple_storage.value_changed_filter().query().await.unwrap();
+            let event = simple_storage.value_changed_filter().query().await.unwrap();
             assert_eq!(event.len(), 1);
             assert_eq!(event[0].old_author, account);
             assert_eq!(event[0].author, account);

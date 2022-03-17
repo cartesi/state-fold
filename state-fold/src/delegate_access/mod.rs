@@ -25,36 +25,17 @@ mod tests {
     async fn test_sync_fold() {
         let (_handle, provider) = state_fold_test::utils::new_geth().await;
         let genesis = provider.get_block_number().await.unwrap();
-        let contract = state_fold_test::simple_storage::deploy_simple_storage(
-            Arc::clone(&provider),
-        )
-        .await;
+        let contract =
+            state_fold_test::simple_storage::deploy_simple_storage(Arc::clone(&provider)).await;
         let account = provider.get_accounts().await.unwrap()[0];
         let deployed_address = contract.address();
 
-        let env = StateFoldEnvironment::new(
-            Arc::clone(&provider),
-            4,
-            genesis,
-            vec![],
-            1,
-            (),
-        );
+        let env = StateFoldEnvironment::new(Arc::clone(&provider), 4, genesis, vec![], 1, ());
 
-        let block0 =
-            state_fold_test::utils::get_current_block(provider.as_ref()).await;
-        let block1 = test_utils::set_value_get_block::<MockFold, _>(
-            &env, &contract, "this",
-        )
-        .await;
-        let block2 = test_utils::set_value_get_block::<MockFold, _>(
-            &env, &contract, "that",
-        )
-        .await;
-        let block3 = test_utils::set_value_get_block::<MockFold, _>(
-            &env, &contract, "other",
-        )
-        .await;
+        let block0 = state_fold_test::utils::get_current_block(provider.as_ref()).await;
+        let block1 = test_utils::set_value_get_block::<MockFold, _>(&env, &contract, "this").await;
+        let block2 = test_utils::set_value_get_block::<MockFold, _>(&env, &contract, "that").await;
+        let block3 = test_utils::set_value_get_block::<MockFold, _>(&env, &contract, "other").await;
 
         sync_middleware::tests::sync_query_test(
             account,
