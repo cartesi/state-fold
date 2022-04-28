@@ -2500,7 +2500,7 @@ dependencies = [
 
 [[package]]
 name = "state-fold"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-trait",
  "ethers",
@@ -2519,7 +2519,7 @@ dependencies = [
 
 [[package]]
 name = "state-server-grpc"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "prost",
  "tokio",

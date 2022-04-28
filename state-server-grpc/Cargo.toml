@@ -1,6 +1,6 @@
 [package]
 name = "state-server-grpc"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Marcelo Castellani <marcelo@linux.com>"]
 edition = "2018"
 
