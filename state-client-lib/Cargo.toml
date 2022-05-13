@@ -5,6 +5,7 @@ version = "0.2.0"
 authors = ["Gabriel Coutinho de Paula <gabriel.coutinho@cartesi.io>"]
 homepage = "https://cartesi.io"
 edition = "2021"
+publish = ["cartesi"]
 
 [dependencies]
 state-fold-types = { path = "../state-fold-types" }
