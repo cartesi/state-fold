@@ -63,7 +63,7 @@ impl BHConfig {
             None => Default::default(),
             Some(v) => std::fs::read_to_string(&v)
                 .map(|v| toml::from_str(&v))
-                .context(ConfigFileError)?
+                .context(ConfigFileSnafu)?
                 .unwrap_or_default(),
         };
 
@@ -71,7 +71,7 @@ impl BHConfig {
             .ws_endpoint
             .or(file_config.block_history.ws_endpoint)
             .ok_or(snafu::NoneError)
-            .context(MissingWsUrl)?;
+            .context(MissingWsUrlSnafu)?;
 
         let block_timeout = Duration::from_secs(
             env_cli_config

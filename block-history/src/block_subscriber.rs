@@ -102,11 +102,11 @@ where
         let mut previous = archive.block_at_depth(depth).await?;
 
         Ok(Box::pin(async_stream::try_stream! {
-            while let () = alarm.changed().await.context(SubscriptionDropped)? {
+            while let () = alarm.changed().await.context(SubscriptionDroppedSnafu)? {
                 let diff = archive
                     .blocks_since(depth, &previous)
                     .await
-                    .context(ArchiveError)?;
+                    .context(ArchiveSnafu)?;
 
                 match diff {
                     BlocksSince::Normal(blocks) => {
@@ -140,15 +140,16 @@ where
         let subscription = middleware
             .subscribe_blocks()
             .await
-            .context(EthersProviderError)
+            .context(EthersProviderSnafu)
             .map(|subscription| {
                 Box::pin(subscription.timeout(subscriber_timeout).map(|x| {
-                    let block_header =
-                        x.map_err(|e| e.into()).context(NewBlockSubscriberTimeout)?;
+                    let block_header = x
+                        .map_err(|e| e.into())
+                        .context(NewBlockSubscriberTimeoutSnafu)?;
 
                     let block = block_header
                         .try_into()
-                        .map_err(|err| BlockIncomplete { err }.build())?;
+                        .map_err(|err| BlockIncompleteSnafu { err }.build())?;
 
                     Ok(block)
                 }))
@@ -174,7 +175,7 @@ async fn listen_and_broadcast<M: Middleware + 'static>(
             .next()
             .await
             .ok_or(snafu::NoneError)
-            .context(EthersSubscriptionDropped)??;
+            .context(EthersSubscriptionDroppedSnafu)??;
 
         // Insert in archive
         let _ = block_archive.update_latest_block(new_head).await;

@@ -7,7 +7,7 @@ use state_fold_types::ethers;
 pub fn sort_logs<M: Middleware>(logs: &mut Vec<Log>) -> Result<(), M> {
     for log in logs.iter() {
         if !(log.block_number.is_some() && log.log_index.is_some()) {
-            return LogUnavailable {}.fail();
+            return LogUnavailableSnafu {}.fail();
         }
     }
 

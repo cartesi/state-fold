@@ -4,7 +4,7 @@ use state_fold_types::ethers;
 use snafu::Snafu;
 
 #[derive(Debug, Snafu)]
-#[snafu(visibility = "pub")]
+#[snafu(visibility(pub))]
 pub enum AccessError<M: Middleware + 'static> {
     #[snafu(display("Ethers provider error: {}", source))]
     EthersProviderError { source: M::Error },

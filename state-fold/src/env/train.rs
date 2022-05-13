@@ -98,7 +98,7 @@ where
                     // should never happen unless the user is actively trying
                     // to sabotage this module. Without this check, this loop
                     // may run forever.
-                    return BlockUnavailable {}.fail();
+                    return BlockUnavailableSnafu {}.fail();
                 } else {
                     has_synced = true;
                 }
@@ -176,12 +176,12 @@ where
                 let previous_state = state_tree
                     .get(&block.parent_hash)
                     .ok_or(snafu::NoneError)
-                    .context(BlockUnavailable {})?;
+                    .context(BlockUnavailableSnafu)?;
 
                 let new_state =
                     F::fold(&previous_state.state, &block, env, env.fold_access(&block))
                         .await
-                        .context(InnerError)?;
+                        .context(InnerSnafu)?;
 
                 BlockState {
                     block: block.clone(),
@@ -199,7 +199,7 @@ where
             .await
             .get(&leaf_block.hash)
             .ok_or(snafu::NoneError)
-            .context(BlockUnavailable {})?
+            .context(BlockUnavailableSnafu)?
             .clone())
     }
 
@@ -239,7 +239,7 @@ where
                 env.sync_access(&sync_block),
             )
             .await
-            .context(InnerError)?;
+            .context(InnerSnafu)?;
 
             BlockState {
                 block: sync_block.clone(),

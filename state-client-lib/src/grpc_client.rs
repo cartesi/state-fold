@@ -48,12 +48,12 @@ where
         let block = client
             .query_block(request)
             .await
-            .context(TonicError {
+            .context(TonicSnafu {
                 context: "`get_block` request",
             })?
             .into_inner()
             .try_into()
-            .context(MessageConversion {
+            .context(MessageConversionSnafu {
                 context: "`get_block`".to_owned(),
             })?;
 
@@ -75,12 +75,12 @@ where
         let diff = client
             .query_blocks_since(request)
             .await
-            .context(TonicError {
+            .context(TonicSnafu {
                 context: "`get_block_diff` request",
             })?
             .into_inner()
             .try_into()
-            .context(MessageConversion {
+            .context(MessageConversionSnafu {
                 context: "`get_block_diff`".to_owned(),
             })?;
 
@@ -100,17 +100,17 @@ where
         let stream = client
             .subscribe_new_blocks(request)
             .await
-            .context(TonicError {
+            .context(TonicSnafu {
                 context: "`subscribe_blocks` request",
             })?
             .into_inner();
 
         let stream = stream.map(|b| -> Result<BlockStreamItem> {
-            b.context(TonicError {
+            b.context(TonicSnafu {
                 context: "`subscribe_blocks` stream item conversion",
             })?
             .try_into()
-            .context(MessageConversion {
+            .context(MessageConversionSnafu {
                 context: "`subscribe_blocks` stream item conversion",
             })
         });
@@ -136,7 +136,7 @@ where
         let mut client = self.client.clone();
 
         let initial_state_json = InitialState {
-            json_data: serde_json::to_string(&initial_state).context(SerializeError)?,
+            json_data: serde_json::to_string(&initial_state).context(SerializeSnafu)?,
         };
 
         let query_block: QueryBlock = query_block.into();
@@ -149,12 +149,12 @@ where
         let state = client
             .query_state(request)
             .await
-            .context(TonicError {
+            .context(TonicSnafu {
                 context: "`get_state` request",
             })?
             .into_inner()
             .try_into()
-            .context(StateConversion {
+            .context(StateConversionSnafu {
                 context: "`get_state`".to_owned(),
             })?;
 
@@ -170,7 +170,7 @@ where
         let mut client = self.client.clone();
 
         let initial_state_json = InitialState {
-            json_data: serde_json::to_string(&initial_state).context(SerializeError)?,
+            json_data: serde_json::to_string(&initial_state).context(SerializeSnafu)?,
         };
 
         let request = Request::new(QueryStatesSinceRequest {
@@ -182,12 +182,12 @@ where
         let diff = client
             .query_states_since(request)
             .await
-            .context(TonicError {
+            .context(TonicSnafu {
                 context: "`get_state_diff` request",
             })?
             .into_inner()
             .try_into()
-            .context(StateConversion {
+            .context(StateConversionSnafu {
                 context: "`get_state_diff`".to_owned(),
             })?;
 
@@ -202,7 +202,7 @@ where
         let mut client = self.client.clone();
 
         let initial_state_json = InitialState {
-            json_data: serde_json::to_string(&initial_state).context(SerializeError)?,
+            json_data: serde_json::to_string(&initial_state).context(SerializeSnafu)?,
         };
 
         let request = Request::new(SubscribeNewStatesRequest {
@@ -213,17 +213,17 @@ where
         let stream = client
             .subscribe_new_states(request)
             .await
-            .context(TonicError {
+            .context(TonicSnafu {
                 context: "`subscribe_blocks` request",
             })?
             .into_inner();
 
         let stream = stream.map(|s| -> Result<StateStreamItem<Self::State>> {
-            s.context(TonicError {
+            s.context(TonicSnafu {
                 context: "`subscribe_blocks` stream item conversion",
             })?
             .try_into()
-            .context(StateConversion {
+            .context(StateConversionSnafu {
                 context: "`subscribe_blocks` stream item conversion",
             })
         });

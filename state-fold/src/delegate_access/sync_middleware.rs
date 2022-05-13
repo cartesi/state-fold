@@ -95,12 +95,12 @@ where
                     .inner
                     .get_block(h)
                     .await
-                    .context(EthersProviderError)?
+                    .context(EthersProviderSnafu)?
                     .ok_or(snafu::NoneError)
-                    .context(BlockUnavailable)?
+                    .context(BlockUnavailableSnafu)?
                     .number
                     .ok_or(snafu::NoneError)
-                    .context(BlockIncomplete)?
+                    .context(BlockIncompleteSnafu)?
                     .as_u64();
 
                 (b, b)
@@ -112,7 +112,7 @@ where
         let mut logs = partition_events
             .get_events(start, end)
             .await
-            .map_err(|err_arr| PartitionError { sources: err_arr }.build())?;
+            .map_err(|err_arr| PartitionSnafu { sources: err_arr }.build())?;
 
         super::utils::sort_logs(&mut logs)?;
         Ok(logs)

@@ -99,7 +99,7 @@ impl<M: Middleware + 'static> BlockArchive<M> {
 
         ensure!(
             U64::from(depth) <= latest.number,
-            DepthTooHigh {
+            DepthTooHighSnafu {
                 depth: depth,
                 latest: latest
             }
@@ -130,14 +130,14 @@ impl<M: Middleware + 'static> BlockArchive<M> {
 
         ensure!(
             depth <= self.max_depth,
-            BlockOutOfRange {
+            BlockOutOfRangeSnafu {
                 depth,
                 max_depth: self.max_depth
             }
         );
         ensure!(
             previous.number <= latest.number,
-            PreviousAheadOfLatest {
+            PreviousAheadOfLatestSnafu {
                 previous_number: previous.number.as_usize(),
                 latest_number: latest.number.as_usize()
             }
@@ -260,12 +260,12 @@ async fn fetch_block<M: Middleware + 'static, T: Into<BlockId> + Send + Sync>(
         .get_block(block_id)
         .await
         .map_err(|e| -> Box<dyn std::error::Error + Send> { Box::new(e) })
-        .context(EthersProviderError)?
+        .context(EthersProviderSnafu)?
         .ok_or(snafu::NoneError)
-        .context(BlockUnavailable)?
+        .context(BlockUnavailableSnafu)?
         .try_into()
         .map_err(|_| snafu::NoneError)
-        .context(BlockIncomplete)
+        .context(BlockIncompleteSnafu)
 }
 
 #[cfg(test)]

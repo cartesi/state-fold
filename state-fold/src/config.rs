@@ -49,7 +49,7 @@ pub struct SFConfig {
 pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, Snafu)]
-#[snafu(visibility = "pub")]
+#[snafu(visibility(pub))]
 pub enum Error {
     #[snafu(display("File error: {}", err))]
     FileError { err: String },
@@ -98,14 +98,14 @@ impl SFConfig {
         match config_file {
             Some(config) => {
                 let s = fs::read_to_string(&config).map_err(|e| {
-                    FileError {
+                    FileSnafu {
                         err: format!("Fail to read config file {}, error: {}", config, e),
                     }
                     .build()
                 })?;
 
                 let file_config: T = toml::from_str(&s).map_err(|e| {
-                    ParseError {
+                    ParseSnafu {
                         err: format!("Fail to parse config {}, error: {}", s, e),
                     }
                     .build()

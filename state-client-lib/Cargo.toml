@@ -11,10 +11,10 @@ state-fold-types = { path = "../state-fold-types" }
 state-server-common = { path = "../state-server-common", features = ["server"] }
 
 async-trait = "0.1"
-tonic = "0.6"
+tonic = "0.7"
 tokio = { version = "1", features = ["sync"] }
 tokio-stream = "0.1"
 
 serde = "1"
 serde_json = "1"
-snafu = "0.6"
+snafu = "0.7"

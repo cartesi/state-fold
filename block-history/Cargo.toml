@@ -10,7 +10,7 @@ edition = "2021"
 state-fold-types = { path = "../state-fold-types", features = ["ethers"] }
 
 serde = "1"
-snafu = "0.6"
+snafu = "0.7"
 structopt = "0.3"
 
 async-stream = "0.3"

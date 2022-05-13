@@ -7,7 +7,7 @@ use ethers::providers::{FromErr, Middleware};
 use snafu::Snafu;
 
 #[derive(Debug, Snafu)]
-#[snafu(visibility = "pub")]
+#[snafu(visibility(pub))]
 pub enum FoldableError<M: Middleware + 'static, F: Foldable + 'static> {
     #[snafu(display("Inner error: {}", source))]
     InnerError { source: F::Error },

@@ -9,7 +9,7 @@ use crate::grpc_interface::state_fold_server::{
 };
 
 use state_fold_types::{
-    ethers::types::{Bloom, H256},
+    ethereum_types::{Bloom, H256},
     Block,
 };
 
@@ -81,10 +81,10 @@ impl<T: DeserializeOwned> TryFrom<GrpcBlockState> for BlockState<T> {
                 message: "GrpcBlockState".to_owned(),
                 field: "block".to_owned(),
             })
-            .context(NilError)
-            .context(MessageError)?
+            .context(NilSnafu)
+            .context(MessageSnafu)?
             .try_into()
-            .context(MessageError)?;
+            .context(MessageSnafu)?;
 
         let state = serde_json::from_str(
             &sr.state
@@ -92,11 +92,11 @@ impl<T: DeserializeOwned> TryFrom<GrpcBlockState> for BlockState<T> {
                     message: "GrpcBlockState".to_owned(),
                     field: "state".to_owned(),
                 })
-                .context(NilError)
-                .context(MessageError)?
+                .context(NilSnafu)
+                .context(MessageSnafu)?
                 .json_data,
         )
-        .context(DeserializeError)?;
+        .context(DeserializeSnafu)?;
 
         Ok(Self { block, state })
     }
@@ -111,8 +111,8 @@ impl<T: DeserializeOwned> TryFrom<StatesSinceResponse> for StatesSince<T> {
                 message: "StatesSinceResponse".to_owned(),
                 field: "response".to_owned(),
             })
-            .context(NilError)
-            .context(MessageError)?
+            .context(NilSnafu)
+            .context(MessageSnafu)?
             .try_into()
     }
 }
@@ -137,8 +137,8 @@ impl<T: DeserializeOwned> TryFrom<StateStreamResponse> for StateStreamItem<T> {
                 message: "StateStreamResponse".to_owned(),
                 field: "response".to_owned(),
             })
-            .context(NilError)
-            .context(MessageError)?
+            .context(NilSnafu)
+            .context(MessageSnafu)?
             .try_into()
     }
 }
@@ -195,7 +195,7 @@ impl TryFrom<BlocksSinceResponse> for BlocksSince {
                 message: "BlocksSinceResponse".to_owned(),
                 field: "response".to_owned(),
             })
-            .context(NilError)?
+            .context(NilSnafu)?
             .try_into()?)
     }
 }
@@ -230,7 +230,7 @@ impl TryFrom<BlockStreamResponse> for BlockStreamItem {
                 message: "BlockStreamResponse".to_owned(),
                 field: "response".to_owned(),
             })
-            .context(NilError)?
+            .context(NilSnafu)?
             .try_into()
     }
 }
@@ -312,7 +312,7 @@ impl TryFrom<Id> for QueryBlock {
         Ok(match i {
             Id::Depth(d) => QueryBlock::BlockDepth(d as usize),
 
-            Id::BlockHash(h) => QueryBlock::BlockHash(h.try_into().context(MalformedError)?),
+            Id::BlockHash(h) => QueryBlock::BlockHash(h.try_into().context(MalformedSnafu)?),
 
             Id::BlockNumber(n) => QueryBlock::BlockNumber(n.into()),
         })
@@ -359,9 +359,9 @@ impl TryFrom<GrpcBlock> for Block {
                     message: "Block".to_owned(),
                     field: "hash".to_owned(),
                 })
-                .context(NilError)?
+                .context(NilSnafu)?
                 .try_into()
-                .context(MalformedError)?,
+                .context(MalformedSnafu)?,
 
             number: b.number.into(),
 
@@ -371,9 +371,9 @@ impl TryFrom<GrpcBlock> for Block {
                     message: "Block".to_owned(),
                     field: "parent_hash".to_owned(),
                 })
-                .context(NilError)?
+                .context(NilSnafu)?
                 .try_into()
-                .context(MalformedError)?,
+                .context(MalformedSnafu)?,
 
             timestamp: b.timestamp.into(),
 
@@ -383,9 +383,9 @@ impl TryFrom<GrpcBlock> for Block {
                     message: "Block".to_owned(),
                     field: "logs_bloom".to_owned(),
                 })
-                .context(NilError)?
+                .context(NilSnafu)?
                 .try_into()
-                .context(MalformedError)?,
+                .context(MalformedSnafu)?,
         };
 
         Ok(ret)

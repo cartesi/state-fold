@@ -117,7 +117,7 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
                     let current = self.get_current_block_number().await?;
                     ensure!(
                         current > depth.into(),
-                        QueryDepthTooHigh {
+                        QueryDepthTooHighSnafu {
                             depth,
                             current_block: current.as_usize()
                         }
@@ -182,12 +182,12 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
         self.inner_middleware
             .get_block(block)
             .await
-            .context(MiddlewareError)?
+            .context(MiddlewareSnafu)?
             .ok_or(snafu::NoneError)
-            .context(BlockUnavailable)?
+            .context(BlockUnavailableSnafu)?
             .try_into()
             .map_err(|_| snafu::NoneError)
-            .context(BlockIncomplete)
+            .context(BlockIncompleteSnafu)
     }
 
     pub(crate) async fn get_current_block_number<F: Foldable + Send + Sync + 'static>(
@@ -196,6 +196,6 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
         self.inner_middleware
             .get_block_number()
             .await
-            .context(MiddlewareError)
+            .context(MiddlewareSnafu)
     }
 }
