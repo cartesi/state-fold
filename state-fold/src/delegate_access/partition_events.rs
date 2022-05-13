@@ -66,7 +66,7 @@ where
                 // Make number of concurrent fetches bounded.
                 let _permit = self.semaphore.acquire().await;
                 self.provider
-                    .fetch_events_with_range(&self.partition_data, start_block, end_block)
+                    .fetch_events_with_range(self.partition_data, start_block, end_block)
                     .await
             };
 

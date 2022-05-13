@@ -1,0 +1,166 @@
+name: Release
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/release.yml
+  push:
+    tags:
+      - v*
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_REGISTRIES_CARTESI_INDEX: ${{ secrets.CARGO_REGISTRIES_CARTESI_INDEX }}
+  CARGO_REGISTRIES_CARTESI_TOKEN: ${{ secrets.CARGO_REGISTRIES_CARTESI_TOKEN }}
+
+jobs:
+  publish-state-fold-types:
+    name: 🌎 Publish state-fold-types crate
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📚 Clone repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ secrets.CI_TOKEN }}
+      - name: 📦 Install stable Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+      - name: 🌎 Publish state-fold-types
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
+          args: --registry=cartesi -p state-fold-types
+
+  publish-block-history:
+    name: 🌎 Publish block-history crate
+    needs: publish-state-fold-types
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📚 Clone repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ secrets.CI_TOKEN }}
+      - name: 📦 Install stable Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+      - name: 🌎 Publish block-history
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
+          args: --registry=cartesi -p block-history
+
+  publish-state-fold:
+    name: 🌎 Publish state-fold crate
+    needs: publish-state-fold-types
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📚 Clone repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ secrets.CI_TOKEN }}
+      - name: 📦 Install stable Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+      - name: 🌎 Publish state-fold
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
+          args: --registry=cartesi -p state-fold
+
+  publish-state-server-common:
+    name: 🌎 Publish state-server-common crate
+    needs: publish-state-fold-types
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📚 Clone repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ secrets.CI_TOKEN }}
+      - name: 📦 Install stable Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+      - name: 🌎 Publish state-server-common
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
+          args: --registry=cartesi -p state-server-common
+
+  publish-state-server-lib:
+    name: 🌎 Publish state-server-lib crate
+    needs:
+      - publish-block-history
+      - publish-state-fold
+      - publish-state-fold-types
+      - publish-state-server-common
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📚 Clone repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ secrets.CI_TOKEN }}
+      - name: 📦 Install stable Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+      - name: 🌎 Publish state-server-lib
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
+          args: --registry=cartesi -p state-server-lib
+
+  publish-state-client-lib:
+    name: 🌎 Publish state-client-lib crate
+    needs:
+      - publish-state-fold-types
+      - publish-state-server-common
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📚 Clone repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ secrets.CI_TOKEN }}
+      - name: 📦 Install stable Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+      - name: 🌎 Publish state-client-lib
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
+          args: --registry=cartesi -p state-client-lib
+
+  sync:
+    name: 🌎 Sync crates registry
+    needs:
+      - publish-state-fold-types
+      - publish-block-history
+      - publish-state-fold
+      - publish-state-server-common
+      - publish-state-server-lib
+      - publish-state-client-lib
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📚 Clone provider's registry index repository
+        run: git clone ${{ secrets.CARGO_REGISTRIES_CARTESI_INDEX }} cartesi-index
+      - name: 🌎 Push changes to cartesi registry index repository
+        uses: ad-m/github-push-action@master
+        with:
+          repository: cartesi/crates-index
+          directory: cartesi-index
+          github_token: ${{ secrets.CI_TOKEN }}

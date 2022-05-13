@@ -99,10 +99,7 @@ impl<M: Middleware + 'static> BlockArchive<M> {
 
         ensure!(
             U64::from(depth) <= latest.number,
-            DepthTooHighSnafu {
-                depth: depth,
-                latest: latest
-            }
+            DepthTooHighSnafu { depth, latest }
         );
 
         let block_number = latest.number - U64::from(depth);

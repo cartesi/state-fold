@@ -1,13 +1,11 @@
 use crate::error::Result;
 
 use ethers::core::types::H256;
-use state_fold_types;
+
 use state_fold_types::ethers;
 use state_fold_types::{
     Block, BlockState, BlockStreamItem, BlocksSince, QueryBlock, StateStreamItem, StatesSince,
 };
-
-use serde;
 
 use async_trait::async_trait;
 use std::pin::Pin;

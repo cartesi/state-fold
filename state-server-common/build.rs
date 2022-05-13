@@ -1,13 +1,19 @@
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+use anyhow::Result;
+use std::path::PathBuf;
+
+fn main() -> Result<()> {
+    let grpc_interfaces_dir = PathBuf::from("grpc-interfaces");
+    let state_fold_server_dir = grpc_interfaces_dir.join("state-fold-server.proto");
+
     tonic_build::configure()
         .build_client(cfg!(feature = "client"))
         .build_server(cfg!(feature = "server"))
-        .compile(
-            &["../grpc-interfaces/state-fold-server.proto"],
-            &["../grpc-interfaces/"],
-        )?;
+        .compile(&[&state_fold_server_dir], &[&grpc_interfaces_dir])?;
 
-    println!("cargo:rerun-if-changed=../grpc-interfaces/state-fold-server.proto");
+    println!(
+        "cargo:rerun-if-changed={}",
+        state_fold_server_dir.to_str().unwrap()
+    );
     println!("cargo:rerun-if-changed=build.rs");
     Ok(())
 }

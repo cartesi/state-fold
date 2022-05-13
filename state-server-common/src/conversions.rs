@@ -190,13 +190,13 @@ impl TryFrom<BlocksSinceResponse> for BlocksSince {
     type Error = MessageConversionError;
 
     fn try_from(d: BlocksSinceResponse) -> Result<Self, Self::Error> {
-        Ok(d.response
+        d.response
             .ok_or(MessageNilError {
                 message: "BlocksSinceResponse".to_owned(),
                 field: "response".to_owned(),
             })
             .context(NilSnafu)?
-            .try_into()?)
+            .try_into()
     }
 }
 

@@ -1,7 +1,7 @@
 use crate::{error::*, BlockServer, StateServer};
 
 use ethers::core::types::H256;
-use state_fold_types;
+
 use state_fold_types::ethers;
 use state_fold_types::{
     Block, BlockState, BlockStreamItem, BlocksSince, QueryBlock, StateStreamItem, StatesSince,
@@ -15,7 +15,6 @@ use state_fold_server::{
 use state_server_common::state_fold_server;
 use tonic::{transport::Channel, Request};
 
-use serde;
 use snafu::ResultExt;
 
 use async_trait::async_trait;

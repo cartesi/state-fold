@@ -1,21 +1,21 @@
 [package]
 name = "block-history"
 license = "Apache-2.0"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Gabriel Coutinho de Paula <gabriel.coutinho@cartesi.io>"]
 homepage = "https://cartesi.io"
 edition = "2021"
 publish = ["cartesi"]
 
 [dependencies]
-state-fold-types = { version = "0.2", registry = "cartesi", path = "../state-fold-types", features = ["ethers"] }
+state-fold-types = { version = "=0.2.1", registry = "cartesi", path = "../state-fold-types", features = ["ethers"] }
 
 serde = "1"
 snafu = "0.7"
 structopt = "0.3"
 
 async-stream = "0.3"
-tokio = { version = "1", features = ["sync"] }
+tokio = { version = "1", features = ["sync", "macros"] }
 tokio-stream = "0.1"
 toml = "0.5.8"
 

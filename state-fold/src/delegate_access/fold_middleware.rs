@@ -83,7 +83,7 @@ pub mod tests {
     ) {
         // Test at block_hash0
         {
-            let m = env.fold_access(&blocks.0);
+            let m = env.fold_access(blocks.0);
             let simple_storage = SimpleStorage::new(deployed_address, m);
 
             let value = simple_storage.get_value().call().await.unwrap();
@@ -106,7 +106,7 @@ pub mod tests {
 
         // Test at block_hash1
         {
-            let m = env.fold_access(&blocks.1);
+            let m = env.fold_access(blocks.1);
             let simple_storage = SimpleStorage::new(deployed_address, m);
 
             let value = simple_storage.get_value().call().await.unwrap();
@@ -143,7 +143,7 @@ pub mod tests {
 
         // Test at block_hash2
         {
-            let m = env.fold_access(&blocks.2);
+            let m = env.fold_access(blocks.2);
             let simple_storage = SimpleStorage::new(deployed_address, m);
 
             let value = simple_storage.get_value().call().await.unwrap();
@@ -164,7 +164,7 @@ pub mod tests {
 
         // Test at block_hash3
         {
-            let m = env.fold_access(&blocks.3);
+            let m = env.fold_access(blocks.3);
             let simple_storage = SimpleStorage::new(deployed_address, m);
 
             let value = simple_storage.get_value().call().await.unwrap();

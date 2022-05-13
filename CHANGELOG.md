@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2022-05-18
+### Added
+- Add `release` workflow that publishes crates on `cartesi` registry.
+
+### Changed
+- Move `rustfmt` into its own workflow and run it on every push.
+- Make `build` workflow run only on pull_request.
+- Move `grpc-interfaces` to `state-server-common/grpc-interfaces` as it would not be included in the cargo package otherwise.
+
+### Fixed
+- Fix `clippy` issues automatically.
+
 ## [0.2.0] - 2022-05-16
 ### Added
 - Add `cartesi` registry.
@@ -29,7 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2021-12-28
 - Initial release
 
-[Unreleased]: https://github.com/cartesi-corp/state-fold/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/cartesi-corp/state-fold/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/cartesi-corp/state-fold/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/cartesi-corp/state-fold/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/cartesi-corp/state-fold/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/cartesi-corp/state-fold/releases/tag/v0.1.0

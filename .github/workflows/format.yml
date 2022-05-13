@@ -1,0 +1,26 @@
+name: Format
+
+on: [ push ]
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_REGISTRIES_CARTESI_INDEX: ${{ secrets.CARGO_REGISTRIES_CARTESI_INDEX }}
+
+jobs:
+  rustfmt:
+    name: 🔍 Analyse using rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📚 Clone repository
+        uses: actions/checkout@v2
+      - name: 📦 Install stable Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+          components: rustfmt
+      - name: 🔍 Analyse code with rustfmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check

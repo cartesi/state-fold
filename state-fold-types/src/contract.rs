@@ -79,7 +79,7 @@ where
     let source: Value = serde_json::from_reader(source)?;
     let abi_source = serde_json::to_string(&source["abi"])?;
 
-    let bindings = Abigen::new(&contract_name, abi_source)?.generate()?;
+    let bindings = Abigen::new(contract_name, abi_source)?.generate()?;
     let tokens = bindings.into_tokens();
 
     let tokens = self::replace_ethers_crates(tokens);

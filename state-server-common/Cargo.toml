@@ -1,11 +1,17 @@
 [package]
 name = "state-server-common"
 license = "Apache-2.0"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Gabriel Coutinho de Paula <gabriel.coutinho@cartesi.io>"]
 homepage = "https://cartesi.io"
 edition = "2021"
-publish = false
+publish = ["cartesi"]
+include = [
+    "build.rs",
+    "**/*.rs",
+    "Cargo.toml",
+    "grpc-interfaces/*.proto"
+]
 
 [features]
 default = ["client"]
@@ -13,7 +19,7 @@ server = []
 client = []
 
 [dependencies]
-state-fold-types = { version = "0.2", registry = "cartesi", path = "../state-fold-types" }
+state-fold-types = { version = "=0.2.1", registry = "cartesi", path = "../state-fold-types" }
 
 prost = "0.10"
 tonic = "0.7"
@@ -25,3 +31,4 @@ snafu = "0.7"
 
 [build-dependencies]
 tonic-build = "0.7"
+anyhow = "1"

@@ -87,7 +87,7 @@ impl MockMiddleware {
     }
 
     pub async fn get_block(&self, hash: H256) -> Option<Block> {
-        self.chain.lock().await.get(&hash).map(|x| x.clone().into())
+        self.chain.lock().await.get(&hash).cloned()
     }
 
     pub async fn get_block_with_number(&self, number: U64) -> Option<Block> {
@@ -102,7 +102,7 @@ impl MockMiddleware {
             match self.chain.lock().await.get(&current_hash) {
                 Some(block) => {
                     if block.number == number {
-                        return Some(block.clone().into());
+                        return Some(block.clone());
                     } else if block.number == 0.into() {
                         return None;
                     } else {
@@ -121,7 +121,7 @@ impl MockMiddleware {
             .lock()
             .await
             .get(&*self.latest_block.lock().await)
-            .map(|x| x.clone().into())
+            .cloned()
     }
 
     async fn new_hash(&self) -> H256 {

@@ -1,6 +1,6 @@
 name: Build
 
-on: [ push ]
+on: [ pull_request ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -25,7 +25,6 @@ jobs:
             ~/.cargo/git
             ~/.rustup/toolchains
             target
-            Cargo.lock
           key: ${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
 
       - name: 📦 Install stable Rust
@@ -37,25 +36,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --all-targets
-
-  rustfmt:
-    name: 🔍 Analyse using rustfmt
-    runs-on: ubuntu-latest
-    steps:
-      - name: 📚 Clone repository
-        uses: actions/checkout@v2
-      - name: 📦 Install stable Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          default: true
-          components: rustfmt
-      - name: 🔍 Analyse code with rustfmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+          args: --all-targets --all-features
 
   clippy:
     name: 🔍 Analyse using clippy
@@ -76,7 +57,6 @@ jobs:
             ~/.cargo/git
             ~/.rustup/toolchains
             target
-            Cargo.lock
           key: ${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
 
       - name: 📦 Install stable Rust with clippy
@@ -89,10 +69,10 @@ jobs:
         uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-features
+          args: --all-targets --all-features
 
   test:
-    name: 🚥 Test
+    name: 🚦 Test
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -112,7 +92,6 @@ jobs:
             ~/.cargo/git
             ~/.rustup/toolchains
             target
-            Cargo.lock
           key: ${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
 
       - name: 📦 Install stable Rust
@@ -120,7 +99,7 @@ jobs:
         with:
           toolchain: stable
           default: true
-      - name: 🚥 Run tests
+      - name: 🚦 Run tests
         uses: actions-rs/cargo@v1
         with:
           command: test

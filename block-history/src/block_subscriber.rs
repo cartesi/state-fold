@@ -74,11 +74,11 @@ where
 
             tokio::select! {
                 res = &mut task => {
-                    return res
+                    res
                 },
 
                 _ = kill_rx => {
-                    return Ok(())
+                    Ok(())
                 }
             }
         });
@@ -181,7 +181,7 @@ async fn listen_and_broadcast<M: Middleware + 'static>(
         let _ = block_archive.update_latest_block(new_head).await;
 
         // Send new block to subscribers.
-        if let Err(_) = new_block_alarm.send(()) {
+        if new_block_alarm.send(()).is_err() {
             // TODO: warn there are no subscribers.
         }
     }

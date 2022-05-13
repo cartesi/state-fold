@@ -40,11 +40,7 @@ where
     }
 
     pub async fn get_block_state(&self, block_hash: &H256) -> Option<BlockState<F>> {
-        self.state_tree
-            .read()
-            .await
-            .get(block_hash)
-            .map(|x| x.clone())
+        self.state_tree.read().await.get(block_hash).cloned()
     }
 
     pub async fn fetch_block_state<M: Middleware + 'static>(
@@ -65,7 +61,7 @@ where
             return Ok(state);
         }
 
-        let block_state = self.fold_to_leaf(env, &block).await?;
+        let block_state = self.fold_to_leaf(env, block).await?;
         Ok(block_state)
     }
 }
@@ -243,7 +239,7 @@ where
 
             BlockState {
                 block: sync_block.clone(),
-                state: state,
+                state,
             }
         };
 
