@@ -1,7 +1,6 @@
-use ethabi::ethereum_types::{Bloom, H256, U256, U64};
+use ethereum_types::{Bloom, H256, U256, U64};
 use serde::{Deserialize, Serialize};
 use snafu::Snafu;
-use std::convert::TryFrom;
 
 #[cfg(feature = "ethers")]
 pub mod contract;
@@ -75,7 +74,8 @@ pub enum BlockError {
     MissingLogsBloom,
 }
 
-impl<T> TryFrom<self::ethers::types::Block<T>> for Block {
+#[cfg(feature = "ethers")]
+impl<T> std::convert::TryFrom<self::ethers::types::Block<T>> for Block {
     type Error = BlockError;
 
     fn try_from(b: self::ethers::types::Block<T>) -> Result<Self, Self::Error> {
