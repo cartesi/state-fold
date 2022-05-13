@@ -1,7 +1,7 @@
 [package]
 name = "state-server-common"
 license = "Apache-2.0"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Gabriel Coutinho de Paula <gabriel.coutinho@cartesi.io>"]
 homepage = "https://cartesi.io"
 edition = "2021"
@@ -13,7 +13,7 @@ server = []
 client = []
 
 [dependencies]
-state-fold-types = { version = "0.2", path = "../state-fold-types" }
+state-fold-types = { version = "0.2", registry = "cartesi", path = "../state-fold-types" }
 
 prost = "0.10"
 tonic = "0.7"

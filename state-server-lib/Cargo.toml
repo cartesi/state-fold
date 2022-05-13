@@ -8,10 +8,10 @@ edition = "2021"
 publish = ["cartesi"]
 
 [dependencies]
-block-history = { version = "0.2", path = "../block-history" }
-state-server-common = { version = "0.2", path = "../state-server-common", features = ["server"] }
-state-fold = { version = "0.2", path = "../state-fold" }
-state-fold-types = { version = "0.2", path = "../state-fold-types" }
+block-history = { version = "0.2", registry = "cartesi", path = "../block-history" }
+state-server-common = { version = "0.2", registry = "cartesi", path = "../state-server-common", features = ["server"] }
+state-fold = { version = "0.2", registry = "cartesi", path = "../state-fold" }
+state-fold-types = { version = "0.2", registry = "cartesi", path = "../state-fold-types" }
 
 futures = "0.3"
 tonic = "0.7"
