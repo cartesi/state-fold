@@ -8,8 +8,8 @@ edition = "2021"
 publish = ["cartesi"]
 
 [dependencies]
-state-fold-types = { path = "../state-fold-types" }
-state-server-common = { path = "../state-server-common", features = ["server"] }
+state-fold-types = { version = "0.2", path = "../state-fold-types" }
+state-server-common = { version = "0.2", path = "../state-server-common", features = ["server"] }
 
 async-trait = "0.1"
 tonic = "0.7"

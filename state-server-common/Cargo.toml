@@ -13,7 +13,7 @@ server = []
 client = []
 
 [dependencies]
-state-fold-types = { path = "../state-fold-types" }
+state-fold-types = { version = "0.2", path = "../state-fold-types" }
 
 prost = "0.10"
 tonic = "0.7"
