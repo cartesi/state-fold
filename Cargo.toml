@@ -7,7 +7,6 @@ members = [
   "state-server-common",
   "state-client-lib",
   "state-server-lib",
-  # "state-server-grpc",
 
   # Internal
   "state-fold-test",
