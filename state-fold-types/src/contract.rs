@@ -58,7 +58,7 @@ macro_rules! contract_include {
 /// # use std::fs::File;
 /// # use state_fold_types::contract;
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-/// let source = File::open("../../artifacts/contracts/RollupsImpl.sol/RollupsImpl.json")?;
+/// let source = File::open("../../artifacts/contracts/RollupsImpl.sol/RollupsImpl.abi")?;
 /// let mut output = File::create(contract::path!("rollups_contract.rs"))?;
 ///
 /// contract::write("RollupsImpl", source, output)?;
@@ -77,7 +77,7 @@ where
     W: Write,
 {
     let source: Value = serde_json::from_reader(source)?;
-    let abi_source = serde_json::to_string(&source["abi"])?;
+    let abi_source = serde_json::to_string(&source)?;
 
     let bindings = Abigen::new(contract_name, abi_source)?.generate()?;
     let tokens = bindings.into_tokens();

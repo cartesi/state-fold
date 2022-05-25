@@ -12,7 +12,7 @@ macro_rules! rerun_if_changed {
 fn main() -> Result<(), Box<dyn Error>> {
     rerun_if_changed!("build.rs");
 
-    let source = fs::canonicalize("src/contracts/bin/SimpleStorage.json")?;
+    let source = fs::canonicalize("src/contracts/bin/SimpleStorage.abi")?;
     rerun_if_changed!(source.to_str().unwrap());
     let source = File::open(source)?;
 
