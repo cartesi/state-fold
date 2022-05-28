@@ -1,6 +1,12 @@
 name: Build
 
-on: [ pull_request ]
+on:
+  pull_request:
+    paths:
+      - '**.rs'
+      - '**.toml'
+      - '**.lock'
+      - .github/workflows/build.yml
 
 env:
   CARGO_TERM_COLOR: always
