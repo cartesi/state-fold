@@ -211,6 +211,9 @@ fn look_for_use(mut new_stream: TokenStream, stream: &mut IntoIter) -> TokenStre
                     mod ethers_contract {
                         pub use state_fold_types::ethers::contract::*;
                     }
+                    mod ethers {
+                        pub use state_fold_types::ethers::*;
+                    }
                 )]);
                 new_stream.extend([next]);
 
@@ -246,6 +249,9 @@ mod tests {
                 }
                 mod ethers_contract {
                     pub use state_fold_types::ethers::contract::*;
+                }
+                mod ethers {
+                    pub use state_fold_types::ethers::*;
                 }
                 use ethers::whatever;
             }

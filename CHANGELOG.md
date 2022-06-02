@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2022-06-14
+### Changes
+- Upgrade `ethers` to `0.13`
+
+  This version is at the time latest and includes fix for the `DiamondCut` ABIs being incorrectly generated which is not included in any published version yet
+
+  See https://github.com/gakonst/ethers-rs/pull/1079/commits/2d734b2ec9cfb065c43bf4df91917fcfcc92390f
+
+### Fixes
+- Fix `simplestorage` test contract build failing with the new `ethers` by adding `ethers::` type of imports to the build script util for generating ABIs that replaces `ethers` imports to `state_fold_types::ethers`.
+
+  Previously, it had supported only `ethers_core`, `ethers_contract` and `ethers_providers`.
+
 ## [0.2.2] - 2022-05-25
 ### Changed
 - Make `contract::write` expect ABI on the input directly instead of getting it from the JSON under `abi` key.
