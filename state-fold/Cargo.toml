@@ -1,14 +1,14 @@
 [package]
 name = "state-fold"
 license = "Apache-2.0"
-version = "0.2.2"
+version = "0.3.0"
 authors = ["Gabriel Coutinho de Paula <gabriel.coutinho@cartesi.io>"]
 homepage = "https://cartesi.io"
 edition = "2021"
 publish = ["cartesi"]
 
 [dependencies]
-state-fold-types = { version = "0.2", registry = "cartesi", path = "../state-fold-types", features = ["ethers"] }
+state-fold-types = { version = "0.3", registry = "cartesi", path = "../state-fold-types", features = ["ethers"] }
 
 async-recursion = "1"
 async-trait = "0.1"

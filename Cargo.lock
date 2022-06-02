@@ -320,7 +320,7 @@ dependencies = [
 
 [[package]]
 name = "block-history"
-version = "0.2.2"
+version = "0.3.0"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -2786,7 +2786,7 @@ dependencies = [
 
 [[package]]
 name = "state-client-lib"
-version = "0.2.2"
+version = "0.3.0"
 dependencies = [
  "async-trait",
  "serde",
@@ -2801,7 +2801,7 @@ dependencies = [
 
 [[package]]
 name = "state-fold"
-version = "0.2.2"
+version = "0.3.0"
 dependencies = [
  "async-trait",
  "futures",
@@ -2817,7 +2817,7 @@ dependencies = [
 
 [[package]]
 name = "state-fold-test"
-version = "0.2.2"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2830,7 +2830,7 @@ dependencies = [
 
 [[package]]
 name = "state-fold-types"
-version = "0.2.2"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "ethabi",
@@ -2844,7 +2844,7 @@ dependencies = [
 
 [[package]]
 name = "state-server-common"
-version = "0.2.2"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "prost",
@@ -2858,7 +2858,7 @@ dependencies = [
 
 [[package]]
 name = "state-server-lib"
-version = "0.2.2"
+version = "0.3.0"
 dependencies = [
  "block-history",
  "futures",

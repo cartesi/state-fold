@@ -191,6 +191,9 @@ fn look_for_group(mut new_stream: TokenStream, stream: &mut IntoIter) -> TokenSt
 /// mod ethers_contract {
 ///     pub use state_fold_types::ethers::contract::*;
 /// }
+/// mod ethers {
+///     pub use state_fold_types::ethers::*;
+/// }
 /// ```
 /// Then goes to [`look_for_module`][self::look_for_module] on the subsequent
 /// tokens.
