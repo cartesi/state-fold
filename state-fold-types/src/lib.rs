@@ -11,6 +11,8 @@ pub use ethabi::ethereum_types;
 #[cfg(feature = "ethers")]
 pub use ethers;
 
+pub mod config_utils;
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Block {
     pub hash: H256,

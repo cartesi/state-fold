@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] - 2022-06-14
 ### Changes
+- Add `config_utils` to `state-fold-types`.
+
 - Add logging to `state-server-lib`.
 
 - Improve the interface of `utils` module in `state-server-lib`.
