@@ -2869,6 +2869,7 @@ dependencies = [
  "state-fold",
  "state-fold-types",
  "state-server-common",
+ "structopt",
  "tokio",
  "tokio-stream",
  "tonic",
