@@ -13,15 +13,15 @@ use tokio::signal;
 use tokio::sync::oneshot;
 use tonic::transport::Server;
 
-pub async fn serve_delegate_manager<
+pub async fn start_server<
     M: Middleware + 'static,
     UD: Send + Sync + 'static,
     F: Foldable<UserData = UD> + 'static,
 >(
-    address: &str,
+    address: std::net::SocketAddr,
     state_server: StateServer<M, UD, F>,
     kill_switch: oneshot::Receiver<()>,
-) -> Result<(), Box<dyn std::error::Error>>
+) -> Result<(), tonic::transport::Error>
 where
     <M as Middleware>::Provider: PubsubClient,
     F::InitialState: serde::de::DeserializeOwned + 'static,
@@ -32,24 +32,21 @@ where
         .set_serving::<StateFoldServer<StateServer<M, UD, F>>>()
         .await;
 
-    let addr = address.parse().unwrap();
-
-    println!("StateFoldServer listening on {}", addr);
+    tracing::info!("StateFoldServer listening on {}", address);
 
     Server::builder()
+        .trace_fn(|_| tracing::trace_span!("state_fold_server"))
         .add_service(health_server)
         .add_service(StateFoldServer::new(state_server))
-        .serve_with_shutdown(addr, async {
+        .serve_with_shutdown(address, async {
             kill_switch.await.ok();
             println!("Graceful context shutdown");
         })
-        .await?;
-
-    Ok(())
+        .await
 }
 
 pub async fn wait_for_signal(tx: oneshot::Sender<()>) {
     let _ = signal::ctrl_c().await;
-    println!("SIGINT received: shutting down");
+    tracing::info!("SIGINT received: shutting down");
     let _ = tx.send(());
 }

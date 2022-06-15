@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] - 2022-06-14
 ### Changes
+- Add logging to `state-server-lib`.
+
+- Improve the interface of `utils` module in `state-server-lib`.
+
 - Upgrade `ethers` to `0.13`
 
   This version is at the time latest and includes fix for the `DiamondCut` ABIs being incorrectly generated which is not included in any published version yet

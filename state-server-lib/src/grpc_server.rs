@@ -62,29 +62,38 @@ where
     type SubscribeNewStatesStream =
         Pin<Box<dyn Stream<Item = Result<StateStreamResponse, Status>> + Send>>;
 
+    #[tracing::instrument(skip_all)]
     async fn query_block(
         &self,
         request: Request<QueryBlockRequest>,
     ) -> Result<Response<GrpcBlock>, Status> {
-        let block = get_block_from_archive(
-            &self.block_subscriber.block_archive,
-            request.into_inner().query_block,
-        )
-        .await?;
+        let query_block = request.into_inner().query_block;
+
+        tracing::trace!("received `query_block` request `{:?}`", query_block);
+
+        let block =
+            get_block_from_archive(&self.block_subscriber.block_archive, query_block).await?;
 
         Ok(Response::new(block.into()))
     }
 
+    #[tracing::instrument(skip_all)]
     async fn query_blocks_since(
         &self,
         request: Request<QueryBlocksSinceRequest>,
     ) -> Result<Response<BlocksSinceResponse>, Status> {
         let message = request.into_inner();
-
         let depth = message.depth as usize;
+        let previous_block = message.previous_block;
+
+        tracing::trace!(
+            "received `query_blocks_since` request: depth = `{:?}`; previous_block = `{:?}`",
+            depth,
+            previous_block
+        );
+
         let block =
-            get_block_with_hash(message.previous_block, &self.block_subscriber.block_archive)
-                .await?;
+            get_block_with_hash(previous_block, &self.block_subscriber.block_archive).await?;
 
         let diff = self
             .block_subscriber
@@ -103,11 +112,17 @@ where
         }))
     }
 
+    #[tracing::instrument(skip_all)]
     async fn subscribe_new_blocks(
         &self,
         request: Request<SubscribeNewBlocksRequest>,
     ) -> Result<Response<Self::SubscribeNewBlocksStream>, Status> {
         let depth = request.into_inner().confirmations as usize;
+
+        tracing::trace!(
+            "received `subscribe_new_blocks` request: depth = `{:?}`",
+            depth
+        );
 
         let stream = self
             .block_subscriber
@@ -123,17 +138,25 @@ where
         Ok(Response::new(Box::pin(stream)))
     }
 
+    #[tracing::instrument(skip_all)]
     async fn query_state(
         &self,
         request: Request<QueryStateRequest>,
     ) -> Result<Response<GrpcBlockState>, Status> {
         let message = request.into_inner();
+        let query_block = message.query_block;
+        let initial_state = message.initial_state;
 
-        let initial_state: F::InitialState = convert_initial_state::<F>(message.initial_state)?;
+        tracing::trace!(
+            "received `query_state` request: query_block = `{:?}`; initial_state = `{:?}`",
+            query_block,
+            initial_state
+        );
+
+        let initial_state: F::InitialState = convert_initial_state::<F>(initial_state)?;
 
         let block =
-            get_block_from_archive(&self.block_subscriber.block_archive, message.query_block)
-                .await?;
+            get_block_from_archive(&self.block_subscriber.block_archive, query_block).await?;
 
         let state = F::get_state_for_block(&initial_state, block, &self.env)
             .await
@@ -146,14 +169,22 @@ where
         Ok(Response::new(serialized_state))
     }
 
+    #[tracing::instrument(skip_all)]
     async fn query_states_since(
         &self,
         request: Request<QueryStatesSinceRequest>,
     ) -> Result<Response<StatesSinceResponse>, Status> {
         let message = request.into_inner();
-
         let depth = message.depth as usize;
-        let initial_state: F::InitialState = convert_initial_state::<F>(message.initial_state)?;
+        let initial_state = message.initial_state;
+
+        tracing::trace!(
+            "received `query_states_since` request: depth = `{:?}`; initial_state = `{:?}`",
+            depth,
+            initial_state
+        );
+
+        let initial_state: F::InitialState = convert_initial_state::<F>(initial_state)?;
 
         let block =
             get_block_with_hash(message.previous_block, &self.block_subscriber.block_archive)
@@ -186,15 +217,23 @@ where
         }))
     }
 
+    #[tracing::instrument(skip_all)]
     async fn subscribe_new_states(
         &self,
         request: Request<SubscribeNewStatesRequest>,
     ) -> Result<Response<Self::SubscribeNewStatesStream>, Status> {
         let message = request.into_inner();
-
         let depth = message.confirmations as usize;
+        let initial_state = message.initial_state;
+
+        tracing::trace!(
+            "received `subscribe_new_states` request: depth = `{:?}`; initial_state = `{:?}`",
+            depth,
+            initial_state
+        );
+
         let initial_state: Arc<F::InitialState> =
-            Arc::new(convert_initial_state::<F>(message.initial_state)?);
+            Arc::new(convert_initial_state::<F>(initial_state)?);
         let env = Arc::clone(&self.env);
 
         let stream = self
