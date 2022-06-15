@@ -18,6 +18,7 @@ async-stream = "0.3"
 tokio = { version = "1", features = ["sync", "macros"] }
 tokio-stream = "0.1"
 toml = "0.5.8"
+tracing = "0.1"
 
 [dev-dependencies]
 state-fold-test = { path = "../state-fold-test" }

@@ -127,6 +127,7 @@ where
     }
 }
 
+#[tracing::instrument(skip_all)]
 async fn background_process<M: Middleware + 'static>(
     middleware: Arc<M>,
     block_archive: Arc<BlockArchive<M>>,
@@ -137,6 +138,7 @@ where
     <M as Middleware>::Provider: PubsubClient,
 {
     loop {
+        tracing::trace!("Starting web3 subscription");
         let subscription = middleware
             .subscribe_blocks()
             .await
@@ -155,14 +157,25 @@ where
                 }))
             })?;
 
-        if let Err(_) =
-            listen_and_broadcast(block_archive.clone(), &new_block_alarm, subscription).await
-        {
-            // TODO: Warn error
+        match listen_and_broadcast(block_archive.clone(), &new_block_alarm, subscription).await {
+            Err(e) => {
+                tracing::warn!(
+                    "`listen_and_broadcast` error `{}`, retrying subscription",
+                    e
+                );
+
+                continue;
+            }
+
+            Ok(()) => {
+                tracing::debug!("Stopping BlockSubscriber `background_process`");
+                return Ok(());
+            }
         }
     }
 }
 
+#[tracing::instrument(skip_all)]
 async fn listen_and_broadcast<M: Middleware + 'static>(
     block_archive: Arc<BlockArchive<M>>,
     new_block_alarm: &watch::Sender<()>,
@@ -177,12 +190,22 @@ async fn listen_and_broadcast<M: Middleware + 'static>(
             .ok_or(snafu::NoneError)
             .context(EthersSubscriptionDroppedSnafu)??;
 
+        tracing::trace!(
+            "Subscriber received block with number `{}` and hash `{}`",
+            new_head.number,
+            new_head.hash
+        );
+
         // Insert in archive
         let _ = block_archive.update_latest_block(new_head).await;
 
         // Send new block to subscribers.
         if new_block_alarm.send(()).is_err() {
-            // TODO: warn there are no subscribers.
+            tracing::debug!(
+                "BlockSubscriber has no subscriptions, stopping `listen_and_broadcast`"
+            );
+
+            return Ok(());
         }
     }
 }
