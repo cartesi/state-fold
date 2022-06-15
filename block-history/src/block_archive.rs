@@ -18,7 +18,7 @@ use snafu::{ensure, ResultExt, Snafu};
 pub enum BlockArchiveError {
     #[snafu(display("Ethers provider error: {}", source))]
     EthersProviderError {
-        source: Box<dyn std::error::Error + Send>,
+        source: Box<dyn std::error::Error + Send + Sync>,
     },
 
     #[snafu(display("Requested block incomplete"))]
@@ -256,7 +256,7 @@ async fn fetch_block<M: Middleware + 'static, T: Into<BlockId> + Send + Sync>(
     middleware
         .get_block(block_id)
         .await
-        .map_err(|e| -> Box<dyn std::error::Error + Send> { Box::new(e) })
+        .map_err(|e| -> Box<dyn std::error::Error + Send + Sync> { Box::new(e) })
         .context(EthersProviderSnafu)?
         .ok_or(snafu::NoneError)
         .context(BlockUnavailableSnafu)?
