@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] - 2022-06-14
 ### Changes
+- Improve configuration modules in `block-archive` and `state-fold`.
+
 - Add `config_utils` to `state-fold-types`.
 
 - Add logging to `state-server-lib`.

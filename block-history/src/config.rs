@@ -1,3 +1,5 @@
+use state_fold_types::config_utils;
+
 use serde::Deserialize;
 use snafu::{ResultExt, Snafu};
 use std::time::Duration;
@@ -44,28 +46,28 @@ pub struct BHConfig {
 }
 
 #[derive(Debug, Snafu)]
-pub enum ConfigError {
+pub enum Error {
     #[snafu(display("Configuration missing websocket endpoint url"))]
     MissingWsUrl {},
 
-    #[snafu(display("Error while loading configuration file: {}", source))]
-    ConfigFileError { source: std::io::Error },
+    #[snafu(display("Error while loading configuration file: {}", source,))]
+    ConfigFileError { source: config_utils::Error },
 }
-pub type Result<T> = std::result::Result<T, ConfigError>;
+pub type Result<T> = std::result::Result<T, Error>;
 
 // default values
-const DEFAULT_MAX_DEPTH: usize = 10000;
+const DEFAULT_MAX_DEPTH: usize = 1000;
 const DEFAULT_TIMEOUT: u64 = 60;
 
 impl BHConfig {
+    pub fn initialize_from_args() -> Result<Self> {
+        let env_cli_config = BHEnvCLIConfig::from_args();
+        Self::initialize(env_cli_config)
+    }
+
     pub fn initialize(env_cli_config: BHEnvCLIConfig) -> Result<Self> {
-        let file_config: FileConfig = match env_cli_config.config_path {
-            None => Default::default(),
-            Some(v) => std::fs::read_to_string(&v)
-                .map(|v| toml::from_str(&v))
-                .context(ConfigFileSnafu)?
-                .unwrap_or_default(),
-        };
+        let file_config: FileConfig =
+            config_utils::load_config_file(env_cli_config.config_path).context(ConfigFileSnafu)?;
 
         let ws_endpoint = env_cli_config
             .ws_endpoint

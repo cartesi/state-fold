@@ -1,28 +1,32 @@
-use serde::de::DeserializeOwned;
+use state_fold_types::config_utils;
+
 use serde::Deserialize;
-use snafu::Snafu;
+use snafu::{ResultExt, Snafu};
 use state_fold_types::ethereum_types::U64;
-use std::fs;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Clone, Debug)]
 #[structopt(name = "sf_config", about = "Configuration for state fold")]
 pub struct SFEnvCLIConfig {
     /// Path to state fold .toml config
-    #[structopt(long, env)]
-    pub sf_config: Option<String>,
-    /// Concurrent events fetch for state fold access
-    #[structopt(long, env)]
-    pub sf_concurrent_events_fetch: Option<usize>,
+    #[structopt(long, env = "SF_CONFIG_PATH")]
+    pub config_path: Option<String>,
+
+    /// Concurrent events fetch for logs query
+    #[structopt(long, env = "SF_CONCURRENT_EVENTS_FETCH")]
+    pub concurrent_events_fetch: Option<usize>,
+
     /// Genesis block number for state fold access
-    #[structopt(long, env)]
-    pub sf_genesis_block: Option<U64>,
+    #[structopt(long, env = "SF_GENESIS_BLOCK")]
+    pub genesis_block: Option<U64>,
+
     /// Query limit error codes for state fold access
-    #[structopt(long, env)]
-    pub sf_query_limit_error_codes: Option<Vec<i32>>,
+    #[structopt(long, env = "SF_QUERY_LIMIT_ERROR_CODES")]
+    pub query_limit_error_codes: Option<Vec<i32>>,
+
     /// Safety margin for state fold
-    #[structopt(long, env)]
-    pub sf_safety_margin: Option<usize>,
+    #[structopt(long, env = "SF_SAFETY_MARGIN")]
+    pub safety_margin: Option<usize>,
 }
 
 #[derive(Clone, Debug, Deserialize, Default)]
@@ -46,43 +50,46 @@ pub struct SFConfig {
     pub safety_margin: usize,
 }
 
-pub type Result<T> = std::result::Result<T, Error>;
-
 #[derive(Debug, Snafu)]
-#[snafu(visibility(pub))]
 pub enum Error {
-    #[snafu(display("File error: {}", err))]
-    FileError { err: String },
-    #[snafu(display("Parse error: {}", err))]
-    ParseError { err: String },
+    #[snafu(display("Error while loading configuration file: {}", source,))]
+    ConfigFileError { source: config_utils::Error },
 }
+
+pub type Result<T> = std::result::Result<T, Error>;
 
 const DEFAULT_CONCURRENT_EVENTS_FETCH: usize = 16;
 const DEFAULT_GENESIS_BLOCK: u64 = 0;
 const DEFAULT_QUERY_LIMIT_ERROR_CODES: Vec<i32> = vec![];
-const DEFAULT_SAFETY_MARGIN: usize = 10;
+const DEFAULT_SAFETY_MARGIN: usize = 20;
 
 impl SFConfig {
+    pub fn initialize_from_args() -> Result<Self> {
+        let env_cli_config = SFEnvCLIConfig::from_args();
+        Self::initialize(env_cli_config)
+    }
+
     pub fn initialize(env_cli_config: SFEnvCLIConfig) -> Result<Self> {
-        let file_config: FileConfig = Self::load_config_file(env_cli_config.sf_config)?;
+        let file_config: FileConfig =
+            config_utils::load_config_file(env_cli_config.config_path).context(ConfigFileSnafu)?;
 
         let concurrent_events_fetch = env_cli_config
-            .sf_concurrent_events_fetch
+            .concurrent_events_fetch
             .or(file_config.state_fold.concurrent_events_fetch)
             .unwrap_or(DEFAULT_CONCURRENT_EVENTS_FETCH);
 
         let genesis_block = env_cli_config
-            .sf_genesis_block
+            .genesis_block
             .or(file_config.state_fold.genesis_block)
             .unwrap_or(U64::from(DEFAULT_GENESIS_BLOCK));
 
         let query_limit_error_codes = env_cli_config
-            .sf_query_limit_error_codes
+            .query_limit_error_codes
             .or(file_config.state_fold.query_limit_error_codes)
             .unwrap_or(DEFAULT_QUERY_LIMIT_ERROR_CODES);
 
         let safety_margin = env_cli_config
-            .sf_safety_margin
+            .safety_margin
             .or(file_config.state_fold.safety_margin)
             .unwrap_or(DEFAULT_SAFETY_MARGIN);
 
@@ -92,28 +99,5 @@ impl SFConfig {
             query_limit_error_codes,
             safety_margin,
         })
-    }
-
-    fn load_config_file<T: Default + DeserializeOwned>(config_file: Option<String>) -> Result<T> {
-        match config_file {
-            Some(config) => {
-                let s = fs::read_to_string(&config).map_err(|e| {
-                    FileSnafu {
-                        err: format!("Fail to read config file {}, error: {}", config, e),
-                    }
-                    .build()
-                })?;
-
-                let file_config: T = toml::from_str(&s).map_err(|e| {
-                    ParseSnafu {
-                        err: format!("Fail to parse config {}, error: {}", s, e),
-                    }
-                    .build()
-                })?;
-
-                Ok(file_config)
-            }
-            None => Ok(T::default()),
-        }
     }
 }
