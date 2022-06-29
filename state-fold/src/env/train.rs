@@ -288,7 +288,15 @@ mod tests {
     ) {
         let train = Train::<IncrementFold>::new(INITIAL_VALUE, SAFETY_MARGIN);
         let m = MockMiddleware::new(128).await;
-        let env = StateFoldEnvironment::new(Arc::clone(&m), SAFETY_MARGIN, 0.into(), vec![], 1, ());
+        let env = StateFoldEnvironment::new(
+            Arc::clone(&m),
+            SAFETY_MARGIN,
+            0.into(),
+            vec![],
+            1,
+            usize::MAX,
+            (),
+        );
 
         (train, m, env)
     }

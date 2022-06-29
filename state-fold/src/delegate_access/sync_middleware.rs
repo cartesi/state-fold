@@ -20,6 +20,7 @@ pub struct SyncMiddleware<M> {
     block_number: U64,
     query_limit_error_codes: Vec<i32>,
     concurrent_events_fetch: usize,
+    maximum_events_per_response: usize,
 }
 
 impl<M> SyncMiddleware<M>
@@ -32,6 +33,7 @@ where
         block_number: U64,
         query_limit_error_codes: Vec<i32>,
         concurrent_events_fetch: usize,
+        maximum_events_per_response: usize,
     ) -> Self {
         Self {
             inner,
@@ -39,6 +41,7 @@ where
             block_number,
             query_limit_error_codes,
             concurrent_events_fetch,
+            maximum_events_per_response,
         }
     }
 
@@ -126,7 +129,7 @@ where
 {
     type ProviderErr = <<Self as Middleware>::Inner as Middleware>::Error;
 
-    async fn fetch_events_with_range(
+    async fn fetch_events_with_range_inner(
         &self,
         data: &Filter,
         from_block: u64,
@@ -146,6 +149,10 @@ where
         }
 
         false
+    }
+
+    fn maximum_events_per_response(&self) -> usize {
+        self.maximum_events_per_response
     }
 }
 

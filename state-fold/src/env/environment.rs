@@ -32,6 +32,14 @@ pub struct StateFoldEnvironment<M: Middleware, UD> {
     // by `concurrent_events_fetch + 1`. We recommend something like `16`.
     concurrent_events_fetch: usize,
 
+    /// Maximum events allowed to be in a single provider response. If response
+    /// event number reaches over this number, the request must be split into
+    /// sub-ranges retried on each of them separately.
+    ///
+    /// Motivation for this configuration parameter mainly comes from Alchemy
+    /// as past a certain limit it responds with invalid data.
+    maximum_events_per_response: usize,
+
     global_archive: GlobalArchive,
 
     user_data: UD,
@@ -44,6 +52,7 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
         genesis_block: U64,
         query_limit_error_codes: Vec<i32>,
         concurrent_events_fetch: usize,
+        maximum_events_per_response: usize,
         user_data: UD,
     ) -> Self {
         let global_archive = GlobalArchive::new(safety_margin);
@@ -54,6 +63,7 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
             genesis_block,
             query_limit_error_codes,
             concurrent_events_fetch,
+            maximum_events_per_response,
             global_archive,
             user_data,
         }
@@ -161,6 +171,7 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
             block.number,
             self.query_limit_error_codes.clone(),
             self.concurrent_events_fetch,
+            self.maximum_events_per_response,
         );
 
         Arc::new(middleware)

@@ -10,6 +10,7 @@ publish = ["cartesi"]
 [dependencies]
 state-fold-types = { version = "0.2", registry = "cartesi", path = "../state-fold-types", features = ["ethers"] }
 
+async-recursion = "1"
 async-trait = "0.1"
 futures = "0.3"
 tokio = { version = "^1.5", features = ["sync"] }
@@ -23,3 +24,4 @@ structopt = "0.3"
 [dev-dependencies]
 state-fold-test = { path = "../state-fold-test" }
 tokio = { version = "^1.5", features = ["macros"] }
+matches = "0.1"
