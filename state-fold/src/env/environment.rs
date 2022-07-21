@@ -4,19 +4,23 @@ use crate::Foldable;
 
 use super::global_archive::GlobalArchive;
 
+use block_history::{
+    current_block_number, fetch_block, fetch_block_at_depth, BlockArchive, BlockArchiveError,
+};
 use state_fold_types::{BlockState, QueryBlock};
 
-use ethers::core::types::{BlockId, BlockNumber, U64};
+use ethers::core::types::{BlockId, BlockNumber, H256, U64};
 use ethers::providers::Middleware;
 use state_fold_types::ethers;
 use state_fold_types::Block;
 
-use snafu::{ensure, ResultExt};
-use std::convert::TryInto;
+use snafu::ResultExt;
 use std::sync::Arc;
 
 pub struct StateFoldEnvironment<M: Middleware, UD> {
     inner_middleware: Arc<M>,
+    pub block_archive: Option<Arc<BlockArchive<M>>>,
+
     genesis_block: U64,
     pub safety_margin: usize,
 
@@ -48,6 +52,7 @@ pub struct StateFoldEnvironment<M: Middleware, UD> {
 impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
     pub fn new(
         inner_middleware: Arc<M>,
+        block_archive: Option<Arc<BlockArchive<M>>>,
         safety_margin: usize,
         genesis_block: U64,
         query_limit_error_codes: Vec<i32>,
@@ -59,6 +64,7 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
 
         Self {
             inner_middleware,
+            block_archive,
             safety_margin,
             genesis_block,
             query_limit_error_codes,
@@ -91,72 +97,34 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
         // to instantiate an unnecessary provider and we avoid running on mutex
         // locks. This match also reduces unecessary `get_block` queries.
         let block = match fold_block {
-            QueryBlock::Latest => {
-                let b = self.get_block(BlockNumber::Latest).await?;
+            QueryBlock::Latest => self.current_block().await.context(BlockArchiveSnafu)?,
 
-                // Check if exists in archive.
-                if let Some(block_state) = train.get_block_state(&b.hash).await {
-                    return Ok(block_state);
-                }
-
-                b
-            }
-
-            QueryBlock::BlockHash(h) => {
-                // Check if exists in archive.
-                if let Some(block_state) = train.get_block_state(&h).await {
-                    return Ok(block_state);
-                }
-
-                self.get_block(h).await?
-            }
+            QueryBlock::BlockHash(hash) => self
+                .block_with_hash(&hash)
+                .await
+                .context(BlockArchiveSnafu)?,
 
             QueryBlock::BlockNumber(n) => {
-                let b = self.get_block(n).await?;
-
-                // Check if exists in archive.
-                if let Some(block_state) = train.get_block_state(&b.hash).await {
-                    return Ok(block_state);
-                }
-
-                b
+                self.block_with_number(n).await.context(BlockArchiveSnafu)?
             }
 
-            QueryBlock::BlockDepth(depth) => {
-                let b = {
-                    let current = self.get_current_block_number().await?;
-                    ensure!(
-                        current > depth.into(),
-                        QueryDepthTooHighSnafu {
-                            depth,
-                            current_block: current.as_usize()
-                        }
-                    );
-                    self.get_block(current - depth).await?
-                };
+            QueryBlock::BlockDepth(depth) => self
+                .block_at_depth(depth)
+                .await
+                .context(BlockArchiveSnafu)?,
 
-                // Check if exists in archive.
-                if let Some(block_state) = train.get_block_state(&b.hash).await {
-                    return Ok(block_state);
-                }
-
-                b
-            }
-
-            QueryBlock::Block(b) => {
-                // Check if exists in archive.
-                if let Some(block_state) = train.get_block_state(&b.hash).await {
-                    return Ok(block_state);
-                }
-
-                b
-            }
+            QueryBlock::Block(b) => b,
         };
+
+        // Check if exists in archive.
+        if let Some(block_state) = train.get_block_state(Arc::clone(&block)).await {
+            return Ok(block_state);
+        }
 
         // If it's not on archive, do the actual work. This method has an
         // internal lock, which makes concurrent calls mutually exclusive, to
         // avoid replicated work.
-        train.fetch_block_state(self, &block).await
+        train.fetch_block_state(self, block).await
     }
 }
 
@@ -179,34 +147,69 @@ impl<M: Middleware + 'static, UD> StateFoldEnvironment<M, UD> {
 
     pub(crate) fn fold_access(&self, block: &Block) -> Arc<FoldMiddleware<M>> {
         let middleware = FoldMiddleware::new(Arc::clone(&self.inner_middleware), block.hash);
-
         Arc::new(middleware)
     }
 
-    pub(crate) async fn get_block<
-        F: Foldable + Send + Sync + 'static,
-        T: Into<BlockId> + Send + Sync,
-    >(
-        &self,
-        block: T,
-    ) -> Result<Block, FoldableError<M, F>> {
-        self.inner_middleware
-            .get_block(block)
-            .await
-            .context(MiddlewareSnafu)?
-            .ok_or(snafu::NoneError)
-            .context(BlockUnavailableSnafu)?
-            .try_into()
-            .map_err(|_| snafu::NoneError)
-            .context(BlockIncompleteSnafu)
+    pub(crate) async fn current_block_number(&self) -> Result<U64, BlockArchiveError<M>> {
+        if let Some(a) = &self.block_archive {
+            Ok(a.latest_block().await.number)
+        } else {
+            current_block_number(self.inner_middleware.as_ref()).await
+        }
     }
 
-    pub(crate) async fn get_current_block_number<F: Foldable + Send + Sync + 'static>(
+    pub(crate) async fn current_block(&self) -> Result<Arc<Block>, BlockArchiveError<M>> {
+        if let Some(a) = &self.block_archive {
+            Ok(a.latest_block().await)
+        } else {
+            self.block(BlockNumber::Latest).await
+        }
+    }
+
+    pub async fn block_with_hash(&self, hash: &H256) -> Result<Arc<Block>, BlockArchiveError<M>> {
+        if let Some(a) = &self.block_archive {
+            a.block_with_hash(hash).await
+        } else {
+            self.block(*hash).await
+        }
+    }
+
+    pub async fn block_with_number(&self, number: U64) -> Result<Arc<Block>, BlockArchiveError<M>> {
+        if let Some(a) = &self.block_archive {
+            a.block_with_number(number).await
+        } else {
+            self.block(number).await
+        }
+    }
+
+    pub(crate) async fn block_at_depth(
         &self,
-    ) -> Result<U64, FoldableError<M, F>> {
-        self.inner_middleware
-            .get_block_number()
-            .await
-            .context(MiddlewareSnafu)
+        depth: usize,
+    ) -> Result<Arc<Block>, BlockArchiveError<M>> {
+        if let Some(a) = &self.block_archive {
+            a.block_at_depth(depth).await
+        } else {
+            let current = self.current_block_number().await?;
+            self.fetch_block_at_depth(current, depth).await
+        }
+    }
+
+    async fn block<T: Into<BlockId> + Send + Sync>(
+        &self,
+        block: T,
+    ) -> Result<Arc<Block>, BlockArchiveError<M>> {
+        Ok(Arc::new(
+            fetch_block(self.inner_middleware.as_ref(), block).await?,
+        ))
+    }
+
+    async fn fetch_block_at_depth(
+        &self,
+        current: U64,
+        depth: usize,
+    ) -> Result<Arc<Block>, BlockArchiveError<M>> {
+        Ok(Arc::new(
+            fetch_block_at_depth(self.inner_middleware.as_ref(), current, depth).await?,
+        ))
     }
 }

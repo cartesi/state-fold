@@ -17,6 +17,8 @@ use tonic::{transport::Channel, Request};
 
 use snafu::ResultExt;
 
+use std::sync::Arc;
+
 use async_trait::async_trait;
 use std::pin::Pin;
 use tokio_stream::{Stream, StreamExt};
@@ -36,7 +38,7 @@ where
     async fn query_block(
         &self,
         query_block: impl Into<QueryBlock> + Send + 'static,
-    ) -> Result<Block> {
+    ) -> Result<Arc<Block>> {
         let mut client = self.client.clone();
 
         let query_block: QueryBlock = query_block.into();

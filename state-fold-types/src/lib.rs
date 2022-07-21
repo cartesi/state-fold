@@ -1,6 +1,7 @@
 use ethereum_types::{Bloom, H256, U256, U64};
 use serde::{Deserialize, Serialize};
 use snafu::Snafu;
+use std::sync::Arc;
 
 #[cfg(feature = "ethers")]
 pub mod contract;
@@ -22,22 +23,45 @@ pub struct Block {
     pub logs_bloom: Bloom,
 }
 
-#[derive(Clone, Debug)]
+impl PartialEq for Block {
+    fn eq(&self, other: &Self) -> bool {
+        self.hash.eq(&other.hash)
+    }
+}
+
+impl Eq for Block {}
+
+impl std::hash::Hash for Block {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.hash.hash(state)
+    }
+}
+
+#[derive(Debug)]
 pub struct BlockState<State> {
-    pub block: Block,
-    pub state: State,
+    pub block: Arc<Block>,
+    pub state: Arc<State>,
+}
+
+impl<State> Clone for BlockState<State> {
+    fn clone(&self) -> Self {
+        Self {
+            block: Arc::clone(&self.block),
+            state: Arc::clone(&self.state),
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
 pub enum BlocksSince {
-    Normal(Vec<Block>),
-    Reorg(Vec<Block>),
+    Normal(Vec<Arc<Block>>),
+    Reorg(Vec<Arc<Block>>),
 }
 
 #[derive(Clone, Debug)]
 pub enum BlockStreamItem {
-    NewBlock(Block),
-    Reorg(Vec<Block>),
+    NewBlock(Arc<Block>),
+    Reorg(Vec<Arc<Block>>),
 }
 
 #[derive(Clone, Debug)]
@@ -58,7 +82,7 @@ pub enum QueryBlock {
     BlockHash(H256),
     BlockNumber(U64),
     BlockDepth(usize),
-    Block(Block),
+    Block(Arc<Block>),
 }
 
 /// Error that might occur when trying to convert [`ethers::Block`] into
@@ -117,6 +141,12 @@ impl From<&U64> for QueryBlock {
 
 impl From<Block> for QueryBlock {
     fn from(b: Block) -> Self {
+        QueryBlock::Block(Arc::new(b))
+    }
+}
+
+impl From<Arc<Block>> for QueryBlock {
+    fn from(b: Arc<Block>) -> Self {
         QueryBlock::Block(b)
     }
 }

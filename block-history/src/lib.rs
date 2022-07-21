@@ -10,3 +10,5 @@ pub use block_subscriber::BlockSubscriber;
 pub use block_archive::BlockArchiveError;
 pub use block_subscriber::BlockSubscriberError;
 pub use block_subscriber::SubscriptionError;
+
+pub use block_archive::{current_block_number, fetch_block, fetch_block_at_depth};

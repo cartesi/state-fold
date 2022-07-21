@@ -10,15 +10,14 @@ publish = ["cartesi"]
 [dependencies]
 state-fold-types = { version = "0.3", registry = "cartesi", path = "../state-fold-types", features = ["ethers"] }
 
-serde = "1"
 snafu = "0.7"
 structopt = "0.3"
 
 async-stream = "0.3"
 tokio = { version = "1", features = ["sync", "macros"] }
 tokio-stream = "0.1"
-toml = "0.5.8"
 tracing = "0.1"
+
 
 [dev-dependencies]
 state-fold-test = { path = "../state-fold-test" }

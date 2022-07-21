@@ -98,7 +98,7 @@ where
         let diff = self
             .block_subscriber
             .block_archive
-            .blocks_since(depth, &block)
+            .blocks_since(depth, block)
             .await
             .map_err(|e| match e {
                 BlockArchiveError::BlockOutOfRange { .. } => {
@@ -193,7 +193,7 @@ where
         let diff = self
             .block_subscriber
             .block_archive
-            .blocks_since(depth, &block)
+            .blocks_since(depth, block)
             .await
             .map_err(|e| match e {
                 BlockArchiveError::BlockOutOfRange { .. } => {
@@ -287,7 +287,7 @@ where
 async fn get_block_from_archive<M: Middleware + 'static>(
     archive: &BlockArchive<M>,
     query_block: Option<QueryBlock>,
-) -> Result<Block, Status> {
+) -> Result<Arc<Block>, Status> {
     Ok(match query_block {
         Some(QueryBlock {
             id: Some(Id::Depth(d)),
@@ -300,7 +300,7 @@ async fn get_block_from_archive<M: Middleware + 'static>(
             id: Some(Id::BlockHash(h)),
         }) => archive
             .block_with_hash(
-                h.try_into()
+                &h.try_into()
                     .map_err(|e| Status::invalid_argument(format!("{}", e)))?,
             )
             .await
@@ -320,10 +320,10 @@ async fn get_block_from_archive<M: Middleware + 'static>(
 async fn get_block_with_hash<M: Middleware + 'static>(
     hash: Option<GrpcHash>,
     archive: &BlockArchive<M>,
-) -> Result<Block, Status> {
+) -> Result<Arc<Block>, Status> {
     let hash = convert_hash(hash)?;
     archive
-        .block_with_hash(hash)
+        .block_with_hash(&hash)
         .await
         .map_err(|e| Status::unavailable(format!("{:?}", e)))
 }
@@ -353,7 +353,7 @@ async fn map_blocks_into_grpc_states<
     UD,
     F: Foldable<UserData = UD> + serde::Serialize + 'static,
 >(
-    blocks: Vec<Block>,
+    blocks: Vec<Arc<Block>>,
     initial_state: &F::InitialState,
     env: &StateFoldEnvironment<M, UD>,
 ) -> Result<GrpcStates, Status> {
@@ -370,7 +370,7 @@ async fn map_blocks_into_grpc_states<
 
 async fn get_foldable_state<M: Middleware + 'static, UD, F: Foldable<UserData = UD> + 'static>(
     initial_state: &F::InitialState,
-    block: Block,
+    block: Arc<Block>,
     env: &StateFoldEnvironment<M, UD>,
 ) -> Result<BlockState<F>, Status> {
     F::get_state_for_block(initial_state, block, env)

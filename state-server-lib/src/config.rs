@@ -17,8 +17,8 @@ pub struct StateServerEnvCLIConfig {
     pub block_history: BHEnvCLIConfig,
 
     /// Server address
-    #[structopt(long, env = "SS_SERVER_ADDRESS")]
-    pub server_address: Option<String>,
+    #[structopt(long)]
+    pub ss_server_address: Option<String>,
 }
 
 #[derive(Clone, Debug)]
@@ -54,7 +54,7 @@ impl StateServerConfig {
         let block_history = BHConfig::initialize(env_cli_config.block_history).context(BHSnafu)?;
 
         let server_address: std::net::SocketAddr = env_cli_config
-            .server_address
+            .ss_server_address
             .unwrap_or(DEFAULT_SERVER_ADDRESS.to_string())
             .parse()
             .context(AddressParseSnafu)?;

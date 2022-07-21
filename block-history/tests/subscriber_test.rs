@@ -45,7 +45,7 @@ async fn subscribe_test() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn get_new_block(b: BlockStreamItem) -> Block {
+fn get_new_block(b: BlockStreamItem) -> Arc<Block> {
     match b {
         BlockStreamItem::NewBlock(b) => b,
         BlockStreamItem::Reorg(_) => unreachable!(),

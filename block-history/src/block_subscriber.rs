@@ -28,7 +28,7 @@ pub enum BlockSubscriberError<M: ethers::providers::Middleware + 'static> {
 pub type Result<T, M> = std::result::Result<T, BlockSubscriberError<M>>;
 
 #[derive(Debug, Snafu)]
-pub enum SubscriptionError {
+pub enum SubscriptionError<M: ethers::providers::Middleware + 'static> {
     #[snafu(display("Subscriber dropped: {}", source))]
     SubscriptionDropped {
         source: tokio::sync::watch::error::RecvError,
@@ -36,10 +36,10 @@ pub enum SubscriptionError {
 
     #[snafu(display("Error while accessing block archive: {}", source))]
     ArchiveError {
-        source: crate::block_archive::BlockArchiveError,
+        source: block_archive::BlockArchiveError<M>,
     },
 }
-pub type SubscriptionResult<T> = std::result::Result<T, SubscriptionError>;
+pub type SubscriptionResult<T, M> = std::result::Result<T, SubscriptionError<M>>;
 
 pub struct BlockSubscriber<M: Middleware + 'static> {
     pub handle: tokio::task::JoinHandle<Result<(), M>>,
@@ -57,7 +57,7 @@ where
         middleware: Arc<M>,
         subscriber_timeout: std::time::Duration,
         max_depth: usize,
-    ) -> crate::block_archive::Result<Self> {
+    ) -> crate::block_archive::Result<Self, M> {
         let archive = Arc::new(BlockArchive::new(middleware.clone(), max_depth).await?);
 
         let (kill_tx, kill_rx) = oneshot::channel();
@@ -94,7 +94,7 @@ where
     pub async fn subscribe_new_blocks_at_depth(
         &self,
         depth: usize,
-    ) -> block_archive::Result<impl Stream<Item = SubscriptionResult<BlockStreamItem>> + Unpin>
+    ) -> block_archive::Result<impl Stream<Item = SubscriptionResult<BlockStreamItem, M>> + Unpin, M>
     {
         let archive = self.block_archive.clone();
         let mut alarm = self.new_block_alarm.clone();
@@ -104,7 +104,7 @@ where
         Ok(Box::pin(async_stream::try_stream! {
             while let () = alarm.changed().await.context(SubscriptionDroppedSnafu)? {
                 let diff = archive
-                    .blocks_since(depth, &previous)
+                    .blocks_since(depth, Arc::clone(&previous))
                     .await
                     .context(ArchiveSnafu)?;
 
@@ -153,7 +153,7 @@ where
                         .try_into()
                         .map_err(|err| BlockIncompleteSnafu { err }.build())?;
 
-                    Ok(block)
+                    Ok(Arc::new(block))
                 }))
             })?;
 
@@ -179,7 +179,7 @@ where
 async fn listen_and_broadcast<M: Middleware + 'static>(
     block_archive: Arc<BlockArchive<M>>,
     new_block_alarm: &watch::Sender<()>,
-    mut subscription: impl Stream<Item = Result<Block, M>> + Send + Unpin,
+    mut subscription: impl Stream<Item = Result<Arc<Block>, M>> + Send + Unpin,
 ) -> Result<(), M> {
     // Listen to new blocks and notify subscribers.
     loop {

@@ -20,8 +20,8 @@ use state_fold_types::{
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json;
 
-use std::convert::TryFrom;
-use std::convert::TryInto;
+use std::convert::{TryFrom, TryInto};
+use std::sync::Arc;
 
 use snafu::{ResultExt, Snafu};
 
@@ -65,7 +65,7 @@ impl<T: Serialize> TryFrom<BlockState<T>> for GrpcBlockState {
         Ok(Self {
             block: Some(bs.block.into()),
             state: Some(GrpcState {
-                json_data: serde_json::to_string(&bs.state)?,
+                json_data: serde_json::to_string(bs.state.as_ref())?,
             }),
         })
     }
@@ -98,7 +98,10 @@ impl<T: DeserializeOwned> TryFrom<GrpcBlockState> for BlockState<T> {
         )
         .context(DeserializeSnafu)?;
 
-        Ok(Self { block, state })
+        Ok(Self {
+            block,
+            state: Arc::new(state),
+        })
     }
 }
 
@@ -287,18 +290,18 @@ impl<T: DeserializeOwned> TryFrom<GrpcStates> for Vec<BlockState<T>> {
     }
 }
 
-impl From<Vec<Block>> for GrpcBlocks {
-    fn from(bs: Vec<Block>) -> Self {
+impl From<Vec<Arc<Block>>> for GrpcBlocks {
+    fn from(bs: Vec<Arc<Block>>) -> Self {
         let blocks: Vec<GrpcBlock> = bs.into_iter().map(|x| x.into()).collect();
         GrpcBlocks { blocks }
     }
 }
 
-impl TryFrom<GrpcBlocks> for Vec<Block> {
+impl TryFrom<GrpcBlocks> for Vec<Arc<Block>> {
     type Error = MessageConversionError;
 
     fn try_from(bs: GrpcBlocks) -> Result<Self, Self::Error> {
-        let blocks_result: Vec<Result<Block, _>> =
+        let blocks_result: Vec<Result<Arc<Block>, _>> =
             bs.blocks.into_iter().map(|x| x.try_into()).collect();
 
         blocks_result.into_iter().collect()
@@ -348,11 +351,11 @@ impl TryFrom<GrpcQueryBlock> for QueryBlock {
     }
 }
 
-impl TryFrom<GrpcBlock> for Block {
+impl TryFrom<GrpcBlock> for Arc<Block> {
     type Error = MessageConversionError;
 
     fn try_from(b: GrpcBlock) -> Result<Self, Self::Error> {
-        let ret = Self {
+        let ret = Block {
             hash: b
                 .hash
                 .ok_or(MessageNilError {
@@ -388,12 +391,12 @@ impl TryFrom<GrpcBlock> for Block {
                 .context(MalformedSnafu)?,
         };
 
-        Ok(ret)
+        Ok(Arc::new(ret))
     }
 }
 
-impl From<Block> for GrpcBlock {
-    fn from(b: Block) -> Self {
+impl From<Arc<Block>> for GrpcBlock {
+    fn from(b: Arc<Block>) -> Self {
         Self {
             hash: Some(b.hash.into()),
             number: b.number.as_u64(),

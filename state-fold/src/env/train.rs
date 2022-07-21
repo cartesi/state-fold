@@ -6,12 +6,13 @@ use super::StateFoldEnvironment;
 use state_fold_types::Block;
 use state_fold_types::BlockState;
 
-use ethers::core::types::{H256, U64};
+use ethers::core::types::U64;
 use ethers::providers::Middleware;
 use state_fold_types::ethers;
 
 use snafu::ResultExt;
 use std::collections::HashMap;
+use std::sync::Arc;
 use tokio::sync::{Mutex, RwLock};
 
 pub(crate) struct Train<F>
@@ -20,7 +21,7 @@ where
 {
     initial_state: F::InitialState,
     safety_margin: usize,
-    state_tree: RwLock<HashMap<H256, BlockState<F>>>,
+    state_tree: RwLock<HashMap<Arc<Block>, Arc<F>>>,
     earliest_block: RwLock<U64>,
     fetch_mutex: Mutex<()>,
 }
@@ -39,14 +40,19 @@ where
         }
     }
 
-    pub async fn get_block_state(&self, block_hash: &H256) -> Option<BlockState<F>> {
-        self.state_tree.read().await.get(block_hash).cloned()
+    pub async fn get_block_state(&self, block: Arc<Block>) -> Option<BlockState<F>> {
+        self.state_tree
+            .read()
+            .await
+            .get(&block)
+            .cloned()
+            .map(|state| BlockState { block, state })
     }
 
     pub async fn fetch_block_state<M: Middleware + 'static>(
         &self,
         env: &StateFoldEnvironment<M, F::UserData>,
-        block: &Block,
+        block: Arc<Block>,
     ) -> Result<BlockState<F>, FoldableError<M, F>> {
         // We assume this function will be called close to the latest block
         // and on the "main" chain, instead of on old blocks on "uncle chains".
@@ -57,7 +63,7 @@ where
         // by the mutual exclusion.
         let _guard = self.fetch_mutex.lock().await;
 
-        if let Some(state) = self.get_block_state(&block.hash).await {
+        if let Some(state) = self.get_block_state(Arc::clone(&block)).await {
             return Ok(state);
         }
 
@@ -74,14 +80,15 @@ where
     async fn fold_to_leaf<M: Middleware + 'static>(
         &self,
         env: &StateFoldEnvironment<M, F::UserData>,
-        leaf_block: &Block,
+        leaf_block: Arc<Block>,
     ) -> Result<BlockState<F>, FoldableError<M, F>> {
         // Build stack of blocks to be processed. We are, in essence, searching
         // for an ancestral block that exists in the archive, saving in a stack
         // the "lineage" of blocks from leaf to this ancestral block.
         let mut stack = vec![];
-        let mut ancestor_block = leaf_block.clone();
+        let mut ancestor_block = Arc::clone(&leaf_block);
         let mut has_synced = false;
+
         loop {
             // Check if the ancestral block we're searching for doesn't exist.
             // In other words, if we cross the `earliest_block` threshold, we
@@ -103,7 +110,7 @@ where
                 // build an ancestral block by syncing. We call our
                 // `sync_to_margin` helper function, which will get us the
                 // block `leaf - safety_margin` inside the archive.
-                let sync_block = self.sync_to_margin(env, leaf_block).await?.block;
+                let sync_block = self.sync_to_margin(env, Arc::clone(&leaf_block)).await?;
 
                 // The function `sync_to_margin` has added an accumualtor to
                 // the train, using at least `safety_margin` from the current
@@ -144,20 +151,18 @@ where
             }
 
             // Check if we've reached a block that we've processed before.
-            if self
-                .state_tree
-                .read()
-                .await
-                .contains_key(&ancestor_block.hash)
-            {
+            if self.state_tree.read().await.contains_key(&ancestor_block) {
                 break;
             } else {
                 // If we haven't, add it to the stack.
-                stack.push(ancestor_block.clone());
+                stack.push(Arc::clone(&ancestor_block));
             }
 
             // Update control vars
-            ancestor_block = env.get_block(ancestor_block.parent_hash).await?;
+            ancestor_block = env
+                .block_with_hash(&ancestor_block.parent_hash)
+                .await
+                .context(BlockArchiveSnafu)?;
         }
 
         // Process each block whose hash was pushed into the stack, in LIFO
@@ -170,45 +175,55 @@ where
             let new_state = {
                 let state_tree = self.state_tree.read().await;
                 let previous_state = state_tree
-                    .get(&block.parent_hash)
+                    .get(&ancestor_block)
                     .ok_or(snafu::NoneError)
                     .context(BlockUnavailableSnafu)?;
 
-                let new_state =
-                    F::fold(&previous_state.state, &block, env, env.fold_access(&block))
-                        .await
-                        .context(InnerSnafu)?;
+                let new_state = F::fold(&previous_state, &block, env, env.fold_access(&block))
+                    .await
+                    .context(InnerSnafu)?;
 
-                BlockState {
-                    block: block.clone(),
-                    state: new_state,
-                }
+                Arc::new(new_state)
             };
 
             // Add new state to state_tree.
-            self.state_tree.write().await.insert(block.hash, new_state);
+            self.state_tree
+                .write()
+                .await
+                .insert(Arc::clone(&block), new_state);
+
+            // Update ancestor block
+            ancestor_block = block;
         }
 
-        Ok(self
-            .state_tree
-            .read()
-            .await
-            .get(&leaf_block.hash)
-            .ok_or(snafu::NoneError)
-            .context(BlockUnavailableSnafu)?
-            .clone())
+        let state = Arc::clone(
+            self.state_tree
+                .read()
+                .await
+                .get(&leaf_block)
+                .ok_or(snafu::NoneError)
+                .context(BlockUnavailableSnafu)?,
+        );
+
+        Ok(BlockState {
+            state,
+            block: leaf_block,
+        })
     }
 
     async fn sync_to_margin<M: Middleware + 'static>(
         &self,
         env: &StateFoldEnvironment<M, F::UserData>,
-        leaf_block: &Block,
-    ) -> Result<BlockState<F>, FoldableError<M, F>> {
+        leaf_block: Arc<Block>,
+    ) -> Result<Arc<Block>, FoldableError<M, F>> {
         // Calculate sync block. If `leaf_block` in within the `safety_margin`,
         // then use `leaf_block`. Otherwise, use current block minus
         // `safety_margin`.
         let sync_block = {
-            let current: U64 = env.get_current_block_number().await?;
+            let current: U64 = env
+                .current_block_number()
+                .await
+                .context(BlockArchiveSnafu)?;
 
             assert!(
                 current > self.safety_margin.into(),
@@ -217,12 +232,14 @@ where
             let minimum_sync_block = current - self.safety_margin;
 
             if leaf_block.number <= minimum_sync_block {
-                leaf_block.clone()
+                leaf_block
             } else {
                 // NOTE: There's the assumption that we are asking for a block
                 // on the main path. Otherwise, `get_block_with_number` will
                 // yield an unexpected result.
-                env.get_block(minimum_sync_block).await?
+                env.block_with_number(minimum_sync_block)
+                    .await
+                    .context(BlockArchiveSnafu)?
             }
         };
 
@@ -237,17 +254,14 @@ where
             .await
             .context(InnerSnafu)?;
 
-            BlockState {
-                block: sync_block.clone(),
-                state,
-            }
+            Arc::new(state)
         };
 
         // Insert it into the archive.
         self.state_tree
             .write()
             .await
-            .insert(sync_block.hash, sync_state.clone());
+            .insert(Arc::clone(&sync_block), sync_state);
 
         // Finally, update the earliest block with the minimum value between
         // itself and sync block number. Note that it has the initial value of
@@ -262,7 +276,7 @@ where
         let mut earliest_block = self.earliest_block.write().await;
         *earliest_block = new_earliest_block;
 
-        Ok(sync_state)
+        Ok(sync_block)
     }
 }
 
@@ -288,8 +302,10 @@ mod tests {
     ) {
         let train = Train::<IncrementFold>::new(INITIAL_VALUE, SAFETY_MARGIN);
         let m = MockMiddleware::new(128).await;
+
         let env = StateFoldEnvironment::new(
             Arc::clone(&m),
+            None,
             SAFETY_MARGIN,
             0.into(),
             vec![],
@@ -305,19 +321,19 @@ mod tests {
     async fn latest_state_test() {
         let (train, m, env) = instantiate_all().await;
 
-        let latest_block = m.get_latest_block().await.unwrap();
+        let latest_block = Arc::new(m.get_latest_block().await.unwrap());
 
-        assert!(train.get_block_state(&latest_block.hash).await.is_none());
+        assert!(train.get_block_state(latest_block.clone()).await.is_none());
         assert_eq!(*train.earliest_block.read().await, U64::max_value());
 
         let state = train
-            .fetch_block_state(&env, &latest_block)
+            .fetch_block_state(&env, latest_block.clone())
             .await
             .unwrap()
             .state;
 
         assert_eq!(
-            state,
+            state.as_ref().clone(),
             IncrementFold {
                 low_hash: latest_block.hash.to_low_u64_be(),
                 n: 128 + INITIAL_VALUE,
@@ -336,13 +352,17 @@ mod tests {
         let (train, m, env) = instantiate_all().await;
 
         for i in 64u64..=128 {
-            let block = m.get_block_with_number(i.into()).await.unwrap();
-            assert!(train.get_block_state(&block.hash).await.is_none());
+            let block = Arc::new(m.get_block_with_number(i.into()).await.unwrap());
+            assert!(train.get_block_state(block.clone()).await.is_none());
 
-            let state = train.fetch_block_state(&env, &block).await.unwrap().state;
+            let state = train
+                .fetch_block_state(&env, block.clone())
+                .await
+                .unwrap()
+                .state;
 
             assert_eq!(
-                state,
+                state.as_ref().clone(),
                 IncrementFold {
                     low_hash: block.hash.to_low_u64_be(),
                     n: i + INITIAL_VALUE,
@@ -354,13 +374,17 @@ mod tests {
         }
 
         for i in 32u64..=50 {
-            let block = m.get_block_with_number(i.into()).await.unwrap();
-            assert!(train.get_block_state(&block.hash).await.is_none());
+            let block = Arc::new(m.get_block_with_number(i.into()).await.unwrap());
+            assert!(train.get_block_state(block.clone()).await.is_none());
 
-            let state = train.fetch_block_state(&env, &block).await.unwrap().state;
+            let state = train
+                .fetch_block_state(&env, block.clone())
+                .await
+                .unwrap()
+                .state;
 
             assert_eq!(
-                state,
+                state.as_ref().clone(),
                 IncrementFold {
                     low_hash: block.hash.to_low_u64_be(),
                     n: i + INITIAL_VALUE,
@@ -372,13 +396,17 @@ mod tests {
         }
 
         for i in 58u64..=63 {
-            let block = m.get_block_with_number(i.into()).await.unwrap();
-            assert!(train.get_block_state(&block.hash).await.is_none());
+            let block = Arc::new(m.get_block_with_number(i.into()).await.unwrap());
+            assert!(train.get_block_state(block.clone()).await.is_none());
 
-            let state = train.fetch_block_state(&env, &block).await.unwrap().state;
+            let state = train
+                .fetch_block_state(&env, block.clone())
+                .await
+                .unwrap()
+                .state;
 
             assert_eq!(
-                state,
+                state.as_ref().clone(),
                 IncrementFold {
                     low_hash: block.hash.to_low_u64_be(),
                     n: i + INITIAL_VALUE,
@@ -390,12 +418,16 @@ mod tests {
         }
 
         for i in 16u64..=128 {
-            let block = m.get_block_with_number(i.into()).await.unwrap();
+            let block = Arc::new(m.get_block_with_number(i.into()).await.unwrap());
 
-            let state = train.fetch_block_state(&env, &block).await.unwrap().state;
+            let state = train
+                .fetch_block_state(&env, block.clone())
+                .await
+                .unwrap()
+                .state;
 
             assert_eq!(
-                state,
+                state.as_ref().clone(),
                 IncrementFold {
                     low_hash: block.hash.to_low_u64_be(),
                     n: i + INITIAL_VALUE,
@@ -420,18 +452,22 @@ mod tests {
 
         let (train, m, env) = instantiate_all().await;
 
-        let base_b = m.get_block_with_number(32.into()).await.unwrap();
-        let base_c = m.get_block_with_number(36.into()).await.unwrap();
-        let base_d = m.get_block_with_number(65.into()).await.unwrap();
+        let base_b = Arc::new(m.get_block_with_number(32.into()).await.unwrap());
+        let base_c = Arc::new(m.get_block_with_number(36.into()).await.unwrap());
+        let base_d = Arc::new(m.get_block_with_number(65.into()).await.unwrap());
 
         let tip_a = m.get_block_with_number(128.into()).await.unwrap().hash;
         for i in 64u64..=128 {
-            let block = m.get_block_with_number_from(i.into(), tip_a).await.unwrap();
+            let block = Arc::new(m.get_block_with_number_from(i.into(), tip_a).await.unwrap());
 
-            let state = train.fetch_block_state(&env, &block).await.unwrap().state;
+            let state = train
+                .fetch_block_state(&env, block.clone())
+                .await
+                .unwrap()
+                .state;
 
             assert_eq!(
-                state,
+                state.as_ref().clone(),
                 IncrementFold {
                     low_hash: block.hash.to_low_u64_be(),
                     n: i + INITIAL_VALUE,
@@ -442,12 +478,16 @@ mod tests {
 
         let tip_b = add_branch(&m, base_b.hash, 128).await;
         for i in 80u64..=128 {
-            let block = m.get_block_with_number_from(i.into(), tip_b).await.unwrap();
+            let block = Arc::new(m.get_block_with_number_from(i.into(), tip_b).await.unwrap());
 
-            let state = train.fetch_block_state(&env, &block).await.unwrap().state;
+            let state = train
+                .fetch_block_state(&env, block.clone())
+                .await
+                .unwrap()
+                .state;
 
             assert_eq!(
-                state,
+                state.as_ref().clone(),
                 IncrementFold {
                     low_hash: block.hash.to_low_u64_be(),
                     n: i + INITIAL_VALUE,
@@ -458,12 +498,16 @@ mod tests {
 
         let tip_c = add_branch(&m, base_c.hash, 128).await;
         for i in 68u64..=128 {
-            let block = m.get_block_with_number_from(i.into(), tip_c).await.unwrap();
+            let block = Arc::new(m.get_block_with_number_from(i.into(), tip_c).await.unwrap());
 
-            let state = train.fetch_block_state(&env, &block).await.unwrap().state;
+            let state = train
+                .fetch_block_state(&env, block.clone())
+                .await
+                .unwrap()
+                .state;
 
             assert_eq!(
-                state,
+                state.as_ref().clone(),
                 IncrementFold {
                     low_hash: block.hash.to_low_u64_be(),
                     n: i + INITIAL_VALUE,
@@ -474,12 +518,16 @@ mod tests {
 
         let tip_d = add_branch(&m, base_d.hash, 128).await;
         for i in 90u64..=128 {
-            let block = m.get_block_with_number_from(i.into(), tip_d).await.unwrap();
+            let block = Arc::new(m.get_block_with_number_from(i.into(), tip_d).await.unwrap());
 
-            let state = train.fetch_block_state(&env, &block).await.unwrap().state;
+            let state = train
+                .fetch_block_state(&env, block.clone())
+                .await
+                .unwrap()
+                .state;
 
             assert_eq!(
-                state,
+                state.as_ref().clone(),
                 IncrementFold {
                     low_hash: block.hash.to_low_u64_be(),
                     n: i + INITIAL_VALUE,

@@ -30,8 +30,16 @@ mod tests {
         let account = provider.get_accounts().await.unwrap()[0];
         let deployed_address = contract.address();
 
-        let env =
-            StateFoldEnvironment::new(Arc::clone(&provider), 4, genesis, vec![], 1, usize::MAX, ());
+        let env = StateFoldEnvironment::new(
+            Arc::clone(&provider),
+            None,
+            4,
+            genesis,
+            vec![],
+            1,
+            usize::MAX,
+            (),
+        );
 
         let block0 = state_fold_test::utils::get_current_block(provider.as_ref()).await;
         let block1 = test_utils::set_value_get_block::<MockFold, _>(&env, &contract, "this").await;

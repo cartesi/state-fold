@@ -15,11 +15,13 @@ use tokio::sync::RwLock;
 use snafu::{ensure, ResultExt, Snafu};
 
 #[derive(Debug, Snafu)]
-pub enum BlockArchiveError {
+pub enum BlockArchiveError<M: ethers::providers::Middleware + 'static> {
+    // #[snafu(display("Ethers provider error: {}", source))]
+    // EthersProviderError {
+    //     source: Box<dyn std::error::Error + Send + Sync>,
+    // },
     #[snafu(display("Ethers provider error: {}", source))]
-    EthersProviderError {
-        source: Box<dyn std::error::Error + Send + Sync>,
-    },
+    EthersProviderError { source: M::Error },
 
     #[snafu(display("Requested block incomplete"))]
     BlockIncomplete {},
@@ -40,11 +42,11 @@ pub enum BlockArchiveError {
     #[snafu(display("The depth `{}` is over the `{}` maximum", depth, max_depth))]
     BlockOutOfRange { depth: usize, max_depth: usize },
 
-    #[snafu(display("Depth of `{}` higher than latest block `{:?}`", depth, latest))]
-    DepthTooHigh { depth: usize, latest: Block },
+    #[snafu(display("Depth of `{}` higher than latest block `{}`", depth, latest))]
+    DepthTooHigh { depth: usize, latest: usize },
 }
 
-pub type Result<T> = std::result::Result<T, BlockArchiveError>;
+pub type Result<T, M> = std::result::Result<T, BlockArchiveError<M>>;
 
 pub struct BlockArchive<M: Middleware> {
     middleware: Arc<M>,
@@ -53,11 +55,11 @@ pub struct BlockArchive<M: Middleware> {
 }
 
 impl<M: Middleware + 'static> BlockArchive<M> {
-    pub(crate) async fn new(middleware: Arc<M>, max_depth: usize) -> Result<Self> {
+    pub(crate) async fn new(middleware: Arc<M>, max_depth: usize) -> Result<Self, M> {
         let block_tree = {
             let latest_block = fetch_block(middleware.as_ref(), BlockNumber::Latest).await?;
 
-            RwLock::new(BlockTree::new(latest_block))
+            RwLock::new(BlockTree::new(Arc::new(latest_block)))
         };
 
         Ok(Self {
@@ -67,7 +69,7 @@ impl<M: Middleware + 'static> BlockArchive<M> {
         })
     }
 
-    pub(crate) async fn update_latest_block(&self, block: Block) -> Result<()> {
+    pub(crate) async fn update_latest_block(&self, block: Arc<Block>) -> Result<(), M> {
         let mut block_tree = self.block_tree.write().await;
 
         let mut parent_number = block.number - 1;
@@ -90,23 +92,26 @@ impl<M: Middleware + 'static> BlockArchive<M> {
 }
 
 impl<M: Middleware + 'static> BlockArchive<M> {
-    pub async fn latest_block(&self) -> Block {
+    pub async fn latest_block(&self) -> Arc<Block> {
         self.block_tree.read().await.latest_block()
     }
 
-    pub async fn block_at_depth(&self, depth: usize) -> Result<Block> {
+    pub async fn block_at_depth(&self, depth: usize) -> Result<Arc<Block>, M> {
         let latest = self.latest_block().await;
 
         ensure!(
             U64::from(depth) <= latest.number,
-            DepthTooHighSnafu { depth, latest }
+            DepthTooHighSnafu {
+                depth,
+                latest: latest.number.as_usize()
+            }
         );
 
         let block_number = latest.number - U64::from(depth);
         self.block_with_number(block_number).await
     }
 
-    pub async fn block_with_number(&self, block_number: U64) -> Result<Block> {
+    pub async fn block_with_number(&self, block_number: U64) -> Result<Arc<Block>, M> {
         if let Some(b) = self
             .block_tree
             .read()
@@ -117,12 +122,12 @@ impl<M: Middleware + 'static> BlockArchive<M> {
         }
 
         let b = self.fetch_block(block_number).await?;
-        self.insert_block(b.clone()).await;
+        self.insert_block(Arc::clone(&b)).await;
 
         Ok(b)
     }
 
-    pub async fn blocks_since(&self, depth: usize, previous: &Block) -> Result<BlocksSince> {
+    pub async fn blocks_since(&self, depth: usize, previous: Arc<Block>) -> Result<BlocksSince, M> {
         let latest = self.latest_block().await;
 
         ensure!(
@@ -132,6 +137,7 @@ impl<M: Middleware + 'static> BlockArchive<M> {
                 max_depth: self.max_depth
             }
         );
+
         ensure!(
             previous.number <= latest.number,
             PreviousAheadOfLatestSnafu {
@@ -147,39 +153,44 @@ impl<M: Middleware + 'static> BlockArchive<M> {
         let number_of_new_blocks = diff - depth;
 
         let diff = self
-            .build_ancestral_stack(previous, &latest, number_of_new_blocks)
+            .build_ancestral_stack(previous, latest, number_of_new_blocks)
             .await?;
 
         Ok(diff)
     }
 
-    pub async fn block_with_hash(&self, block_hash: H256) -> Result<Block> {
-        if let Some(b) = self.block_tree.read().await.block_with_hash(&block_hash) {
+    pub async fn block_with_hash(&self, block_hash: &H256) -> Result<Arc<Block>, M> {
+        if let Some(b) = self.block_tree.read().await.block_with_hash(block_hash) {
             return Ok(b);
         }
 
-        let b = self.fetch_block(block_hash).await?;
-        self.insert_block(b.clone()).await;
+        let b = self.fetch_block(*block_hash).await?;
+        self.insert_block(Arc::clone(&b)).await;
 
         Ok(b)
     }
 }
 
 impl<M: Middleware + 'static> BlockArchive<M> {
-    async fn fetch_block<T: Into<BlockId> + Send + Sync>(&self, block_id: T) -> Result<Block> {
-        fetch_block(self.middleware.as_ref(), block_id).await
+    async fn fetch_block<T: Into<BlockId> + Send + Sync>(
+        &self,
+        block_id: T,
+    ) -> Result<Arc<Block>, M> {
+        Ok(Arc::new(
+            fetch_block(self.middleware.as_ref(), block_id).await?,
+        ))
     }
 
-    async fn insert_block(&self, block: Block) {
+    async fn insert_block(&self, block: Arc<Block>) {
         self.block_tree.write().await.insert_block(block);
     }
 
     async fn build_ancestral_stack(
         &self,
-        previous: &Block,
-        leaf: &Block,
+        previous: Arc<Block>,
+        leaf: Arc<Block>,
         number_of_new_blocks: usize,
-    ) -> Result<BlocksSince> {
+    ) -> Result<BlocksSince, M> {
         let mut stack = self.build_stack_from_leaf(previous.number, leaf).await?;
 
         let len = stack.len();
@@ -209,22 +220,26 @@ impl<M: Middleware + 'static> BlockArchive<M> {
     async fn build_stack_from_leaf(
         &self,
         ancestor_number: U64,
-        leaf: &Block,
-    ) -> Result<Vec<Block>> {
+        leaf: Arc<Block>,
+    ) -> Result<Vec<Arc<Block>>, M> {
         let mut stack = Vec::new();
         let mut current = leaf.clone();
 
         while current.number != ancestor_number {
-            let parent_hash = current.parent_hash;
+            let new_current = self.block_with_hash(&current.parent_hash).await?;
             stack.push(current);
-            current = self.block_with_hash(parent_hash).await?;
+            current = new_current;
         }
 
         stack.push(current);
         Ok(stack)
     }
 
-    async fn extend_stack_to_ancestor(&self, stack: &mut Vec<Block>, uncle: &Block) -> Result<()> {
+    async fn extend_stack_to_ancestor(
+        &self,
+        stack: &mut Vec<Arc<Block>>,
+        uncle: Arc<Block>,
+    ) -> Result<(), M> {
         let last = stack
             .last()
             .expect("should not call `extend_stack_to_ancestor` with empty stack");
@@ -236,10 +251,10 @@ impl<M: Middleware + 'static> BlockArchive<M> {
         let mut current_parent = last.parent_hash;
 
         while current_parent != current_uncle_parent {
-            let current = self.block_with_hash(current_parent).await?;
+            let current = self.block_with_hash(&current_parent).await?;
             current_parent = current.parent_hash;
 
-            let current_uncle = self.block_with_hash(current_uncle_parent).await?;
+            let current_uncle = self.block_with_hash(&current_uncle_parent).await?;
             current_uncle_parent = current_uncle.parent_hash;
 
             stack.push(current);
@@ -249,20 +264,42 @@ impl<M: Middleware + 'static> BlockArchive<M> {
     }
 }
 
-async fn fetch_block<M: Middleware + 'static, T: Into<BlockId> + Send + Sync>(
+pub async fn fetch_block<M: Middleware + 'static, T: Into<BlockId> + Send + Sync>(
     middleware: &M,
     block_id: T,
-) -> Result<Block> {
+) -> Result<Block, M> {
     middleware
         .get_block(block_id)
         .await
-        .map_err(|e| -> Box<dyn std::error::Error + Send + Sync> { Box::new(e) })
         .context(EthersProviderSnafu)?
         .ok_or(snafu::NoneError)
         .context(BlockUnavailableSnafu)?
         .try_into()
         .map_err(|_| snafu::NoneError)
         .context(BlockIncompleteSnafu)
+}
+
+pub async fn current_block_number<M: Middleware + 'static>(middleware: &M) -> Result<U64, M> {
+    middleware
+        .get_block_number()
+        .await
+        .context(EthersProviderSnafu)
+}
+
+pub async fn fetch_block_at_depth<M: Middleware + 'static>(
+    middleware: &M,
+    current: U64,
+    depth: usize,
+) -> Result<Block, M> {
+    ensure!(
+        current > depth.into(),
+        DepthTooHighSnafu {
+            depth,
+            latest: current.as_usize()
+        }
+    );
+
+    fetch_block(middleware, current - depth).await
 }
 
 #[cfg(test)]
@@ -282,7 +319,7 @@ mod tests {
     }
 
     async fn update_archive_with_latest(m: &MockMiddleware, a: &BlockArchive<MockMiddleware>) {
-        a.update_latest_block(m.get_latest_block().await.unwrap())
+        a.update_latest_block(Arc::new(m.get_latest_block().await.unwrap()))
             .await
             .unwrap();
     }
@@ -316,7 +353,7 @@ mod tests {
         for i in 0..128 {
             latest = m.add_block(latest).await.unwrap();
             update_archive_with_latest(&m, &archive).await;
-            let diff = archive.blocks_since(8, &previous).await.unwrap();
+            let diff = archive.blocks_since(8, previous).await.unwrap();
 
             previous = match diff {
                 BlocksSince::Normal(v) => {
@@ -339,7 +376,7 @@ mod tests {
         let previous = archive.block_at_depth(8).await.unwrap();
 
         for i in (0..8).rev() {
-            let diff = archive.blocks_since(i, &previous).await.unwrap();
+            let diff = archive.blocks_since(i, previous.clone()).await.unwrap();
             assert!(matches!(diff, BlocksSince::Normal(v) if v.len() == 8 - i));
         }
     }
@@ -357,7 +394,7 @@ mod tests {
             if i % 2 != 0 {
                 update_archive_with_latest(&m, &archive).await;
 
-                let diff = archive.blocks_since(8, &previous).await.unwrap();
+                let diff = archive.blocks_since(8, previous).await.unwrap();
 
                 previous = match diff {
                     BlocksSince::Normal(v) => {
@@ -388,7 +425,7 @@ mod tests {
         for i in 0..7 {
             temp_latest = m.add_block(temp_latest).await.unwrap();
             update_archive_with_latest(&m, &archive).await;
-            let diff = archive.blocks_since(8, &previous).await.unwrap();
+            let diff = archive.blocks_since(8, previous.clone()).await.unwrap();
 
             previous = match diff {
                 BlocksSince::Normal(v) => {
@@ -407,7 +444,7 @@ mod tests {
         for _ in 0..7 {
             latest = m.add_block(latest).await.unwrap();
             update_archive_with_latest(&m, &archive).await;
-            let diff = archive.blocks_since(8, &previous).await.unwrap();
+            let diff = archive.blocks_since(8, previous.clone()).await.unwrap();
 
             match diff {
                 BlocksSince::Normal(v) => {
@@ -422,7 +459,7 @@ mod tests {
 
         m.add_block(latest).await.unwrap();
         update_archive_with_latest(&m, &archive).await;
-        let diff = archive.blocks_since(8, &previous).await.unwrap();
+        let diff = archive.blocks_since(8, previous).await.unwrap();
 
         match diff {
             BlocksSince::Normal(v) => {
@@ -448,7 +485,7 @@ mod tests {
         for i in 0..9 {
             temp_latest = m.add_block(temp_latest).await.unwrap();
             update_archive_with_latest(&m, &archive).await;
-            let diff = archive.blocks_since(8, &previous).await.unwrap();
+            let diff = archive.blocks_since(8, previous.clone()).await.unwrap();
 
             previous = match diff {
                 BlocksSince::Normal(v) => {
@@ -467,7 +504,7 @@ mod tests {
         for _ in 0..9 {
             latest = m.add_block(latest).await.unwrap();
             update_archive_with_latest(&m, &archive).await;
-            let diff = archive.blocks_since(8, &previous).await.unwrap();
+            let diff = archive.blocks_since(8, previous.clone()).await.unwrap();
 
             match diff {
                 BlocksSince::Normal(v) => {
@@ -482,7 +519,7 @@ mod tests {
 
         m.add_block(latest).await.unwrap();
         update_archive_with_latest(&m, &archive).await;
-        let diff = archive.blocks_since(8, &previous).await.unwrap();
+        let diff = archive.blocks_since(8, previous).await.unwrap();
 
         match diff {
             BlocksSince::Normal(_) => {

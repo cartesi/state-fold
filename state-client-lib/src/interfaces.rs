@@ -7,6 +7,8 @@ use state_fold_types::{
     Block, BlockState, BlockStreamItem, BlocksSince, QueryBlock, StateStreamItem, StatesSince,
 };
 
+use std::sync::Arc;
+
 use async_trait::async_trait;
 use std::pin::Pin;
 use tokio_stream::Stream;
@@ -16,7 +18,7 @@ pub trait BlockServer {
     async fn query_block(
         &self,
         query_block: impl Into<QueryBlock> + Send + 'static,
-    ) -> Result<Block>;
+    ) -> Result<Arc<Block>>;
 
     async fn query_blocks_since(
         &self,

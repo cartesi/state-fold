@@ -11,7 +11,7 @@ use async_trait::async_trait;
 use std::sync::Arc;
 
 #[async_trait]
-pub trait Foldable: Clone + Send + Sync + std::fmt::Debug {
+pub trait Foldable: Send + Sync + std::fmt::Debug + Sized {
     type InitialState: Clone + PartialEq + Eq + std::hash::Hash + Send + Sync;
     type Error: std::error::Error;
     type UserData: Send + Sync;

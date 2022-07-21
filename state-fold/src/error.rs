@@ -1,5 +1,6 @@
 use crate::Foldable;
 
+use block_history::BlockArchiveError;
 use state_fold_types::ethers;
 
 use ethers::providers::{FromErr, Middleware};
@@ -15,24 +16,17 @@ pub enum FoldableError<M: Middleware + 'static, F: Foldable + 'static> {
     #[snafu(display("Middleware error: {}", source))]
     MiddlewareError { source: M::Error },
 
+    #[snafu(display("Block Archive error: {}", source))]
+    BlockArchiveError { source: BlockArchiveError<M> },
+
     #[snafu(display("Requested block unavailable"))]
     BlockUnavailable {},
-
-    #[snafu(display("Requested block incomplete"))]
-    BlockIncomplete {},
 
     #[snafu(display("Requested log unavailable"))]
     LogUnavailable {},
 
     #[snafu(display("Partition error: {:?}", sources))]
     PartitionError { sources: Vec<M::Error> },
-
-    #[snafu(display(
-        "Query depth of ({}) higher than blocks in chain ({})",
-        depth,
-        current_block
-    ))]
-    QueryDepthTooHigh { depth: usize, current_block: usize },
 }
 
 impl<M: Middleware, F: Foldable> FromErr<M::Error> for FoldableError<M, F> {
