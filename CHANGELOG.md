@@ -6,11 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.3.0] - 2022-06-14
+## [0.3.0] - 2022-07-26
 ### Changes
 - Improve `state-fold` memory consumption through structural sharing.
 
 - Add `block_archive` to `state-fold` for caching.
+
+- Add configuration module to `state-server-lib`, and `state-client-lib`.
 
 - Improve configuration modules in `block-archive` and `state-fold`.
 
@@ -20,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improve the interface of `utils` module in `state-server-lib`.
 
-- Upgrade `ethers` to `0.14`
+- Upgrade `ethers` to `0.15`
 
   This version is at the time latest and includes fix for the `DiamondCut` ABIs being incorrectly generated which is not included in any published version yet
 
