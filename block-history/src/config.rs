@@ -1,6 +1,3 @@
-use state_fold_types::config_utils;
-
-use snafu::Snafu;
 use std::time::Duration;
 use structopt::StructOpt;
 
@@ -28,28 +25,18 @@ pub struct BHConfig {
     pub max_depth: usize,
 }
 
-#[derive(Debug, Snafu)]
-pub enum Error {
-    #[snafu(display("Configuration missing websocket endpoint url"))]
-    MissingWsUrl {},
-
-    #[snafu(display("Error while loading configuration file: {}", source,))]
-    ConfigFileError { source: config_utils::Error },
-}
-pub type Result<T> = std::result::Result<T, Error>;
-
 // default values
 const DEFAULT_ENDPOINT: &str = "ws://localhost:8545";
 const DEFAULT_MAX_DEPTH: usize = 1000;
 const DEFAULT_TIMEOUT: u64 = 60;
 
 impl BHConfig {
-    pub fn initialize_from_args() -> Result<Self> {
+    pub fn initialize_from_args() -> Self {
         let env_cli_config = BHEnvCLIConfig::from_args();
         Self::initialize(env_cli_config)
     }
 
-    pub fn initialize(env_cli_config: BHEnvCLIConfig) -> Result<Self> {
+    pub fn initialize(env_cli_config: BHEnvCLIConfig) -> Self {
         let ws_endpoint = env_cli_config
             .bh_ws_endpoint
             .unwrap_or(DEFAULT_ENDPOINT.to_string());
@@ -59,10 +46,10 @@ impl BHConfig {
 
         let max_depth = env_cli_config.bh_max_depth.unwrap_or(DEFAULT_MAX_DEPTH);
 
-        Ok(BHConfig {
+        BHConfig {
             ws_endpoint,
             block_timeout,
             max_depth,
-        })
+        }
     }
 }

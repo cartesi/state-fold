@@ -1,8 +1,8 @@
 use snafu::{ResultExt, Snafu};
 use structopt::StructOpt;
 
-use block_history::config::{BHConfig, BHEnvCLIConfig, Error as BHError};
-use state_fold::config::{Error as SFError, SFConfig, SFEnvCLIConfig};
+use block_history::config::{BHConfig, BHEnvCLIConfig};
+use state_fold::config::{SFConfig, SFEnvCLIConfig};
 
 #[derive(StructOpt, Clone, Debug)]
 #[structopt(
@@ -30,12 +30,6 @@ pub struct StateServerConfig {
 
 #[derive(Debug, Snafu)]
 pub enum ConfigError {
-    #[snafu(display("Error loading state-fold configuration: {}", source))]
-    SFError { source: SFError },
-
-    #[snafu(display("Error loading block-history configuration: {}", source))]
-    BHError { source: BHError },
-
     #[snafu(display("Error loading block-history configuration: {}", source))]
     AddressParseError { source: std::net::AddrParseError },
 }
@@ -50,8 +44,8 @@ impl StateServerConfig {
     }
 
     pub fn initialize(env_cli_config: StateServerEnvCLIConfig) -> Result<Self> {
-        let state_fold = SFConfig::initialize(env_cli_config.state_fold).context(SFSnafu)?;
-        let block_history = BHConfig::initialize(env_cli_config.block_history).context(BHSnafu)?;
+        let state_fold = SFConfig::initialize(env_cli_config.state_fold);
+        let block_history = BHConfig::initialize(env_cli_config.block_history);
 
         let server_address: std::net::SocketAddr = env_cli_config
             .ss_server_address

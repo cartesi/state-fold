@@ -39,20 +39,20 @@ pub trait StateServer {
 
     async fn query_state(
         &self,
-        initial_state: Self::InitialState,
+        initial_state: &Self::InitialState,
         query_block: impl Into<QueryBlock> + Send + 'static,
     ) -> Result<BlockState<Self::State>>;
 
     async fn query_states_since(
         &self,
-        initial_state: Self::InitialState,
+        initial_state: &Self::InitialState,
         previous_block_hash: H256,
         depth: usize,
     ) -> Result<StatesSince<Self::State>>;
 
     async fn subscribe_states(
         &self,
-        initial_state: Self::InitialState,
+        initial_state: &Self::InitialState,
         confirmations: usize,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<StateStreamItem<Self::State>>>>>>;
 }

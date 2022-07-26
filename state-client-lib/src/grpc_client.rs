@@ -23,10 +23,22 @@ use async_trait::async_trait;
 use std::pin::Pin;
 use tokio_stream::{Stream, StreamExt};
 
-struct GrpcStateFoldClient<I, S> {
+pub struct GrpcStateFoldClient<I, S> {
     client: StateFoldClient<Channel>,
     __marker1: std::marker::PhantomData<I>,
     __marker2: std::marker::PhantomData<S>,
+}
+
+impl<I, S> GrpcStateFoldClient<I, S> {
+    pub fn new_from_channel(channel: Channel) -> Self {
+        let client = StateFoldClient::new(channel);
+
+        Self {
+            client,
+            __marker1: std::marker::PhantomData,
+            __marker2: std::marker::PhantomData,
+        }
+    }
 }
 
 #[async_trait]
@@ -131,7 +143,7 @@ where
 
     async fn query_state(
         &self,
-        initial_state: Self::InitialState,
+        initial_state: &Self::InitialState,
         query_block: impl Into<QueryBlock> + Send + 'static,
     ) -> Result<BlockState<Self::State>> {
         let mut client = self.client.clone();
@@ -164,7 +176,7 @@ where
 
     async fn query_states_since(
         &self,
-        initial_state: Self::InitialState,
+        initial_state: &Self::InitialState,
         previous_block_hash: H256,
         depth: usize,
     ) -> Result<StatesSince<Self::State>> {
@@ -197,7 +209,7 @@ where
 
     async fn subscribe_states(
         &self,
-        initial_state: Self::InitialState,
+        initial_state: &Self::InitialState,
         confirmations: usize,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<StateStreamItem<Self::State>>>>>> {
         let mut client = self.client.clone();

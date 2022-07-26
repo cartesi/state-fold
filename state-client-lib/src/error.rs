@@ -12,6 +12,9 @@ pub enum StateServerError {
         source: tonic::Status,
     },
 
+    #[snafu(display("Transport error: {}", source))]
+    TransportError { source: tonic::transport::Error },
+
     #[snafu(display("Serialize error: {}", source))]
     SerializeError { source: serde_json::Error },
 
@@ -26,8 +29,6 @@ pub enum StateServerError {
         context: String,
         source: StateConversionError,
     },
-    // #[snafu(display("Grpc message incomplete error: {}", context,))]
-    // GrpcMessageIncompleteError { context: String },
 }
 
 pub type Result<T> = std::result::Result<T, StateServerError>;
