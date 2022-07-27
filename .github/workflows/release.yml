@@ -1,9 +1,6 @@
 name: Release
 
 on:
-  pull_request:
-    paths:
-      - .github/workflows/release.yml
   push:
     tags:
       - v*
@@ -101,7 +98,9 @@ jobs:
 
   publish-state-fold:
     name: 🌎 Publish state-fold crate
-    needs: publish-state-fold-types
+    needs:
+      - publish-block-history
+      - publish-state-fold-types
     runs-on: ubuntu-latest
     steps:
       - name: 📚 Clone repository
