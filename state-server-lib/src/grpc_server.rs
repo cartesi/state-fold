@@ -11,7 +11,7 @@ use state_server_common::state_fold_server;
 
 use tonic::{Request, Response, Status};
 
-use ethers::providers::{Middleware, PubsubClient};
+use ethers::providers::Middleware;
 use ethers::types::H256;
 use state_fold_types;
 use state_fold_types::ethers;
@@ -52,7 +52,6 @@ impl<M: Middleware + 'static, UD, F: Foldable<UserData = UD>> StateServer<M, UD,
 impl<M: Middleware + 'static, UD: Send + Sync + 'static, F: Foldable<UserData = UD> + 'static>
     StateFold for StateServer<M, UD, F>
 where
-    <M as Middleware>::Provider: PubsubClient,
     F::InitialState: serde::de::DeserializeOwned + 'static,
     F: serde::Serialize,
 {

@@ -1,8 +1,9 @@
 use crate::block_archive::{self, BlockArchive};
 
-use ethers::providers::{Middleware, PubsubClient};
-use state_fold_types::ethers;
-use state_fold_types::{Block, BlockError, BlockStreamItem, BlocksSince};
+use state_fold_types::{
+    ethers::providers::{Middleware, Provider, ProviderError, Ws},
+    Block, BlockError, BlockStreamItem, BlocksSince,
+};
 
 use std::sync::Arc;
 use tokio::sync::{oneshot, watch};
@@ -11,7 +12,7 @@ use tokio_stream::{Stream, StreamExt};
 use snafu::{ResultExt, Snafu};
 
 #[derive(Debug, Snafu, Clone)]
-pub enum BlockSubscriberError<M: ethers::providers::Middleware + 'static> {
+pub enum BlockSubscriberError<M: Middleware + 'static> {
     #[snafu(display("Ethers provider error: {}", source))]
     EthersProviderError { source: M::Error },
 
@@ -23,12 +24,15 @@ pub enum BlockSubscriberError<M: ethers::providers::Middleware + 'static> {
 
     #[snafu(display("Ethers subscription dropped"))]
     EthersSubscriptionDropped {},
+
+    #[snafu(display("Failed to stablish Ws connection"))]
+    ProviderWsConnectError { source: Arc<ProviderError> },
 }
 
 pub type Result<T, M> = std::result::Result<T, Arc<BlockSubscriberError<M>>>;
 
 #[derive(Debug, Snafu)]
-pub enum SubscriptionError<M: ethers::providers::Middleware + 'static> {
+pub enum SubscriptionError<M: Middleware + 'static> {
     #[snafu(display("Subscriber dropped: {}", source))]
     SubscriptionDropped {
         source: tokio::sync::watch::error::RecvError,
@@ -42,20 +46,18 @@ pub enum SubscriptionError<M: ethers::providers::Middleware + 'static> {
 pub type SubscriptionResult<T, M> = std::result::Result<T, SubscriptionError<M>>;
 
 pub struct BlockSubscriber<M: Middleware + 'static> {
-    pub handle: tokio::task::JoinHandle<Result<(), M>>,
+    pub handle: tokio::task::JoinHandle<Result<(), Provider<Ws>>>,
     pub block_archive: Arc<BlockArchive<M>>,
-    pub shutdown_notifier: watch::Receiver<Option<Result<(), M>>>,
+    pub shutdown_notifier: watch::Receiver<Option<Result<(), Provider<Ws>>>>,
 
     new_block_alarm: watch::Receiver<()>,
     _kill_switch: oneshot::Sender<()>,
 }
 
-impl<M: Middleware + 'static> BlockSubscriber<M>
-where
-    <M as Middleware>::Provider: PubsubClient,
-{
+impl<M: Middleware + 'static> BlockSubscriber<M> {
     pub async fn start(
         middleware: Arc<M>,
+        ws_url: String,
         subscriber_timeout: std::time::Duration,
         max_depth: usize,
     ) -> crate::block_archive::Result<Self, M> {
@@ -71,7 +73,7 @@ where
         let handle = tokio::spawn(async move {
             // Create future of `background_process` main loop. This
             // future will run against the kill_switch.
-            let task = background_process(middleware, archive, new_block_tx, subscriber_timeout);
+            let task = background_process(ws_url, archive, new_block_tx, subscriber_timeout);
             tokio::pin!(task);
 
             tokio::select! {
@@ -95,7 +97,7 @@ where
         })
     }
 
-    pub async fn wait_for_completion(&self) -> Result<(), M> {
+    pub async fn wait_for_completion(&self) -> Result<(), Provider<Ws>> {
         let mut notifier = self.shutdown_notifier.clone();
 
         {
@@ -162,17 +164,20 @@ where
 
 #[tracing::instrument(skip_all)]
 async fn background_process<M: Middleware + 'static>(
-    middleware: Arc<M>,
+    ws_url: String,
     block_archive: Arc<BlockArchive<M>>,
     new_block_alarm: watch::Sender<()>,
     subscriber_timeout: std::time::Duration,
-) -> Result<(), M>
-where
-    <M as Middleware>::Provider: PubsubClient,
-{
+) -> Result<(), Provider<Ws>> {
     loop {
-        tracing::trace!("Starting web3 subscription");
-        let subscription = middleware
+        tracing::trace!("Starting Ws connection");
+        let provider = Provider::connect(ws_url.clone())
+            .await
+            .map_err(Arc::new)
+            .context(ProviderWsConnectSnafu)?;
+
+        tracing::trace!("Starting block subscription");
+        let subscription = provider
             .subscribe_blocks()
             .await
             .context(EthersProviderSnafu)

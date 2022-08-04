@@ -1,7 +1,7 @@
 use crate::grpc_server::StateServer;
 
 use state_fold::Foldable;
-use state_fold_types::ethers::providers::{Middleware, PubsubClient};
+use state_fold_types::ethers::providers::Middleware;
 use state_server_common::state_fold_server::state_fold_server::StateFoldServer;
 
 use std::sync::Arc;
@@ -18,7 +18,6 @@ pub async fn start_server<
     kill_switch: oneshot::Receiver<()>,
 ) -> Result<(), tonic::transport::Error>
 where
-    <M as Middleware>::Provider: PubsubClient,
     F::InitialState: serde::de::DeserializeOwned + 'static,
     F: serde::Serialize,
 {

@@ -5,28 +5,34 @@ use structopt::StructOpt;
 #[structopt(name = "bh_config", about = "Configuration for block-history")]
 pub struct BHEnvCLIConfig {
     /// URL of websocket enpoint for block history
-    #[structopt(long)]
+    #[structopt(long, env)]
     pub bh_ws_endpoint: Option<String>,
 
+    /// URL of http enpoint for block history
+    #[structopt(long, env)]
+    pub bh_http_endpoint: Option<String>,
+
     /// Timeout value (secs) for block subscription
-    #[structopt(long)]
+    #[structopt(long, env)]
     pub bh_block_timeout: Option<u64>,
 
     /// How far back can we look into the block history from the most recent
     /// block index
-    #[structopt(long)]
+    #[structopt(long, env)]
     pub bh_max_depth: Option<usize>,
 }
 
 #[derive(Clone, Debug)]
 pub struct BHConfig {
     pub ws_endpoint: String,
+    pub http_endpoint: String,
     pub block_timeout: Duration,
     pub max_depth: usize,
 }
 
 // default values
-const DEFAULT_ENDPOINT: &str = "ws://localhost:8545";
+const DEFAULT_WS_ENDPOINT: &str = "ws://localhost:8545";
+const DEFAULT_HTTP_ENDPOINT: &str = "http://localhost:8545";
 const DEFAULT_MAX_DEPTH: usize = 1000;
 const DEFAULT_TIMEOUT: u64 = 60;
 
@@ -39,7 +45,11 @@ impl BHConfig {
     pub fn initialize(env_cli_config: BHEnvCLIConfig) -> Self {
         let ws_endpoint = env_cli_config
             .bh_ws_endpoint
-            .unwrap_or(DEFAULT_ENDPOINT.to_string());
+            .unwrap_or(DEFAULT_WS_ENDPOINT.to_string());
+
+        let http_endpoint = env_cli_config
+            .bh_http_endpoint
+            .unwrap_or(DEFAULT_HTTP_ENDPOINT.to_string());
 
         let block_timeout =
             Duration::from_secs(env_cli_config.bh_block_timeout.unwrap_or(DEFAULT_TIMEOUT));
@@ -48,6 +58,7 @@ impl BHConfig {
 
         BHConfig {
             ws_endpoint,
+            http_endpoint,
             block_timeout,
             max_depth,
         }

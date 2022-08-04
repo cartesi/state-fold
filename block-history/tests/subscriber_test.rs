@@ -2,7 +2,7 @@ use block_history::BlockSubscriber;
 use state_fold_types::BlockStreamItem;
 
 use ethers::core::utils::Geth;
-use ethers::providers::{Middleware, Provider};
+use ethers::providers::{Http, Middleware, Provider};
 use state_fold_types::{ethers, Block};
 
 use std::sync::Arc;
@@ -11,10 +11,11 @@ use tokio_stream::StreamExt;
 #[tokio::test]
 async fn subscribe_test() -> Result<(), Box<dyn std::error::Error>> {
     let geth = Geth::new().block_time(1u64).spawn();
-    let provider = Arc::new(Provider::connect(geth.ws_endpoint()).await?);
+    let provider = Arc::new(Provider::<Http>::try_from(geth.endpoint())?);
 
     let block_history = BlockSubscriber::start(
         Arc::clone(&provider),
+        geth.ws_endpoint(),
         std::time::Duration::from_secs(3),
         100,
     )
