@@ -78,6 +78,11 @@ impl<M: Middleware + 'static> BlockSubscriber<M> {
 
             tokio::select! {
                 res = &mut task => {
+                    tracing::error!(
+                        "subscriber `background_process` exited with error: {:?}",
+                        res
+                    );
+
                     let _ = shutdown_sender.send(Some(res.clone()));
                     res
                 },
