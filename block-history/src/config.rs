@@ -4,11 +4,11 @@ use structopt::StructOpt;
 #[derive(StructOpt, Clone, Debug)]
 #[structopt(name = "bh_config", about = "Configuration for block-history")]
 pub struct BHEnvCLIConfig {
-    /// URL of websocket enpoint for block history
+    /// URL of websocket endpoint for block history
     #[structopt(long, env)]
     pub bh_ws_endpoint: Option<String>,
 
-    /// URL of http enpoint for block history
+    /// URL of http endpoint for block history
     #[structopt(long, env)]
     pub bh_http_endpoint: Option<String>,
 

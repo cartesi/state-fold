@@ -175,7 +175,7 @@ async fn background_process<M: Middleware + 'static>(
     subscriber_timeout: std::time::Duration,
 ) -> Result<(), Provider<Ws>> {
     loop {
-        tracing::trace!("Starting Ws connection");
+        tracing::trace!("Starting Ws connection at {}", ws_url);
         let provider = Provider::connect(ws_url.clone())
             .await
             .map_err(Arc::new)
