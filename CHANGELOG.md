@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2022-08-04
+### Changes
+- Make `block-subscriber` use a different provider for subscription,
+reestablishing it at every subscription attempt.
+
+- Add new field to `block-history` configuration for http endpoint.
+
+### Fix
+- Fix reorg detection bug not updating correctly.
+
+- Make state-server-lib shutting down in case of subscription error.
+
+- Make `block-history` configuration accept environment variables.
+
+
 ## [0.4.0] - 2022-08-01
 ### Changes
 - Add `rustls` support
@@ -80,7 +95,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2021-12-28
 - Initial release
 
-[Unreleased]: https://github.com/cartesi-corp/state-fold/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/cartesi-corp/state-fold/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/cartesi-corp/state-fold/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/cartesi-corp/state-fold/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/cartesi-corp/state-fold/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/cartesi-corp/state-fold/compare/v0.2.1...v0.2.2
