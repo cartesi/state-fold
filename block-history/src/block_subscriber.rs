@@ -10,7 +10,7 @@ use tokio_stream::{Stream, StreamExt};
 
 use snafu::{ResultExt, Snafu};
 
-#[derive(Debug, Snafu)]
+#[derive(Debug, Snafu, Clone)]
 pub enum BlockSubscriberError<M: ethers::providers::Middleware + 'static> {
     #[snafu(display("Ethers provider error: {}", source))]
     EthersProviderError { source: M::Error },
@@ -19,13 +19,13 @@ pub enum BlockSubscriberError<M: ethers::providers::Middleware + 'static> {
     BlockIncomplete { err: BlockError },
 
     #[snafu(display("New block subscriber timeout: {}", source))]
-    NewBlockSubscriberTimeout { source: std::io::Error },
+    NewBlockSubscriberTimeout { source: Arc<std::io::Error> },
 
     #[snafu(display("Ethers subscription dropped"))]
     EthersSubscriptionDropped {},
 }
 
-pub type Result<T, M> = std::result::Result<T, BlockSubscriberError<M>>;
+pub type Result<T, M> = std::result::Result<T, Arc<BlockSubscriberError<M>>>;
 
 #[derive(Debug, Snafu)]
 pub enum SubscriptionError<M: ethers::providers::Middleware + 'static> {
@@ -44,6 +44,7 @@ pub type SubscriptionResult<T, M> = std::result::Result<T, SubscriptionError<M>>
 pub struct BlockSubscriber<M: Middleware + 'static> {
     pub handle: tokio::task::JoinHandle<Result<(), M>>,
     pub block_archive: Arc<BlockArchive<M>>,
+    pub shutdown_notifier: watch::Receiver<Option<Result<(), M>>>,
 
     new_block_alarm: watch::Receiver<()>,
     _kill_switch: oneshot::Sender<()>,
@@ -61,6 +62,7 @@ where
         let archive = Arc::new(BlockArchive::new(middleware.clone(), max_depth).await?);
 
         let (kill_tx, kill_rx) = oneshot::channel();
+        let (shutdown_sender, shutdown_notifier) = watch::channel(None);
         let (new_block_tx, new_block_alarm) = watch::channel(());
 
         let block_archive = archive.clone();
@@ -74,6 +76,7 @@ where
 
             tokio::select! {
                 res = &mut task => {
+                    let _ = shutdown_sender.send(Some(res.clone()));
                     res
                 },
 
@@ -86,9 +89,35 @@ where
         Ok(Self {
             handle,
             block_archive,
+            shutdown_notifier,
             new_block_alarm,
             _kill_switch: kill_tx,
         })
+    }
+
+    pub async fn wait_for_completion(&self) -> Result<(), M> {
+        let mut notifier = self.shutdown_notifier.clone();
+
+        {
+            let ret = notifier.borrow();
+            if let Some(r) = ret.clone() {
+                return r;
+            }
+        }
+
+        loop {
+            notifier
+                .changed()
+                .await
+                .expect("`shutdown_notifier` should never be closed in this context");
+
+            let ret = notifier.borrow();
+            if let Some(r) = ret.clone() {
+                break r;
+            } else {
+                continue;
+            }
+        }
     }
 
     pub async fn subscribe_new_blocks_at_depth(
@@ -119,6 +148,10 @@ where
                     }
 
                     BlocksSince::Reorg(blocks) => {
+                        if let Some(p) = blocks.last() {
+                            previous = p.clone();
+                        }
+
                         yield BlockStreamItem::Reorg(blocks);
                     }
                 }
@@ -146,7 +179,7 @@ where
             .map(|subscription| {
                 Box::pin(subscription.timeout(subscriber_timeout).map(|x| {
                     let block_header = x
-                        .map_err(|e| e.into())
+                        .map_err(|e| Arc::new(e.into()))
                         .context(NewBlockSubscriberTimeoutSnafu)?;
 
                     let block = block_header

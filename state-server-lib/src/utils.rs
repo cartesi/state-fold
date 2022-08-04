@@ -1,16 +1,11 @@
 use crate::grpc_server::StateServer;
 
-use state_fold_server::state_fold_server::StateFoldServer;
-use state_server_common::state_fold_server;
-
 use state_fold::Foldable;
+use state_fold_types::ethers::providers::{Middleware, PubsubClient};
+use state_server_common::state_fold_server::state_fold_server::StateFoldServer;
 
-use ethers::providers::{Middleware, PubsubClient};
-use state_fold_types;
-use state_fold_types::ethers;
-
-use tokio::signal;
-use tokio::sync::oneshot;
+use std::sync::Arc;
+use tokio::{select, signal, sync::oneshot};
 use tonic::transport::Server;
 
 pub async fn start_server<
@@ -28,9 +23,12 @@ where
     F: serde::Serialize,
 {
     let (mut health_reporter, health_server) = tonic_health::server::health_reporter();
+
     health_reporter
         .set_serving::<StateFoldServer<StateServer<M, UD, F>>>()
         .await;
+
+    let block_subscriber = Arc::clone(&state_server.block_subscriber);
 
     tracing::info!("StateFoldServer listening on {}", address);
 
@@ -39,8 +37,18 @@ where
         .add_service(health_server)
         .add_service(StateFoldServer::new(state_server))
         .serve_with_shutdown(address, async {
-            kill_switch.await.ok();
-            println!("Graceful context shutdown");
+            select! {
+                r = block_subscriber.wait_for_completion() => {
+                    tracing::error!("`block_subscriber` has exited: {:?}", r);
+                    tracing::error!("Shutting down...");
+                    return;
+                }
+
+                r = kill_switch => {
+                    tracing::info!("Graceful context shutdown: {:?}", r);
+                    return;
+                }
+            }
         })
         .await
 }

@@ -30,8 +30,8 @@ use std::sync::Arc;
 use tokio_stream::Stream;
 
 pub struct StateServer<M: Middleware + 'static, UD, F: Foldable<UserData = UD>> {
-    block_subscriber: Arc<BlockSubscriber<M>>,
-    env: Arc<StateFoldEnvironment<M, UD>>,
+    pub block_subscriber: Arc<BlockSubscriber<M>>,
+    pub env: Arc<StateFoldEnvironment<M, UD>>,
     __phantom: std::marker::PhantomData<F>,
 }
 
