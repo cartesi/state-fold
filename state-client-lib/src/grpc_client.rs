@@ -103,7 +103,7 @@ where
     async fn subscribe_blocks(
         &self,
         confirmations: usize,
-    ) -> Result<Pin<Box<dyn Stream<Item = Result<BlockStreamItem>>>>> {
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<BlockStreamItem>> + Send>>> {
         let mut client = self.client.clone();
 
         let request = Request::new(SubscribeNewBlocksRequest {
@@ -211,7 +211,7 @@ where
         &self,
         initial_state: &Self::InitialState,
         confirmations: usize,
-    ) -> Result<Pin<Box<dyn Stream<Item = Result<StateStreamItem<Self::State>>>>>> {
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<StateStreamItem<Self::State>>> + Send>>> {
         let mut client = self.client.clone();
 
         let initial_state_json = InitialState {

@@ -1,15 +1,15 @@
 [package]
 name = "state-client-lib"
 license = "Apache-2.0"
-version = "0.5.0"
+version = "0.6.0"
 authors = ["Gabriel Coutinho de Paula <gabriel.coutinho@cartesi.io>"]
 homepage = "https://cartesi.io"
 edition = "2021"
 publish = ["cartesi"]
 
 [dependencies]
-state-fold-types = { version = "0.5", registry = "cartesi", path = "../state-fold-types", features = ["ethers"] }
-state-server-common = { version = "0.5", registry = "cartesi", path = "../state-server-common", features = ["server"] }
+state-fold-types = { version = "0.6", registry = "cartesi", path = "../state-fold-types", features = ["ethers"] }
+state-server-common = { version = "0.6", registry = "cartesi", path = "../state-server-common", features = ["server"] }
 
 async-trait = "0.1"
 tonic = "0.7"

@@ -4,8 +4,6 @@ use ethers::{contract::Contract, providers::Middleware, types::H256};
 use state_fold_types::ethers;
 use state_fold_types::Block;
 
-use std::convert::TryInto;
-
 pub(crate) async fn set_value_get_block<F: Foldable, M: Middleware + Clone + 'static>(
     env: &StateFoldEnvironment<M, ()>,
     contract: &Contract<M>,
@@ -24,11 +22,5 @@ pub(crate) async fn set_value_get_block<F: Foldable, M: Middleware + Clone + 'st
         .block_hash
         .unwrap();
 
-    env.inner_middleware()
-        .get_block(hash)
-        .await
-        .unwrap()
-        .unwrap()
-        .try_into()
-        .unwrap()
+    env.block_with_hash(&hash).await.unwrap().as_ref().clone()
 }
