@@ -12,7 +12,7 @@ state-fold-types = { version = "0.6", registry = "cartesi", path = "../state-fol
 state-server-common = { version = "0.6", registry = "cartesi", path = "../state-server-common", features = ["server"] }
 
 async-trait = "0.1"
-tonic = "0.7"
+tonic = "0.8"
 tokio = { version = "1", features = ["sync"] }
 tokio-stream = "0.1"
 

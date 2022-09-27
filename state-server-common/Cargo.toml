@@ -21,8 +21,8 @@ client = []
 [dependencies]
 state-fold-types = { version = "0.6", registry = "cartesi", path = "../state-fold-types" }
 
-prost = "0.10"
-tonic = "0.7"
+prost = "0.11"
+tonic = "0.8"
 
 serde = "1"
 serde_json = "1"
@@ -30,5 +30,5 @@ snafu = "0.7"
 
 
 [build-dependencies]
-tonic-build = "0.7"
+tonic-build = "0.8"
 anyhow = "1"
