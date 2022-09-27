@@ -13,6 +13,7 @@ pub(crate) async fn set_value_get_block<F: Foldable, M: Middleware + Clone + 'st
         .connect(env.inner_middleware())
         .method::<_, H256>("setValue", value.to_owned())
         .unwrap()
+        .gas(8000000)
         .send()
         .await
         .unwrap()
