@@ -49,11 +49,17 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: 📦 Install protoc
+        run: |
+          sudo apt update && sudo apt upgrade -y
+          sudo apt install -y protobuf-compiler libprotobuf-dev
+
       - name: 📚 Clone repository
         uses: actions/checkout@v2
         with:
             submodules: recursive
             token: ${{ secrets.CI_TOKEN }}
+
       - name: ⚡ Cache
         uses: actions/cache@v2
         continue-on-error: true
@@ -71,6 +77,7 @@ jobs:
             toolchain: stable
             default: true
             components: clippy
+
       - name: 🔍 Analyse code with clippy
         uses: actions-rs/clippy-check@v1
         with:
