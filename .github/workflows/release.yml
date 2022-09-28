@@ -159,6 +159,11 @@ jobs:
         with:
           toolchain: stable
           default: true
+      - name: 📦 Install protoc
+        run: |
+          sudo apt update && sudo apt upgrade -y
+          sudo apt install -y protobuf-compiler libprotobuf-dev
+
       - name: 📦 Package state-server-common
         uses: actions-rs/cargo@v1
         with:
@@ -206,6 +211,11 @@ jobs:
         with:
           toolchain: stable
           default: true
+      - name: 📦 Install protoc
+        run: |
+          sudo apt update && sudo apt upgrade -y
+          sudo apt install -y protobuf-compiler libprotobuf-dev
+
       - name: 📦 Package state-server-lib
         uses: actions-rs/cargo@v1
         with:
@@ -251,6 +261,11 @@ jobs:
         with:
           toolchain: stable
           default: true
+      - name: 📦 Install protoc
+        run: |
+          sudo apt update && sudo apt upgrade -y
+          sudo apt install -y protobuf-compiler libprotobuf-dev
+
       - name: 📦 Package state-client-lib
         uses: actions-rs/cargo@v1
         with:
