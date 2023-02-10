@@ -5,11 +5,11 @@ use structopt::StructOpt;
 #[structopt(name = "sc_config", about = "Configuration for state-client-lib")]
 pub struct SCEnvCLIConfig {
     /// URL of state-fold server grpc
-    #[structopt(long)]
+    #[structopt(long, env)]
     pub sc_grpc_endpoint: Option<String>,
 
     /// Default confirmations
-    #[structopt(long)]
+    #[structopt(long, env)]
     pub sc_default_confirmations: Option<usize>,
 }
 

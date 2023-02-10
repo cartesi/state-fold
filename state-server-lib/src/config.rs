@@ -17,7 +17,7 @@ pub struct StateServerEnvCLIConfig {
     pub block_history: BHEnvCLIConfig,
 
     /// Server address
-    #[structopt(long)]
+    #[structopt(long, env)]
     pub ss_server_address: Option<String>,
 }
 

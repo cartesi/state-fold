@@ -5,19 +5,19 @@ use structopt::StructOpt;
 #[structopt(name = "sf_config", about = "Configuration for state fold")]
 pub struct SFEnvCLIConfig {
     /// Concurrent events fetch for logs query
-    #[structopt(long)]
+    #[structopt(long, env)]
     pub sf_concurrent_events_fetch: Option<usize>,
 
     /// Genesis block number for state fold access
-    #[structopt(long)]
+    #[structopt(long, env)]
     pub sf_genesis_block: Option<U64>,
 
     /// Query limit error codes for state fold access
-    #[structopt(long)]
+    #[structopt(long, env)]
     pub sf_query_limit_error_codes: Option<Vec<i32>>,
 
     /// Safety margin for state fold
-    #[structopt(long)]
+    #[structopt(long, env)]
     pub sf_safety_margin: Option<usize>,
 }
 
