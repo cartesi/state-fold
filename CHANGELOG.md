@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.6.3] - 2023-03-09
 ### Changes
 - Remove `structopt` and add `clap` for CLI configuration.
+- Change `ethers` lib to 1.0.
 
 ## [0.6.2] - 2023-02-16
 ### Fix

@@ -9,8 +9,8 @@ publish = ["cartesi"]
 
 [dependencies]
 serde = "1"
-ethers = { version = "0.17", optional = true, features = ["ws", "abigen", "rustls"] }
-ethabi = { version = "17" }
+ethers = { version = "1.0", optional = true, features = ["ws", "abigen", "rustls"] }
+ethabi = { version = "18" }
 serde_json = "1"
 toml = "0.5.8"
 anyhow = "1"
