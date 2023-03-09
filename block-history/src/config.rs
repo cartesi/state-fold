@@ -1,24 +1,25 @@
+use clap::Parser;
 use std::time::Duration;
-use structopt::StructOpt;
 
-#[derive(StructOpt, Clone, Debug)]
-#[structopt(name = "bh_config", about = "Configuration for block-history")]
+#[derive(Clone, Debug, Parser)]
+#[command(name = "bh_config")]
+#[command(about = "Configuration for block-history")]
 pub struct BHEnvCLIConfig {
     /// URL of websocket endpoint for block history
-    #[structopt(long, env)]
+    #[arg(long, env)]
     pub bh_ws_endpoint: Option<String>,
 
     /// URL of http endpoint for block history
-    #[structopt(long, env)]
+    #[arg(long, env)]
     pub bh_http_endpoint: Option<String>,
 
     /// Timeout value (secs) for block subscription
-    #[structopt(long, env)]
+    #[arg(long, env)]
     pub bh_block_timeout: Option<u64>,
 
     /// How far back can we look into the block history from the most recent
     /// block index
-    #[structopt(long, env)]
+    #[arg(long, env)]
     pub bh_max_depth: Option<usize>,
 }
 
@@ -38,7 +39,7 @@ const DEFAULT_TIMEOUT: u64 = 60;
 
 impl BHConfig {
     pub fn initialize_from_args() -> Self {
-        let env_cli_config = BHEnvCLIConfig::from_args();
+        let env_cli_config = BHEnvCLIConfig::parse();
         Self::initialize(env_cli_config)
     }
 

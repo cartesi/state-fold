@@ -1,23 +1,21 @@
+use clap::Parser;
 use snafu::{ResultExt, Snafu};
-use structopt::StructOpt;
 
 use block_history::config::{BHConfig, BHEnvCLIConfig};
 use state_fold::config::{SFConfig, SFEnvCLIConfig};
 
-#[derive(StructOpt, Clone, Debug)]
-#[structopt(
-    name = "sate_server_config",
-    about = "Configuration for state-fold state-server"
-)]
+#[derive(Debug, Clone, Parser)]
+#[command(name = "sate_server_config")]
+#[command(about = "Configuration for state-fold state-server")]
 pub struct StateServerEnvCLIConfig {
-    #[structopt(flatten)]
+    #[command(flatten)]
     pub state_fold: SFEnvCLIConfig,
 
-    #[structopt(flatten)]
+    #[command(flatten)]
     pub block_history: BHEnvCLIConfig,
 
     /// Server address
-    #[structopt(long, env)]
+    #[arg(long, env)]
     pub ss_server_address: Option<String>,
 }
 
@@ -39,7 +37,7 @@ const DEFAULT_SERVER_ADDRESS: &str = "0.0.0.0:50051";
 
 impl StateServerConfig {
     pub fn initialize_from_args() -> Result<Self> {
-        let env_cli_config = StateServerEnvCLIConfig::from_args();
+        let env_cli_config = StateServerEnvCLIConfig::parse();
         Self::initialize(env_cli_config)
     }
 

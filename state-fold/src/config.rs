@@ -1,23 +1,24 @@
+use clap::Parser;
 use state_fold_types::ethereum_types::U64;
-use structopt::StructOpt;
 
-#[derive(StructOpt, Clone, Debug)]
-#[structopt(name = "sf_config", about = "Configuration for state fold")]
+#[derive(Debug, Clone, Parser)]
+#[command(name = "sf_config")]
+#[command(about = "Configuration for state fold")]
 pub struct SFEnvCLIConfig {
     /// Concurrent events fetch for logs query
-    #[structopt(long, env)]
+    #[arg(long, env)]
     pub sf_concurrent_events_fetch: Option<usize>,
 
     /// Genesis block number for state fold access
-    #[structopt(long, env)]
+    #[arg(long, env)]
     pub sf_genesis_block: Option<U64>,
 
     /// Query limit error codes for state fold access
-    #[structopt(long, env)]
+    #[arg(long, env)]
     pub sf_query_limit_error_codes: Option<Vec<i32>>,
 
     /// Safety margin for state fold
-    #[structopt(long, env)]
+    #[arg(long, env)]
     pub sf_safety_margin: Option<usize>,
 }
 
@@ -36,7 +37,7 @@ const DEFAULT_SAFETY_MARGIN: usize = 20;
 
 impl SFConfig {
     pub fn initialize_from_args() -> Self {
-        let env_cli_config = SFEnvCLIConfig::from_args();
+        let env_cli_config = SFEnvCLIConfig::parse();
         Self::initialize(env_cli_config)
     }
 

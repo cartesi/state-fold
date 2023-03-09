@@ -1,15 +1,16 @@
+use clap::Parser;
 use snafu::{ResultExt, Snafu};
-use structopt::StructOpt;
 
-#[derive(StructOpt, Clone, Debug)]
-#[structopt(name = "sc_config", about = "Configuration for state-client-lib")]
+#[derive(Clone, Debug, Parser)]
+#[command(name = "sc_config")]
+#[command(about = "Configuration for state-client-lib")]
 pub struct SCEnvCLIConfig {
     /// URL of state-fold server grpc
-    #[structopt(long, env)]
+    #[arg(long, env)]
     pub sc_grpc_endpoint: Option<String>,
 
     /// Default confirmations
-    #[structopt(long, env)]
+    #[arg(long, env)]
     pub sc_default_confirmations: Option<usize>,
 }
 
@@ -31,7 +32,7 @@ const DEFAULT_DEFAULT_CONFIRMATIONS: usize = 7;
 
 impl SCConfig {
     pub fn initialize_from_args() -> Result<Self> {
-        let env_cli_config = SCEnvCLIConfig::from_args();
+        let env_cli_config = SCEnvCLIConfig::parse();
         Self::initialize(env_cli_config)
     }
 
