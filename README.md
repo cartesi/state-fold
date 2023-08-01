@@ -18,11 +18,6 @@ Developer also defines the behavior of **syncing** and **folding** to read **sta
 
 * [Rust 1.50+ stable](https://rustup.rs/)
 
-### For examples
-
-* [Solc 0.7.5+](https://docs.soliditylang.org/en/v0.8.11/installing-solidity.html#linux-packages)
-* [Geth 1.9.24+](https://geth.ethereum.org/docs/install-and-build/installing-geth)
-
 ## Installation
 
 This repository is a `cargo` workspace. Crates are published on `cartesi` crates registry. That's a private registry, so you need to add this into your `~/.cargo/config.toml`:
@@ -72,10 +67,6 @@ Format code:
 ```
 cargo fmt --all
 ```
-
-## Examples
-
-See [`examples/` directory](examples).
 
 ## Documentation
 
