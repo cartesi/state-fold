@@ -1,4 +1,6 @@
-# ![State Fold Picture](https://miro.medium.com/max/1400/1*SscxopPK3-BgUz2sFlnHUw.png "State Fold")
+# ![State Fold Picture](https://cartesi.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F0fd9b7e1-93a3-4c99-8680-eb28cbc6aa3e%2F2023_LinkedIn_Header_-_Core_Contributors_(1).png?table=block&id=9eea3776-7397-4739-81ad-c96172f72c1e&spaceId=62ffa304-a896-4e7e-823d-af99eb3cccf3&width=2000&userId=&cache=v2 "State Fold")
+
+# State Fold
 
 A collection of libraries with GRPC server and client for reading custom-defined state at any position on the Ethereum blockchain accessed via any Ethereum JSON-RPC API provider.
 
@@ -35,18 +37,18 @@ After that you can add one or more *State Fold* crates into your `Cargo.toml` li
 ```toml
 [dependencies]
 # Common crate for all other crates
-state-fold-types = { version = "0.2", registry = "cartesi" }
+state-fold-types = { version = "0.6", registry = "cartesi" }
 
 # Libraries for state-fold core logic
-block-history = { version = "0.2", registry = "cartesi" }
-state-fold = { version = "0.2", registry = "cartesi" }
+block-history = { version = "0.6", registry = "cartesi" }
+state-fold = { version = "0.6", registry = "cartesi" }
 
 # Common crate for server/client
-state-server-common = { version = "0.2", registry = "cartesi", features = ["server"] }
+state-server-common = { version = "0.6", registry = "cartesi", features = ["server"] }
 
 # Libraries for state-fold GRPC interfaces
-state-server-lib = { version = "0.2", registry = "cartesi" }
-state-client-lib = { version = "0.2", registry = "cartesi" }
+state-server-lib = { version = "0.6", registry = "cartesi" }
+state-client-lib = { version = "0.6", registry = "cartesi" }
 ```
 
 ## Usage
