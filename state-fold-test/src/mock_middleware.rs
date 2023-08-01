@@ -98,18 +98,13 @@ impl MockMiddleware {
     pub async fn get_block_with_number_from(&self, number: U64, tip: H256) -> Option<Block> {
         let mut current_hash = tip;
 
-        loop {
-            match self.chain.lock().await.get(&current_hash) {
-                Some(block) => {
-                    if block.number == number {
-                        return Some(block.clone());
-                    } else if block.number == 0.into() {
-                        return None;
-                    } else {
-                        current_hash = block.parent_hash;
-                    }
-                }
-                None => break,
+        while let Some(block) = self.chain.lock().await.get(&current_hash) {
+            if block.number == number {
+                return Some(block.clone());
+            } else if block.number == 0.into() {
+                return None;
+            } else {
+                current_hash = block.parent_hash;
             }
         }
 
@@ -148,7 +143,7 @@ impl Middleware for MockMiddleware {
         &self,
         block_hash_or_number: T,
     ) -> Result<Option<ethers::types::Block<H256>>, Self::Error> {
-        let b = match block_hash_or_number.into() {
+        let block = match block_hash_or_number.into() {
             BlockId::Hash(h) => MockMiddleware::get_block(self, h).await.unwrap(),
 
             BlockId::Number(BlockNumber::Number(n)) => {
@@ -164,13 +159,15 @@ impl Middleware for MockMiddleware {
             x => panic!("get_block not number {:?}", x),
         };
 
-        let mut ret = ethers::types::Block::default();
-        ret.hash = Some(b.hash);
-        ret.number = Some(b.number);
-        ret.parent_hash = b.parent_hash;
-        ret.timestamp = U256::zero();
-        ret.logs_bloom = Some(Bloom::zero());
+        let block = ethers::types::Block {
+            hash: Some(block.hash),
+            number: Some(block.number),
+            parent_hash: block.parent_hash,
+            timestamp: U256::zero(),
+            logs_bloom: Some(Bloom::zero()),
+            ..Default::default()
+        };
 
-        Ok(Some(ret))
+        Ok(Some(block))
     }
 }

@@ -4,7 +4,7 @@ use eth_state_fold_types::ethers;
 use ethers::core::types::Log;
 use ethers::providers::Middleware;
 
-pub fn sort_logs<M: Middleware>(logs: &mut Vec<Log>) -> Result<(), M> {
+pub fn sort_logs<M: Middleware>(logs: &mut [Log]) -> Result<(), M> {
     for log in logs.iter() {
         if !(log.block_number.is_some() && log.log_index.is_some()) {
             return LogUnavailableSnafu {}.fail();

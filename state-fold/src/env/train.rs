@@ -179,7 +179,7 @@ where
                     .ok_or(snafu::NoneError)
                     .context(BlockUnavailableSnafu)?;
 
-                let new_state = F::fold(&previous_state, &block, env, env.fold_access(&block))
+                let new_state = F::fold(previous_state, &block, env, env.fold_access(&block))
                     .await
                     .context(InnerSnafu)?;
 

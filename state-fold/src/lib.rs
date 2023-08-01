@@ -1,3 +1,6 @@
+#![allow(clippy::module_inception)]
+#![allow(clippy::too_many_arguments)]
+
 pub mod config;
 pub mod error;
 pub mod utils;

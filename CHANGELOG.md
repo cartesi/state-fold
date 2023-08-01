@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `eth-` prefix to all crate names. Since the crates are published
 to the public registry, names had to be improved. This prefix in
 particular was chosen as it is specific to the Ethereum base layer.
+- Rewrite readme.
+- Remove outdated examples.
+- Trigger CI workflows only on relevant file types.
+
+### Fixed
+- Apply all clippy suggestions; suppress warnings too complicated to
+fix with low impact.
 
 
 ## [0.6.3] - 2023-03-09

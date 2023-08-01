@@ -1,3 +1,5 @@
+#![allow(clippy::module_inception)]
+
 pub mod conversions;
 
 mod grpc_interface;

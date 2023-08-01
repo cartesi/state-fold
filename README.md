@@ -1,4 +1,4 @@
-# ![State Fold Picture](https://cartesi.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F0fd9b7e1-93a3-4c99-8680-eb28cbc6aa3e%2F2023_LinkedIn_Header_-_Core_Contributors_(1).png?table=block&id=9eea3776-7397-4739-81ad-c96172f72c1e&spaceId=62ffa304-a896-4e7e-823d-af99eb3cccf3&width=2000&userId=&cache=v2 "State Fold")
+![State Fold Picture](https://cartesi.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F0fd9b7e1-93a3-4c99-8680-eb28cbc6aa3e%2F2023_LinkedIn_Header_-_Core_Contributors_(1).png?table=block&id=9eea3776-7397-4739-81ad-c96172f72c1e&spaceId=62ffa304-a896-4e7e-823d-af99eb3cccf3&width=2000&userId=&cache=v2 "State Fold")
 
 # State Fold
 

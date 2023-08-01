@@ -12,7 +12,6 @@ mod utils;
 #[cfg(test)]
 mod tests {
     use crate::test_utils;
-    use crate::test_utils::mocks::MockFold;
     use crate::StateFoldEnvironment;
     use std::sync::Arc;
 
@@ -42,9 +41,9 @@ mod tests {
         );
 
         let block0 = eth_state_fold_test::utils::get_current_block(provider.as_ref()).await;
-        let block1 = test_utils::set_value_get_block::<MockFold, _>(&env, &contract, "this").await;
-        let block2 = test_utils::set_value_get_block::<MockFold, _>(&env, &contract, "that").await;
-        let block3 = test_utils::set_value_get_block::<MockFold, _>(&env, &contract, "other").await;
+        let block1 = test_utils::set_value_get_block::<_>(&env, &contract, "this").await;
+        let block2 = test_utils::set_value_get_block::<_>(&env, &contract, "that").await;
+        let block3 = test_utils::set_value_get_block::<_>(&env, &contract, "other").await;
 
         sync_middleware::tests::sync_query_test(
             account,

@@ -40,12 +40,10 @@ where
                 r = block_subscriber.wait_for_completion() => {
                     tracing::error!("`block_subscriber` has exited: {:?}", r);
                     tracing::error!("Shutting down...");
-                    return;
                 }
 
                 r = kill_switch => {
                     tracing::info!("Graceful context shutdown: {:?}", r);
-                    return;
                 }
             }
         })

@@ -265,11 +265,8 @@ where
                             map_blocks_into_grpc_states::<_, _, F>(blocks, &initial_state, &env)
                                 .await?;
 
-                        let response = Some(GrpcStateStreamResponse::ReorganizedStates(
-                            block_states
-                                .try_into()
-                                .map_err(|e| Status::internal(format!("{:?}", e)))?,
-                        ));
+                        let response =
+                            Some(GrpcStateStreamResponse::ReorganizedStates(block_states));
 
                         Ok(StateStreamResponse { response })
                     }
