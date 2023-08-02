@@ -1,5 +1,5 @@
 use clap::Parser;
-use state_fold_types::ethereum_types::U64;
+use eth_state_fold_types::ethereum_types::U64;
 
 #[derive(Debug, Clone, Parser)]
 #[command(name = "sf_config")]

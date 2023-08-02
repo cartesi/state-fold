@@ -18,7 +18,7 @@ pub use {crate::contract_include as include, crate::contract_path as path};
 ///
 /// ```no_run
 /// # use std::fs::File;
-/// # use state_fold_types::contract;
+/// # use eth_state_fold_types::contract;
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// let mut output = File::create(contract::path!("rollups_contract.rs"))?;
 /// # Ok(())
@@ -38,7 +38,7 @@ macro_rules! contract_path {
 /// same effect as importing `rollups_contract::*`.
 ///
 /// ```ignore
-/// # use state_fold_types::contract;
+/// # use eth_state_fold_types::contract;
 /// contract::include!("rollups_contract");
 /// ```
 #[macro_export]
@@ -56,7 +56,7 @@ macro_rules! contract_include {
 ///
 /// ```no_run
 /// # use std::fs::File;
-/// # use state_fold_types::contract;
+/// # use eth_state_fold_types::contract;
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// let source = File::open("../../artifacts/contracts/RollupsImpl.sol/RollupsImpl.abi")?;
 /// let mut output = File::create(contract::path!("rollups_contract.rs"))?;
@@ -123,7 +123,7 @@ where
     Ok(stdout)
 }
 
-/// Changes ethers crates to the state_fold_types reexport.
+/// Changes ethers crates to the eth_state_fold_types reexport.
 ///
 /// This way, updating the ethers version is trivial, and we make sure every
 /// contract bindings use it.
@@ -183,16 +183,16 @@ fn look_for_group(mut new_stream: TokenStream, stream: &mut IntoIter) -> TokenSt
 /// Find the first `use` statement and preface it with this:
 /// ```
 /// mod ethers_core {
-///     pub use state_fold_types::ethers::core::*;
+///     pub use eth_state_fold_types::ethers::core::*;
 /// }
 /// mod ethers_providers {
-///     pub use state_fold_types::ethers::providers::*;
+///     pub use eth_state_fold_types::ethers::providers::*;
 /// }
 /// mod ethers_contract {
-///     pub use state_fold_types::ethers::contract::*;
+///     pub use eth_state_fold_types::ethers::contract::*;
 /// }
 /// mod ethers {
-///     pub use state_fold_types::ethers::*;
+///     pub use eth_state_fold_types::ethers::*;
 /// }
 /// ```
 /// Then goes to [`look_for_module`][self::look_for_module] on the subsequent
@@ -206,16 +206,16 @@ fn look_for_use(mut new_stream: TokenStream, stream: &mut IntoIter) -> TokenStre
             if found {
                 new_stream.extend([quote!(
                     mod ethers_core {
-                        pub use state_fold_types::ethers::core::*;
+                        pub use eth_state_fold_types::ethers::core::*;
                     }
                     mod ethers_providers {
-                        pub use state_fold_types::ethers::providers::*;
+                        pub use eth_state_fold_types::ethers::providers::*;
                     }
                     mod ethers_contract {
-                        pub use state_fold_types::ethers::contract::*;
+                        pub use eth_state_fold_types::ethers::contract::*;
                     }
                     mod ethers {
-                        pub use state_fold_types::ethers::*;
+                        pub use eth_state_fold_types::ethers::*;
                     }
                 )]);
                 new_stream.extend([next]);
@@ -245,16 +245,16 @@ mod tests {
         let expected_output = quote! {
             mod prdel {
                 mod ethers_core {
-                    pub use state_fold_types::ethers::core::*;
+                    pub use eth_state_fold_types::ethers::core::*;
                 }
                 mod ethers_providers {
-                    pub use state_fold_types::ethers::providers::*;
+                    pub use eth_state_fold_types::ethers::providers::*;
                 }
                 mod ethers_contract {
-                    pub use state_fold_types::ethers::contract::*;
+                    pub use eth_state_fold_types::ethers::contract::*;
                 }
                 mod ethers {
-                    pub use state_fold_types::ethers::*;
+                    pub use eth_state_fold_types::ethers::*;
                 }
                 use ethers::whatever;
             }

@@ -2,8 +2,8 @@ use crate::error::Result;
 
 use ethers::core::types::H256;
 
-use state_fold_types::ethers;
-use state_fold_types::{
+use eth_state_fold_types::ethers;
+use eth_state_fold_types::{
     Block, BlockState, BlockStreamItem, BlocksSince, QueryBlock, StateStreamItem, StatesSince,
 };
 

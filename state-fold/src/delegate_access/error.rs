@@ -1,5 +1,5 @@
+use eth_state_fold_types::ethers;
 use ethers::providers::{FromErr, Middleware};
-use state_fold_types::ethers;
 
 use snafu::Snafu;
 

@@ -7,12 +7,11 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  CARGO_REGISTRIES_CARTESI_INDEX: ${{ secrets.CARGO_REGISTRIES_CARTESI_INDEX }}
-  CARGO_REGISTRIES_CARTESI_TOKEN: ${{ secrets.CARGO_REGISTRIES_CARTESI_TOKEN }}
+  CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
 jobs:
   publish-state-fold-types:
-    name: 🌎 Publish state-fold-types crate
+    name: 🌎 Publish eth-state-fold-types crate
     runs-on: ubuntu-latest
     steps:
       - name: 📚 Clone repository
@@ -20,41 +19,19 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.CI_TOKEN }}
-      - name: 🔍 Get state-fold-types version
-        id: version
-        run: echo "::set-output name=version::$(cat state-fold-types/Cargo.toml | grep -P '^version = ' | sed -e 's/[version = "]//g')"
       - name: 📦 Install stable Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           default: true
-      - name: 📦 Package state-fold-types
+      - name: 🌎 Publish eth-state-fold-types
         uses: actions-rs/cargo@v1
         with:
           command: publish
-          args: --registry=cartesi -p state-fold-types --dry-run
-      - name: 🌎 Publish state-fold-types
-        uses: cloudsmith-io/action@master
-        with:
-          api-key: ${{ secrets.CARGO_REGISTRIES_CARTESI_TOKEN }}
-          command: "push"
-          format: "cargo"
-          owner: "cartesi"
-          repo: "main"
-          republish: "true"
-          file: 'target/package/state-fold-types-${{ steps.version.outputs.version }}.crate'
-      - name: 📚 Clone provider's registry index repository
-        run: git clone ${{ secrets.CARGO_REGISTRIES_CARTESI_INDEX }} cartesi-index
-      - name: 🌎 Push changes to cartesi registry index repository
-        uses: ad-m/github-push-action@master
-        with:
-          force: true
-          repository: cartesi/crates-index
-          directory: cartesi-index
-          github_token: ${{ secrets.CI_TOKEN }}
+          args: -p eth-state-fold-types
 
   publish-block-history:
-    name: 🌎 Publish block-history crate
+    name: 🌎 Publish eth-block-history crate
     needs: publish-state-fold-types
     runs-on: ubuntu-latest
     steps:
@@ -63,41 +40,19 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.CI_TOKEN }}
-      - name: 🔍 Get block-history version
-        id: version
-        run: echo "::set-output name=version::$(cat block-history/Cargo.toml | grep -P '^version = ' | sed -e 's/[version = "]//g')"
       - name: 📦 Install stable Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           default: true
-      - name: 📦 Package block-history
+      - name: 🌎 Publish eth-block-history
         uses: actions-rs/cargo@v1
         with:
           command: publish
-          args: --registry=cartesi -p block-history --dry-run
-      - name: 🌎 Publish block-history
-        uses: cloudsmith-io/action@master
-        with:
-          api-key: ${{ secrets.CARGO_REGISTRIES_CARTESI_TOKEN }}
-          command: "push"
-          format: "cargo"
-          owner: "cartesi"
-          repo: "main"
-          republish: "true"
-          file: 'target/package/block-history-${{ steps.version.outputs.version }}.crate'
-      - name: 📚 Clone provider's registry index repository
-        run: git clone ${{ secrets.CARGO_REGISTRIES_CARTESI_INDEX }} cartesi-index
-      - name: 🌎 Push changes to cartesi registry index repository
-        uses: ad-m/github-push-action@master
-        with:
-          force: true
-          repository: cartesi/crates-index
-          directory: cartesi-index
-          github_token: ${{ secrets.CI_TOKEN }}
+          args: -p eth-block-history
 
   publish-state-fold:
-    name: 🌎 Publish state-fold crate
+    name: 🌎 Publish eth-state-fold crate
     needs:
       - publish-block-history
       - publish-state-fold-types
@@ -108,41 +63,19 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.CI_TOKEN }}
-      - name: 🔍 Get state-fold version
-        id: version
-        run: echo "::set-output name=version::$(cat state-fold/Cargo.toml | grep -P '^version = ' | sed -e 's/[version = "]//g')"
       - name: 📦 Install stable Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           default: true
-      - name: 📦 Package state-fold
+      - name: 🌎 Publish eth-state-fold
         uses: actions-rs/cargo@v1
         with:
           command: publish
-          args: --registry=cartesi -p state-fold --dry-run
-      - name: 🌎 Publish state-fold
-        uses: cloudsmith-io/action@master
-        with:
-          api-key: ${{ secrets.CARGO_REGISTRIES_CARTESI_TOKEN }}
-          command: "push"
-          format: "cargo"
-          owner: "cartesi"
-          repo: "main"
-          republish: "true"
-          file: 'target/package/state-fold-${{ steps.version.outputs.version }}.crate'
-      - name: 📚 Clone provider's registry index repository
-        run: git clone ${{ secrets.CARGO_REGISTRIES_CARTESI_INDEX }} cartesi-index
-      - name: 🌎 Push changes to cartesi registry index repository
-        uses: ad-m/github-push-action@master
-        with:
-          force: true
-          repository: cartesi/crates-index
-          directory: cartesi-index
-          github_token: ${{ secrets.CI_TOKEN }}
+          args: -p eth-state-fold
 
   publish-state-server-common:
-    name: 🌎 Publish state-server-common crate
+    name: 🌎 Publish eth-state-server-common crate
     needs: publish-state-fold-types
     runs-on: ubuntu-latest
     steps:
@@ -151,9 +84,6 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.CI_TOKEN }}
-      - name: 🔍 Get state-server version
-        id: version
-        run: echo "::set-output name=version::$(cat state-server-common/Cargo.toml | grep -P '^version = ' | sed -e 's/[version = "]//g')"
       - name: 📦 Install stable Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -164,33 +94,14 @@ jobs:
           sudo apt update && sudo apt upgrade -y
           sudo apt install -y protobuf-compiler libprotobuf-dev
 
-      - name: 📦 Package state-server-common
+      - name: 🌎 Publish eth-state-server-common
         uses: actions-rs/cargo@v1
         with:
           command: publish
-          args: --registry=cartesi -p state-server-common --dry-run
-      - name: 🌎 Publish state-server-common
-        uses: cloudsmith-io/action@master
-        with:
-          api-key: ${{ secrets.CARGO_REGISTRIES_CARTESI_TOKEN }}
-          command: "push"
-          format: "cargo"
-          owner: "cartesi"
-          repo: "main"
-          republish: "true"
-          file: 'target/package/state-server-common-${{ steps.version.outputs.version }}.crate'
-      - name: 📚 Clone provider's registry index repository
-        run: git clone ${{ secrets.CARGO_REGISTRIES_CARTESI_INDEX }} cartesi-index
-      - name: 🌎 Push changes to cartesi registry index repository
-        uses: ad-m/github-push-action@master
-        with:
-          force: true
-          repository: cartesi/crates-index
-          directory: cartesi-index
-          github_token: ${{ secrets.CI_TOKEN }}
+          args: -p eth-state-server-common
 
   publish-state-server-lib:
-    name: 🌎 Publish state-server-lib crate
+    name: 🌎 Publish eth-state-server-lib crate
     needs:
       - publish-block-history
       - publish-state-fold
@@ -203,9 +114,6 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.CI_TOKEN }}
-      - name: 🔍 Get state-server-lib version
-        id: version
-        run: echo "::set-output name=version::$(cat state-server-lib/Cargo.toml | grep -P '^version = ' | sed -e 's/[version = "]//g')"
       - name: 📦 Install stable Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -216,33 +124,14 @@ jobs:
           sudo apt update && sudo apt upgrade -y
           sudo apt install -y protobuf-compiler libprotobuf-dev
 
-      - name: 📦 Package state-server-lib
+      - name: 🌎 Publish eth-state-server-lib
         uses: actions-rs/cargo@v1
         with:
           command: publish
-          args: --registry=cartesi -p state-server-lib --dry-run
-      - name: 🌎 Publish state-server-lib
-        uses: cloudsmith-io/action@master
-        with:
-          api-key: ${{ secrets.CARGO_REGISTRIES_CARTESI_TOKEN }}
-          command: "push"
-          format: "cargo"
-          owner: "cartesi"
-          repo: "main"
-          republish: "true"
-          file: 'target/package/state-server-lib-${{ steps.version.outputs.version }}.crate'
-      - name: 📚 Clone provider's registry index repository
-        run: git clone ${{ secrets.CARGO_REGISTRIES_CARTESI_INDEX }} cartesi-index
-      - name: 🌎 Push changes to cartesi registry index repository
-        uses: ad-m/github-push-action@master
-        with:
-          force: true
-          repository: cartesi/crates-index
-          directory: cartesi-index
-          github_token: ${{ secrets.CI_TOKEN }}
+          args: -p eth-state-server-lib
 
   publish-state-client-lib:
-    name: 🌎 Publish state-client-lib crate
+    name: 🌎 Publish eth-state-client-lib crate
     needs:
       - publish-state-fold-types
       - publish-state-server-common
@@ -253,9 +142,6 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.CI_TOKEN }}
-      - name: 🔍 Get state-client-lib version
-        id: version
-        run: echo "::set-output name=version::$(cat state-client-lib/Cargo.toml | grep -P '^version = ' | sed -e 's/[version = "]//g')"
       - name: 📦 Install stable Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -266,27 +152,8 @@ jobs:
           sudo apt update && sudo apt upgrade -y
           sudo apt install -y protobuf-compiler libprotobuf-dev
 
-      - name: 📦 Package state-client-lib
+      - name: 🌎 Publish eth-state-client-lib
         uses: actions-rs/cargo@v1
         with:
           command: publish
-          args: --registry=cartesi -p state-client-lib --dry-run
-      - name: 🌎 Publish state-client-lib to cloudsmith registry
-        uses: cloudsmith-io/action@master
-        with:
-          api-key: ${{ secrets.CARGO_REGISTRIES_CARTESI_TOKEN }}
-          command: "push"
-          format: "cargo"
-          owner: "cartesi"
-          repo: "main"
-          republish: "true"
-          file: 'target/package/state-client-lib-${{ steps.version.outputs.version }}.crate'
-      - name: 📚 Clone provider's registry index repository
-        run: git clone ${{ secrets.CARGO_REGISTRIES_CARTESI_INDEX }} cartesi-index
-      - name: 🌎 Push changes to cartesi registry index repository
-        uses: ad-m/github-push-action@master
-        with:
-          force: true
-          repository: cartesi/crates-index
-          directory: cartesi-index
-          github_token: ${{ secrets.CI_TOKEN }}
+          args: -p eth-state-client-lib

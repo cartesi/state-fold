@@ -1,3 +1,4 @@
+use eth_state_server_common::state_fold_server;
 use state_fold_server::state_fold_server::StateFold;
 use state_fold_server::{
     query_block::Id, state_stream_response::Response as GrpcStateStreamResponse,
@@ -7,19 +8,18 @@ use state_fold_server::{
     QueryStateRequest, QueryStatesSinceRequest, StateStreamResponse, States as GrpcStates,
     StatesSinceResponse, SubscribeNewBlocksRequest, SubscribeNewStatesRequest,
 };
-use state_server_common::state_fold_server;
 
 use tonic::{Request, Response, Status};
 
+use eth_state_fold_types;
+use eth_state_fold_types::ethers;
+use eth_state_fold_types::Block;
 use ethers::providers::Middleware;
 use ethers::types::H256;
-use state_fold_types;
-use state_fold_types::ethers;
-use state_fold_types::Block;
 
-use block_history::{BlockArchive, BlockArchiveError, BlockSubscriber};
-use state_fold::{Foldable, StateFoldEnvironment};
-use state_fold_types::{BlockState, BlockStreamItem, BlocksSince};
+use eth_block_history::{BlockArchive, BlockArchiveError, BlockSubscriber};
+use eth_state_fold::{Foldable, StateFoldEnvironment};
+use eth_state_fold_types::{BlockState, BlockStreamItem, BlocksSince};
 
 use futures::future::try_join_all;
 use futures::stream::StreamExt;

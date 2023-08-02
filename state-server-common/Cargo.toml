@@ -1,11 +1,10 @@
 [package]
-name = "state-server-common"
+name = "eth-state-server-common"
 license = "Apache-2.0"
 version = "0.6.3"
 authors = ["Gabriel Coutinho de Paula <gabriel.coutinho@cartesi.io>"]
 homepage = "https://cartesi.io"
 edition = "2021"
-publish = ["cartesi"]
 include = [
     "build.rs",
     "**/*.rs",
@@ -19,7 +18,7 @@ server = []
 client = []
 
 [dependencies]
-state-fold-types = { version = "0.6", registry = "cartesi", path = "../state-fold-types" }
+eth-state-fold-types = { workspace = true }
 
 prost = "0.11"
 tonic = "0.8"

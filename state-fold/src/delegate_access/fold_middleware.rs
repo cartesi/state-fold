@@ -1,10 +1,10 @@
 use super::error::*;
 
+use eth_state_fold_types::ethers;
 use ethers::core::types::{
     transaction::eip2718::TypedTransaction, BlockId, Bytes, Filter, Log, H256,
 };
 use ethers::providers::{FromErr, Middleware};
-use state_fold_types::ethers;
 
 use async_trait::async_trait;
 use std::sync::Arc;
@@ -68,12 +68,12 @@ where
 pub mod tests {
     use crate::{utils, StateFoldEnvironment};
 
+    use eth_state_fold_types::ethers;
+    use eth_state_fold_types::Block;
     use ethers::providers::Middleware;
     use ethers::types::{Address, U256};
-    use state_fold_types::ethers;
-    use state_fold_types::Block;
 
-    use state_fold_test::simple_storage::SimpleStorage;
+    use eth_state_fold_test::simple_storage::SimpleStorage;
 
     pub async fn fold_query_test<M: Middleware + 'static>(
         account: Address,

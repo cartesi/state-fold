@@ -1,4 +1,4 @@
-use state_fold_types::contract;
+use eth_state_fold_types::contract;
 use std::error::Error;
 use std::fs;
 use std::fs::File;

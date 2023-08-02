@@ -1,8 +1,8 @@
 use crate::{Foldable, StateFoldEnvironment};
 
+use eth_state_fold_types::ethers;
+use eth_state_fold_types::Block;
 use ethers::{contract::Contract, providers::Middleware, types::H256};
-use state_fold_types::ethers;
-use state_fold_types::Block;
 
 pub(crate) async fn set_value_get_block<F: Foldable, M: Middleware + Clone + 'static>(
     env: &StateFoldEnvironment<M, ()>,

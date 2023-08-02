@@ -1,8 +1,8 @@
 use crate::grpc_server::StateServer;
 
-use state_fold::Foldable;
-use state_fold_types::ethers::providers::Middleware;
-use state_server_common::state_fold_server::state_fold_server::StateFoldServer;
+use eth_state_fold::Foldable;
+use eth_state_fold_types::ethers::providers::Middleware;
+use eth_state_server_common::state_fold_server::state_fold_server::StateFoldServer;
 
 use std::sync::Arc;
 use tokio::{select, signal, sync::oneshot};

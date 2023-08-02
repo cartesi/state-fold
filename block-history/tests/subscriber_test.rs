@@ -1,9 +1,8 @@
-use block_history::BlockSubscriber;
-use state_fold_types::BlockStreamItem;
+use eth_block_history::BlockSubscriber;
 
+use eth_state_fold_types::{ethers, Block, BlockStreamItem};
 use ethers::core::utils::Geth;
 use ethers::providers::{Http, Middleware, Provider};
-use state_fold_types::{ethers, Block};
 
 use std::sync::Arc;
 use tokio_stream::StreamExt;

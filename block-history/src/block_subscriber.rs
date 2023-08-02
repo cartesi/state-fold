@@ -1,6 +1,6 @@
 use crate::block_archive::{self, BlockArchive};
 
-use state_fold_types::{
+use eth_state_fold_types::{
     ethers::providers::{Middleware, Provider, ProviderError, Ws},
     Block, BlockError, BlockStreamItem, BlocksSince,
 };

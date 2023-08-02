@@ -1,7 +1,7 @@
 use crate::Foldable;
 
-use block_history::BlockArchiveError;
-use state_fold_types::ethers;
+use eth_block_history::BlockArchiveError;
+use eth_state_fold_types::ethers;
 
 use ethers::providers::{FromErr, Middleware};
 

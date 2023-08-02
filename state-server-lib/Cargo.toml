@@ -1,17 +1,16 @@
 [package]
-name = "state-server-lib"
+name = "eth-state-server-lib"
 license = "Apache-2.0"
 version = "0.6.3"
 authors = ["Gabriel Coutinho de Paula <gabriel.coutinho@cartesi.io>"]
 homepage = "https://cartesi.io"
 edition = "2021"
-publish = ["cartesi"]
 
 [dependencies]
-block-history = { version = "0.6", registry = "cartesi", path = "../block-history" }
-state-server-common = { version = "0.6", registry = "cartesi", path = "../state-server-common", features = ["server"] }
-state-fold = { version = "0.6", registry = "cartesi", path = "../state-fold" }
-state-fold-types = { version = "0.6", registry = "cartesi", path = "../state-fold-types" }
+eth-block-history = { workspace = true }
+eth-state-server-common = { workspace = true, features = ["server"] }
+eth-state-fold = { workspace = true }
+eth-state-fold-types = { workspace = true }
 
 futures = "0.3"
 tonic = "0.8"

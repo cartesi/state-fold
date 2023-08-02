@@ -1,15 +1,14 @@
 [package]
-name = "state-fold"
+name = "eth-state-fold"
 license = "Apache-2.0"
 version = "0.6.3"
 authors = ["Gabriel Coutinho de Paula <gabriel.coutinho@cartesi.io>"]
 homepage = "https://cartesi.io"
 edition = "2021"
-publish = ["cartesi"]
 
 [dependencies]
-state-fold-types = { version = "0.6", registry = "cartesi", path = "../state-fold-types", features = ["ethers"] }
-block-history = { version = "0.6", registry = "cartesi", path = "../block-history" }
+eth-state-fold-types = { workspace = true, features = ["ethers"] }
+eth-block-history = { workspace = true }
 
 snafu = "0.7"
 clap = { version = "4.1", features = ["derive", "env"] }
@@ -21,6 +20,6 @@ tokio = { version = "^1.5", features = ["sync"] }
 
 
 [dev-dependencies]
-state-fold-test = { path = "../state-fold-test" }
+eth-state-fold-test = { workspace = true }
 tokio = { version = "^1.5", features = ["macros"] }
 matches = "0.1"

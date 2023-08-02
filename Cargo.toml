@@ -11,3 +11,13 @@ members = [
   # Internal
   "state-fold-test",
 ]
+
+[workspace.dependencies]
+eth-block-history = { version = "0.6", path = "block-history" }
+eth-state-fold = { version = "0.6", path = "state-fold" }
+eth-state-fold-types = { version = "0.6", path = "state-fold-types" }
+eth-state-server-common = { version = "0.6", path = "state-server-common" }
+eth-state-client-lib = { version = "0.6", path = "state-client-lib" }
+eth-state-server-lib = { version = "0.6", path = "state-server-lib" }
+
+eth-state-fold-test = { path = "state-fold-test" }

@@ -4,15 +4,15 @@ use crate::Foldable;
 
 use super::global_archive::GlobalArchive;
 
-use block_history::{
+use eth_block_history::{
     current_block_number, fetch_block, fetch_block_at_depth, BlockArchive, BlockArchiveError,
 };
-use state_fold_types::{BlockState, QueryBlock};
+use eth_state_fold_types::{BlockState, QueryBlock};
 
+use eth_state_fold_types::ethers;
+use eth_state_fold_types::Block;
 use ethers::core::types::{BlockId, BlockNumber, H256, U64};
 use ethers::providers::Middleware;
-use state_fold_types::ethers;
-use state_fold_types::Block;
 
 use snafu::ResultExt;
 use std::sync::Arc;

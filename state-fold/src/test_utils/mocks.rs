@@ -1,10 +1,10 @@
 use crate::{FoldMiddleware, Foldable, StateFoldEnvironment, SyncMiddleware};
 
-use state_fold_test::mock_middleware::MockError;
+use eth_state_fold_test::mock_middleware::MockError;
 
+use eth_state_fold_types::ethers;
+use eth_state_fold_types::Block;
 use ethers::providers::Middleware;
-use state_fold_types::ethers;
-use state_fold_types::Block;
 
 use async_trait::async_trait;
 use std::sync::Arc;

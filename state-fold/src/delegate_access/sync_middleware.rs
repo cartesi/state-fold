@@ -1,12 +1,12 @@
 use super::error::*;
 use super::partition_events::*;
 
+use eth_state_fold_types::ethers;
 use ethers::core::types::{
     transaction::eip2718::TypedTransaction, BlockId, BlockNumber, Bytes, Filter, FilterBlockOption,
     Log, U64,
 };
 use ethers::providers::{FromErr, Middleware};
-use state_fold_types::ethers;
 
 use async_trait::async_trait;
 use std::sync::Arc;
@@ -160,12 +160,12 @@ where
 pub mod tests {
     use crate::StateFoldEnvironment;
 
+    use eth_state_fold_types::ethers;
+    use eth_state_fold_types::Block;
     use ethers::providers::Middleware;
     use ethers::types::Address;
-    use state_fold_types::ethers;
-    use state_fold_types::Block;
 
-    use state_fold_test::simple_storage::SimpleStorage;
+    use eth_state_fold_test::simple_storage::SimpleStorage;
 
     pub async fn sync_query_test<M: Middleware + 'static>(
         account: Address,

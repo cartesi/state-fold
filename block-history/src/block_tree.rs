@@ -1,5 +1,5 @@
-use state_fold_types::ethereum_types::{H256, U64};
-use state_fold_types::Block;
+use eth_state_fold_types::ethereum_types::{H256, U64};
+use eth_state_fold_types::Block;
 
 use std::collections::HashMap;
 use std::sync::Arc;

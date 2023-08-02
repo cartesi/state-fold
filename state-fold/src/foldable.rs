@@ -1,11 +1,11 @@
 use crate::error::*;
 use crate::{FoldMiddleware, StateFoldEnvironment, SyncMiddleware};
 
-use state_fold_types::Block;
-use state_fold_types::{BlockState, QueryBlock};
+use eth_state_fold_types::Block;
+use eth_state_fold_types::{BlockState, QueryBlock};
 
+use eth_state_fold_types::ethers;
 use ethers::providers::Middleware;
-use state_fold_types::ethers;
 
 use async_trait::async_trait;
 use std::sync::Arc;

@@ -20,30 +20,23 @@ Developer also defines the behavior of **syncing** and **folding** to read **sta
 
 ## Installation
 
-This repository is a `cargo` workspace. Crates are published on `cartesi` crates registry. That's a private registry, so you need to add this into your `~/.cargo/config.toml`:
-
-```toml
-[registries]
-cartesi = { index = "https://github.com/cartesi/crates-index" }
-```
-
-After that you can add one or more *State Fold* crates into your `Cargo.toml` like so:
+Add one or more *State Fold* crates into your `Cargo.toml` like so:
 
 ```toml
 [dependencies]
 # Common crate for all other crates
-state-fold-types = { version = "0.6", registry = "cartesi" }
+eth-state-fold-types = { version = "0.6" }
 
 # Libraries for state-fold core logic
-block-history = { version = "0.6", registry = "cartesi" }
-state-fold = { version = "0.6", registry = "cartesi" }
+eth-block-history = { version = "0.6" }
+eth-state-fold = { version = "0.6" }
 
 # Common crate for server/client
-state-server-common = { version = "0.6", registry = "cartesi", features = ["server"] }
+eth-state-server-common = { version = "0.6", features = ["server"] }
 
 # Libraries for state-fold GRPC interfaces
-state-server-lib = { version = "0.6", registry = "cartesi" }
-state-client-lib = { version = "0.6", registry = "cartesi" }
+eth-state-server-lib = { version = "0.6" }
+eth-state-client-lib = { version = "0.6" }
 ```
 
 ## Usage

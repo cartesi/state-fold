@@ -1,8 +1,8 @@
 use clap::Parser;
 use snafu::{ResultExt, Snafu};
 
-use block_history::config::{BHConfig, BHEnvCLIConfig};
-use state_fold::config::{SFConfig, SFEnvCLIConfig};
+use eth_block_history::config::{BHConfig, BHEnvCLIConfig};
+use eth_state_fold::config::{SFConfig, SFEnvCLIConfig};
 
 #[derive(Debug, Clone, Parser)]
 #[command(name = "sate_server_config")]

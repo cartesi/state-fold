@@ -16,17 +16,17 @@ mod tests {
     use crate::StateFoldEnvironment;
     use std::sync::Arc;
 
+    use eth_state_fold_types::ethers;
     use ethers::providers::Middleware;
-    use state_fold_types::ethers;
 
     use super::{fold_middleware, sync_middleware};
 
     #[tokio::test]
     async fn test_sync_fold() {
-        let (_handle, provider) = state_fold_test::utils::new_geth().await;
+        let (_handle, provider) = eth_state_fold_test::utils::new_geth().await;
         let genesis = provider.get_block_number().await.unwrap();
         let contract =
-            state_fold_test::simple_storage::deploy_simple_storage(Arc::clone(&provider)).await;
+            eth_state_fold_test::simple_storage::deploy_simple_storage(Arc::clone(&provider)).await;
         let account = provider.get_accounts().await.unwrap()[0];
         let deployed_address = contract.address();
 
@@ -41,7 +41,7 @@ mod tests {
             (),
         );
 
-        let block0 = state_fold_test::utils::get_current_block(provider.as_ref()).await;
+        let block0 = eth_state_fold_test::utils::get_current_block(provider.as_ref()).await;
         let block1 = test_utils::set_value_get_block::<MockFold, _>(&env, &contract, "this").await;
         let block2 = test_utils::set_value_get_block::<MockFold, _>(&env, &contract, "that").await;
         let block3 = test_utils::set_value_get_block::<MockFold, _>(&env, &contract, "other").await;

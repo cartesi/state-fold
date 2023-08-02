@@ -8,12 +8,12 @@ use crate::grpc_interface::state_fold_server::{
     StateStreamResponse, States as GrpcStates, StatesSinceResponse,
 };
 
-use state_fold_types::{
+use eth_state_fold_types::{
     ethereum_types::{Bloom, H256},
     Block,
 };
 
-use state_fold_types::{
+use eth_state_fold_types::{
     BlockState, BlockStreamItem, BlocksSince, QueryBlock, StateStreamItem, StatesSince,
 };
 

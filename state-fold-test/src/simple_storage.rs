@@ -1,6 +1,6 @@
+use eth_state_fold_types::{contract, ethers};
 use ethers::{contract::Contract, providers::Middleware};
 use hex;
-use state_fold_types::{contract, ethers};
 use std::sync::Arc;
 
 contract::include!("simple_storage");

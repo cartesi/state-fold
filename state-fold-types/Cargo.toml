@@ -1,11 +1,10 @@
 [package]
-name = "state-fold-types"
+name = "eth-state-fold-types"
 license = "Apache-2.0"
 version = "0.6.3"
 authors = ["Gabriel Coutinho de Paula <gabriel.coutinho@cartesi.io>"]
 homepage = "https://cartesi.io"
 edition = "2021"
-publish = ["cartesi"]
 
 [dependencies]
 serde = "1"

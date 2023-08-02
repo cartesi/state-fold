@@ -3,12 +3,12 @@ use crate::Foldable;
 
 use super::StateFoldEnvironment;
 
-use state_fold_types::Block;
-use state_fold_types::BlockState;
+use eth_state_fold_types::Block;
+use eth_state_fold_types::BlockState;
 
+use eth_state_fold_types::ethers;
 use ethers::core::types::U64;
 use ethers::providers::Middleware;
-use state_fold_types::ethers;
 
 use snafu::ResultExt;
 use std::collections::HashMap;
@@ -287,10 +287,10 @@ mod tests {
     use crate::StateFoldEnvironment;
     use std::sync::Arc;
 
-    use state_fold_test::mock_middleware::MockMiddleware;
+    use eth_state_fold_test::mock_middleware::MockMiddleware;
 
+    use eth_state_fold_types::ethers;
     use ethers::core::types::{H256, U64};
-    use state_fold_types::ethers;
 
     const INITIAL_VALUE: u64 = 42;
     const SAFETY_MARGIN: usize = 8;

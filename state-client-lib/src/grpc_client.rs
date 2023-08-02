@@ -2,17 +2,17 @@ use crate::{error::*, BlockServer, StateServer};
 
 use ethers::core::types::H256;
 
-use state_fold_types::ethers;
-use state_fold_types::{
+use eth_state_fold_types::ethers;
+use eth_state_fold_types::{
     Block, BlockState, BlockStreamItem, BlocksSince, QueryBlock, StateStreamItem, StatesSince,
 };
 
+use eth_state_server_common::state_fold_server;
 use state_fold_server::state_fold_client::StateFoldClient;
 use state_fold_server::{
     InitialState, QueryBlockRequest, QueryBlocksSinceRequest, QueryStateRequest,
     QueryStatesSinceRequest, SubscribeNewBlocksRequest, SubscribeNewStatesRequest,
 };
-use state_server_common::state_fold_server;
 use tonic::{transport::Channel, Request};
 
 use snafu::ResultExt;

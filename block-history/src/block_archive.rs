@@ -1,12 +1,12 @@
 use crate::block_tree::BlockTree;
 
-use state_fold_types::BlocksSince;
+use eth_state_fold_types::BlocksSince;
 
+use eth_state_fold_types::ethereum_types::{H256, U64};
+use eth_state_fold_types::ethers;
+use eth_state_fold_types::Block;
 use ethers::providers::Middleware;
 use ethers::types::{BlockId, BlockNumber};
-use state_fold_types::ethereum_types::{H256, U64};
-use state_fold_types::ethers;
-use state_fold_types::Block;
 
 use std::convert::TryInto;
 use std::sync::Arc;
@@ -305,8 +305,8 @@ pub async fn fetch_block_at_depth<M: Middleware + 'static>(
 #[cfg(test)]
 mod tests {
     use super::BlockArchive;
-    use state_fold_test::mock_middleware::MockMiddleware;
-    use state_fold_types::BlocksSince;
+    use eth_state_fold_test::mock_middleware::MockMiddleware;
+    use eth_state_fold_types::BlocksSince;
 
     use std::sync::Arc;
 
