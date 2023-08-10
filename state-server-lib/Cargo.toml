@@ -12,13 +12,13 @@ eth-state-server-common = { workspace = true, features = ["server"] }
 eth-state-fold = { workspace = true }
 eth-state-fold-types = { workspace = true }
 
-futures = "0.3"
-tonic = "0.8"
-tonic-health = "0.7"
-tokio = { version = "1", features = ["sync", "signal"] }
-tokio-stream = "0.1"
-tracing = "0.1"
-serde = "1"
-serde_json = "1"
-snafu = "0.7"
-clap = { version = "4.1", features = ["derive", "env"] }
+futures = { workspace = true }
+tonic = { workspace = true }
+tonic-health = { workspace = true }
+tokio = { features = ["sync", "signal"] , workspace = true }
+tokio-stream = { workspace = true }
+tracing = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+snafu = { workspace = true }
+clap = { features = ["derive", "env"] , workspace = true }

@@ -9,13 +9,13 @@ publish = false
 
 [dependencies]
 eth-state-fold-types = { workspace = true }
-hex = "0.4"
-serde_json = "1.0"
-async-trait = "0.1"
-tokio = { version = "^1.5", features = ["sync"] }
+hex = { workspace = true }
+serde_json = { workspace = true }
+async-trait = { workspace = true }
+tokio = { features = ["sync"] , workspace = true }
 
 [build-dependencies]
 eth-state-fold-types = { workspace = true, features = ["ethers"] }
-serde_json = "1"
-anyhow = "1"
-proc-macro2 = "1"
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+proc-macro2 = { workspace = true }

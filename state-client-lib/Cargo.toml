@@ -10,12 +10,12 @@ edition = "2021"
 eth-state-fold-types = { workspace = true, features = ["ethers"] }
 eth-state-server-common = { workspace = true, features = ["server"] }
 
-async-trait = "0.1"
-tonic = "0.8"
-tokio = { version = "1", features = ["sync"] }
-tokio-stream = "0.1"
+async-trait = { workspace = true }
+tonic = { workspace = true }
+tokio = { features = ["sync"] , workspace = true }
+tokio-stream = { workspace = true }
 
-serde = "1"
-serde_json = "1"
-snafu = "0.7"
-clap = { version = "4.1", features = ["derive", "env"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+snafu = { workspace = true }
+clap = { features = ["derive", "env"] , workspace = true }
