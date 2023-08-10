@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
 ## [Unreleased]
+
+## [0.7.0] - 2023-08-10
 ### Changes
 - Publish crates to crates.io instead of the `cartesi` private registry.
 - Remove all mentions of the `cartesi` private registry.
@@ -14,6 +17,7 @@ particular was chosen as it is specific to the Ethereum base layer.
 - Rewrite readme.
 - Remove outdated examples.
 - Trigger CI workflows only on relevant file types.
+- Update dependencies.
 
 ### Fixed
 - Apply all clippy suggestions; suppress warnings too complicated to
@@ -134,16 +138,17 @@ reestablishing it at every subscription attempt.
 ## [0.1.0] - 2021-12-28
 - Initial release
 
-[Unreleased]: https://github.com/cartesi-corp/state-fold/compare/v0.6.3...HEAD
-[0.6.3]: https://github.com/cartesi-corp/state-fold/compare/v0.6.2...v0.6.3
-[0.6.2]: https://github.com/cartesi-corp/state-fold/compare/v0.6.1...v0.6.2
-[0.6.1]: https://github.com/cartesi-corp/state-fold/compare/v0.6.0...v0.6.1
-[0.6.0]: https://github.com/cartesi-corp/state-fold/compare/v0.5.0...v0.6.0
-[0.5.0]: https://github.com/cartesi-corp/state-fold/compare/v0.4.0...v0.5.0
-[0.4.0]: https://github.com/cartesi-corp/state-fold/compare/v0.3.0...v0.4.0
-[0.3.0]: https://github.com/cartesi-corp/state-fold/compare/v0.2.2...v0.3.0
-[0.2.2]: https://github.com/cartesi-corp/state-fold/compare/v0.2.1...v0.2.2
-[0.2.1]: https://github.com/cartesi-corp/state-fold/compare/v0.2.0...v0.2.1
-[0.2.0]: https://github.com/cartesi-corp/state-fold/compare/v0.1.1...v0.2.0
-[0.1.1]: https://github.com/cartesi-corp/state-fold/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/cartesi-corp/state-fold/releases/tag/v0.1.0
+[Unreleased]: https://github.com/cartesi/state-fold/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/cartesi/state-fold/compare/v0.6.3...v0.7.0
+[0.6.3]: https://github.com/cartesi/state-fold/compare/v0.6.2...v0.6.3
+[0.6.2]: https://github.com/cartesi/state-fold/compare/v0.6.1...v0.6.2
+[0.6.1]: https://github.com/cartesi/state-fold/compare/v0.6.0...v0.6.1
+[0.6.0]: https://github.com/cartesi/state-fold/compare/v0.5.0...v0.6.0
+[0.5.0]: https://github.com/cartesi/state-fold/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/cartesi/state-fold/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/cartesi/state-fold/compare/v0.2.2...v0.3.0
+[0.2.2]: https://github.com/cartesi/state-fold/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/cartesi/state-fold/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/cartesi/state-fold/compare/v0.1.1...v0.2.0
+[0.1.1]: https://github.com/cartesi/state-fold/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/cartesi/state-fold/releases/tag/v0.1.0
