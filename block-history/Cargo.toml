@@ -9,13 +9,13 @@ edition = "2021"
 [dependencies]
 eth-state-fold-types = { workspace = true, features = ["ethers"] }
 
-snafu = "0.7"
-clap = { version = "4.1", features = ["derive", "env"] }
+snafu = { workspace = true }
+clap = { features = ["derive", "env"] , workspace = true }
 
-async-stream = "0.3"
-tokio = { version = "1", features = ["sync", "macros"] }
-tokio-stream = "0.1"
-tracing = "0.1"
+async-stream = { workspace = true }
+tokio = { features = ["sync", "macros"] , workspace = true }
+tokio-stream = { workspace = true }
+tracing = { workspace = true }
 
 
 [dev-dependencies]

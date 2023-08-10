@@ -1,9 +1,12 @@
 [workspace]
 resolver = "2"
 members = [
+  # Core crates (in dependency order)
+  "state-fold-types",
   "block-history",
   "state-fold",
-  "state-fold-types",
+
+  # gRPC crates
   "state-server-common",
   "state-client-lib",
   "state-server-lib",
@@ -13,11 +16,32 @@ members = [
 ]
 
 [workspace.dependencies]
+eth-state-fold-types = { version = "0.6", path = "state-fold-types" }
 eth-block-history = { version = "0.6", path = "block-history" }
 eth-state-fold = { version = "0.6", path = "state-fold" }
-eth-state-fold-types = { version = "0.6", path = "state-fold-types" }
 eth-state-server-common = { version = "0.6", path = "state-server-common" }
-eth-state-client-lib = { version = "0.6", path = "state-client-lib" }
-eth-state-server-lib = { version = "0.6", path = "state-server-lib" }
+eth-state-fold-test = { version = "*", path = "state-fold-test" }
 
-eth-state-fold-test = { path = "state-fold-test" }
+ethabi = "18"
+ethers = "1.0"
+
+anyhow = "1"
+async-recursion = "1"
+async-stream = "0.3"
+async-trait = "0.1"
+clap = "4.2"
+futures = "0.3"
+hex = "0.4"
+proc-macro2 = "1"
+prost = "0.11"
+quote = "1"
+serde = "1"
+serde_json = "1"
+snafu = "0.7"
+tokio = "1"
+tokio-stream = "0.1"
+toml = "0.5"
+tonic = "0.9"
+tonic-build = "0.9"
+tonic-health = "0.9"
+tracing = "0.1"

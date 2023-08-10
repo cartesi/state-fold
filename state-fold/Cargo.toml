@@ -10,13 +10,13 @@ edition = "2021"
 eth-state-fold-types = { workspace = true, features = ["ethers"] }
 eth-block-history = { workspace = true }
 
-snafu = "0.7"
-clap = { version = "4.1", features = ["derive", "env"] }
+snafu = { workspace = true }
+clap = { features = ["derive", "env"] , workspace = true }
 
-async-recursion = "1"
-async-trait = "0.1"
-futures = "0.3"
-tokio = { version = "^1.5", features = ["sync"] }
+async-recursion = { workspace = true }
+async-trait = { workspace = true }
+futures = { workspace = true }
+tokio = { features = ["sync"] , workspace = true }
 
 
 [dev-dependencies]
