@@ -1,3 +1,6 @@
+// (c) Cartesi and individual authors (see AUTHORS)
+// SPDX-License-Identifier: Apache-2.0 (see LICENSE)
+
 use eth_state_fold_types::ethereum_types::{H256, U64};
 use eth_state_fold_types::Block;
 

@@ -1,3 +1,6 @@
+// (c) Cartesi and individual authors (see AUTHORS)
+// SPDX-License-Identifier: Apache-2.0 (see LICENSE)
+
 use crate::{error::*, BlockServer, StateServer};
 
 use ethers::core::types::H256;

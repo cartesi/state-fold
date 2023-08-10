@@ -1,3 +1,5 @@
+// (c) Cartesi and individual authors (see AUTHORS)
+// SPDX-License-Identifier: Apache-2.0 (see LICENSE)
 use crate::grpc_server::StateServer;
 
 use eth_state_fold::Foldable;

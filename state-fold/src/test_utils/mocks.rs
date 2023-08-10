@@ -1,3 +1,6 @@
+// (c) Cartesi and individual authors (see AUTHORS)
+// SPDX-License-Identifier: Apache-2.0 (see LICENSE)
+
 use crate::{FoldMiddleware, Foldable, StateFoldEnvironment, SyncMiddleware};
 
 use eth_state_fold_test::mock_middleware::MockError;

@@ -1,3 +1,6 @@
+// (c) Cartesi and individual authors (see AUTHORS)
+// SPDX-License-Identifier: Apache-2.0 (see LICENSE)
+
 use crate::block_tree::BlockTree;
 
 use eth_state_fold_types::BlocksSince;

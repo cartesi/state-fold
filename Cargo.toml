@@ -15,6 +15,16 @@ members = [
   "state-fold-test",
 ]
 
+[workspace.package]
+version = "0.7.0"
+license = "Apache-2.0"
+authors = [
+  "Gabriel Coutinho de Paula <gcdepaula@protonmail.io>",
+  "Roman Hodulák <hodulakr@gmail.com>",
+]
+homepage = "https://github.com/cartesi/state-fold"
+edition = "2021"
+
 [workspace.dependencies]
 eth-state-fold-types = { version = "0.7", path = "state-fold-types" }
 eth-block-history = { version = "0.7", path = "block-history" }
