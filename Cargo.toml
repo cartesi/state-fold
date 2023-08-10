@@ -16,10 +16,10 @@ members = [
 ]
 
 [workspace.dependencies]
-eth-state-fold-types = { version = "0.6", path = "state-fold-types" }
-eth-block-history = { version = "0.6", path = "block-history" }
-eth-state-fold = { version = "0.6", path = "state-fold" }
-eth-state-server-common = { version = "0.6", path = "state-server-common" }
+eth-state-fold-types = { version = "0.7", path = "state-fold-types" }
+eth-block-history = { version = "0.7", path = "block-history" }
+eth-state-fold = { version = "0.7", path = "state-fold" }
+eth-state-server-common = { version = "0.7", path = "state-server-common" }
 eth-state-fold-test = { version = "*", path = "state-fold-test" }
 
 ethabi = "18"
