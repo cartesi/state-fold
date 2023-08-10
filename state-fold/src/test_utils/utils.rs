@@ -1,3 +1,6 @@
+// (c) Cartesi and individual authors (see AUTHORS)
+// SPDX-License-Identifier: Apache-2.0 (see LICENSE)
+
 use crate::StateFoldEnvironment;
 
 use eth_state_fold_types::ethers;

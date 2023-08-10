@@ -1,3 +1,6 @@
+// (c) Cartesi and individual authors (see AUTHORS)
+// SPDX-License-Identifier: Apache-2.0 (see LICENSE)
+
 use ethereum_types::{Bloom, H256, U256, U64};
 use serde::{Deserialize, Serialize};
 use snafu::Snafu;

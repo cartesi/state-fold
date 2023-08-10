@@ -1,3 +1,6 @@
+// (c) Cartesi and individual authors (see AUTHORS)
+// SPDX-License-Identifier: Apache-2.0 (see LICENSE)
+
 use crate::grpc_interface::state_fold_server::{
     block_stream_response::Response as GrpcBlockStreamResponse,
     blocks_since_response::Response as GrpcBlocksSince, query_block::Id,

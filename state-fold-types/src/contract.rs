@@ -1,3 +1,6 @@
+// (c) Cartesi and individual authors (see AUTHORS)
+// SPDX-License-Identifier: Apache-2.0 (see LICENSE)
+
 use anyhow::{anyhow, Result};
 use ethers::contract::Abigen;
 use proc_macro2::token_stream::IntoIter;

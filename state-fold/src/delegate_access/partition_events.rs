@@ -1,3 +1,6 @@
+// (c) Cartesi and individual authors (see AUTHORS)
+// SPDX-License-Identifier: Apache-2.0 (see LICENSE)
+
 use async_recursion::async_recursion;
 use async_trait::async_trait;
 use tokio::sync::Semaphore;

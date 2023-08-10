@@ -1,3 +1,5 @@
+// (c) Cartesi and individual authors (see AUTHORS)
+// SPDX-License-Identifier: Apache-2.0 (see LICENSE)
 use eth_state_server_common::state_fold_server;
 use state_fold_server::state_fold_server::StateFold;
 use state_fold_server::{
