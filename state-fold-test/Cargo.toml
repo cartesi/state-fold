@@ -1,12 +1,15 @@
 [package]
 name = "eth-state-fold-test"
 publish = false
-
-license = { workspace = true }
 version = { workspace = true }
+
 authors = { workspace = true }
-homepage = { workspace = true }
+description = { workspace = true }
 edition = { workspace = true }
+homepage = { workspace = true }
+license-file = { workspace = true }
+readme = { workspace = true }
+repository = { workspace = true }
 
 
 [dependencies]
