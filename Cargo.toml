@@ -17,13 +17,19 @@ members = [
 
 [workspace.package]
 version = "0.7.0"
-license = "Apache-2.0"
+
 authors = [
   "Gabriel Coutinho de Paula <gcdepaula@protonmail.io>",
   "Roman Hodulák <hodulakr@gmail.com>",
 ]
-homepage = "https://github.com/cartesi/state-fold"
+description = "An Ethereum reader library"
 edition = "2021"
+homepage = "https://github.com/cartesi/state-fold"
+license-file = "LICENSE"
+readme = "README.md"
+repository = "https://github.com/cartesi/state-fold"
+
+
 
 [workspace.dependencies]
 eth-state-fold-types = { version = "0.7", path = "state-fold-types" }
