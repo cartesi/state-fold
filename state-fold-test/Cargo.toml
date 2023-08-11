@@ -1,6 +1,5 @@
 [package]
 name = "eth-state-fold-test"
-publish = false
 version = { workspace = true }
 
 authors = { workspace = true }

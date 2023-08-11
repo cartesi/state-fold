@@ -30,9 +30,31 @@ jobs:
           command: publish
           args: -p eth-state-fold-types
 
+  publish-state-fold-test:
+    name: 🌎 Publish eth-state-fold-test crate
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📚 Clone repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ secrets.CI_TOKEN }}
+      - name: 📦 Install stable Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+      - name: 🌎 Publish eth-state-fold-test
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
+          args: -p eth-state-fold-test
+
   publish-block-history:
     name: 🌎 Publish eth-block-history crate
-    needs: publish-state-fold-types
+    needs: 
+      - publish-state-fold-types
+      - publish-state-fold-test
     runs-on: ubuntu-latest
     steps:
       - name: 📚 Clone repository
@@ -56,6 +78,7 @@ jobs:
     needs:
       - publish-block-history
       - publish-state-fold-types
+      - publish-state-fold-test
     runs-on: ubuntu-latest
     steps:
       - name: 📚 Clone repository
