@@ -25,18 +25,18 @@ Add one or more *State Fold* crates into your `Cargo.toml` like so:
 ```toml
 [dependencies]
 # Common crate for all other crates
-eth-state-fold-types = { version = "0.6" }
+eth-state-fold-types = { version = "0.7" }
 
 # Libraries for state-fold core logic
-eth-block-history = { version = "0.6" }
-eth-state-fold = { version = "0.6" }
+eth-block-history = { version = "0.7" }
+eth-state-fold = { version = "0.7" }
 
 # Common crate for server/client
-eth-state-server-common = { version = "0.6", features = ["server"] }
+eth-state-server-common = { version = "0.7", features = ["server"] }
 
 # Libraries for state-fold GRPC interfaces
-eth-state-server-lib = { version = "0.6" }
-eth-state-client-lib = { version = "0.6" }
+eth-state-server-lib = { version = "0.7" }
+eth-state-client-lib = { version = "0.7" }
 ```
 
 ## Usage

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.1] - 2023-08-11
+### Fixed
+- Remove the `version` attribute from the `eth-state-fold-test` dependency to prevent it from being published.
+
 ## [0.7.0] - 2023-08-10
 ### Changes
 - Publish crates to crates.io instead of the `cartesi` private registry.
@@ -138,7 +142,8 @@ reestablishing it at every subscription attempt.
 ## [0.1.0] - 2021-12-28
 - Initial release
 
-[Unreleased]: https://github.com/cartesi/state-fold/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/cartesi/state-fold/compare/v0.7.1...HEAD
+[0.7.1]: https://github.com/cartesi/state-fold/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/cartesi/state-fold/compare/v0.6.3...v0.7.0
 [0.6.3]: https://github.com/cartesi/state-fold/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/cartesi/state-fold/compare/v0.6.1...v0.6.2

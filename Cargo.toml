@@ -16,7 +16,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.7.0"
+version = "0.7.1"
 
 authors = [
   "Gabriel Coutinho de Paula <gcdepaula@protonmail.io>",
@@ -30,13 +30,12 @@ readme = "README.md"
 repository = "https://github.com/cartesi/state-fold"
 
 
-
 [workspace.dependencies]
 eth-state-fold-types = { version = "0.7", path = "state-fold-types" }
 eth-block-history = { version = "0.7", path = "block-history" }
 eth-state-fold = { version = "0.7", path = "state-fold" }
 eth-state-server-common = { version = "0.7", path = "state-server-common" }
-eth-state-fold-test = { version = "*", path = "state-fold-test" }
+eth-state-fold-test = { path = "state-fold-test" }
 
 ethabi = "18"
 ethers = "1.0"
