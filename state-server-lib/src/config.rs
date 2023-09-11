@@ -19,6 +19,10 @@ pub struct StateServerEnvCLIConfig {
     /// Server address
     #[arg(long, env)]
     pub ss_server_address: Option<String>,
+
+    /// Maximum size of a decoded message
+    #[arg(long, env, default_value_t = 100 * 1024 * 1024)]
+    pub ss_max_decoding_message_size: usize,
 }
 
 #[derive(Clone, Debug)]
@@ -26,6 +30,7 @@ pub struct StateServerConfig {
     pub state_fold: SFConfig,
     pub block_history: BHConfig,
     pub server_address: std::net::SocketAddr,
+    pub max_decoding_message_size: usize,
 }
 
 #[derive(Debug, Snafu)]
@@ -53,10 +58,13 @@ impl StateServerConfig {
             .parse()
             .context(AddressParseSnafu)?;
 
+        let max_decoding_message_size = env_cli_config.ss_max_decoding_message_size;
+
         Ok(Self {
             state_fold,
             block_history,
             server_address,
+            max_decoding_message_size,
         })
     }
 }

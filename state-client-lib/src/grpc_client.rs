@@ -1,6 +1,7 @@
 // (c) Cartesi and individual authors (see AUTHORS)
 // SPDX-License-Identifier: Apache-2.0 (see LICENSE)
 
+use crate::config::SCConfig;
 use crate::{error::*, BlockServer, StateServer};
 
 use ethers::core::types::H256;
@@ -33,8 +34,9 @@ pub struct GrpcStateFoldClient<I, S> {
 }
 
 impl<I, S> GrpcStateFoldClient<I, S> {
-    pub fn new_from_channel(channel: Channel) -> Self {
-        let client = StateFoldClient::new(channel);
+    pub fn new_from_channel(channel: Channel, config: &SCConfig) -> Self {
+        let client = StateFoldClient::new(channel)
+            .max_decoding_message_size(config.max_decoding_message_size);
 
         Self {
             client,
