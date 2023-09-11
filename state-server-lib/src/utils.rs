@@ -1,6 +1,6 @@
 // (c) Cartesi and individual authors (see AUTHORS)
 // SPDX-License-Identifier: Apache-2.0 (see LICENSE)
-use crate::grpc_server::StateServer;
+use crate::{config::StateServerConfig, grpc_server::StateServer};
 
 use eth_state_fold::Foldable;
 use eth_state_fold_types::ethers::providers::Middleware;
@@ -15,7 +15,7 @@ pub async fn start_server<
     UD: Send + Sync + 'static,
     F: Foldable<UserData = UD> + 'static,
 >(
-    address: std::net::SocketAddr,
+    config: &StateServerConfig,
     state_server: StateServer<M, UD, F>,
     kill_switch: oneshot::Receiver<()>,
 ) -> Result<(), tonic::transport::Error>
@@ -31,13 +31,16 @@ where
 
     let block_subscriber = Arc::clone(&state_server.block_subscriber);
 
-    tracing::info!("StateFoldServer listening on {}", address);
+    tracing::info!("StateFoldServer listening on {}", config.server_address);
 
     Server::builder()
         .trace_fn(|_| tracing::trace_span!("state_fold_server"))
         .add_service(health_server)
-        .add_service(StateFoldServer::new(state_server))
-        .serve_with_shutdown(address, async {
+        .add_service(
+            StateFoldServer::new(state_server)
+                .max_decoding_message_size(config.max_decoding_message_size),
+        )
+        .serve_with_shutdown(config.server_address, async {
             select! {
                 r = block_subscriber.wait_for_completion() => {
                     tracing::error!("`block_subscriber` has exited: {:?}", r);

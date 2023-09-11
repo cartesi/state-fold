@@ -15,12 +15,17 @@ pub struct SCEnvCLIConfig {
     /// Default confirmations
     #[arg(long, env)]
     pub sc_default_confirmations: Option<usize>,
+
+    /// Maximum size of a decoded message
+    #[arg(long, env, default_value_t = 100 * 1024 * 1024)]
+    pub ss_max_decoding_message_size: usize,
 }
 
 #[derive(Clone, Debug)]
 pub struct SCConfig {
     pub grpc_endpoint: String,
     pub default_confirmations: usize,
+    pub max_decoding_message_size: usize,
 }
 
 #[derive(Debug, Snafu)]
@@ -49,9 +54,12 @@ impl SCConfig {
             .sc_default_confirmations
             .unwrap_or(DEFAULT_DEFAULT_CONFIRMATIONS);
 
+        let max_decoding_message_size = env_cli_config.ss_max_decoding_message_size;
+
         Ok(SCConfig {
             grpc_endpoint,
             default_confirmations,
+            max_decoding_message_size,
         })
     }
 }
