@@ -7,9 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [0.8.0] - 2023-09-11
+### Changes
+- Add `max_decoding_message_size` configuration to gRPC server and client libs.
+
+
 ## [0.7.1] - 2023-08-11
 ### Fixed
 - Remove the `version` attribute from the `eth-state-fold-test` dependency to prevent it from being published.
+
 
 ## [0.7.0] - 2023-08-10
 ### Changes
@@ -142,7 +149,8 @@ reestablishing it at every subscription attempt.
 ## [0.1.0] - 2021-12-28
 - Initial release
 
-[Unreleased]: https://github.com/cartesi/state-fold/compare/v0.7.1...HEAD
+[Unreleased]: https://github.com/cartesi/state-fold/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/cartesi/state-fold/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/cartesi/state-fold/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/cartesi/state-fold/compare/v0.6.3...v0.7.0
 [0.6.3]: https://github.com/cartesi/state-fold/compare/v0.6.2...v0.6.3
