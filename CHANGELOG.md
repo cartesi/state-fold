@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2023-09-15
+### Changes
+- Allow negative numbers in `sf_query_limit_error_codes` state-fold configuration.
+
+### Fixed
+- Parse `sf_genesis_block` correctly.
+- Setting `sf_concurrent_events_fetch` to `0` no longer silently halts the system, and instead use this configuration as _additional_ concurrent events, as documented.
+
 
 ## [0.8.0] - 2023-09-11
 ### Changes
@@ -149,7 +157,8 @@ reestablishing it at every subscription attempt.
 ## [0.1.0] - 2021-12-28
 - Initial release
 
-[Unreleased]: https://github.com/cartesi/state-fold/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/cartesi/state-fold/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/cartesi/state-fold/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/cartesi/state-fold/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/cartesi/state-fold/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/cartesi/state-fold/compare/v0.6.3...v0.7.0
