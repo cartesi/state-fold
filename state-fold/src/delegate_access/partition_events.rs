@@ -89,7 +89,7 @@ where
     P: PartitionProvider<E, D> + Send + Sync,
 {
     pub fn new(concurrent_workers: usize, provider: &'a P, partition_data: &'a D) -> Self {
-        let semaphore = Semaphore::new(concurrent_workers);
+        let semaphore = Semaphore::new(concurrent_workers + 1);
         PartitionEvents {
             semaphore,
             provider,
