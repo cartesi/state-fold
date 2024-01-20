@@ -24,8 +24,8 @@ pub struct StateFoldEnvironment<M: Middleware, UD> {
     inner_middleware: Arc<M>,
     pub block_archive: Option<Arc<BlockArchive<M>>>,
 
-    genesis_block: U64,
     pub safety_margin: usize,
+    genesis_block: U64,
 
     // If the Ethereum node has a limit on the number of events returned by the
     // method `eth_getLogs` (such as Infura, with a 10k events limit and <10s
